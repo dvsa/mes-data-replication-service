@@ -1,24 +1,26 @@
 /**
  * Node.js Typescript CLI app to generate and run DMS tasks.
  */
-import * as AWS from 'aws-sdk';
 import { getLogger } from './util';
 
 const logger = getLogger('cli-app', 'debug');
 
-logger.info('Hello world...');
-logger.debug('1 + 1 is %d', 2);
-
-export class SourceFilter {
-    constructor(readonly column: string, readonly operator: string, readonly value: string) {}
+export interface SourceFilter {
+    column: string,
+    operator: string, 
+    value: string
 }
 
-export class Table {
-    constructor(readonly sourceName: string, readonly sourceFilter: SourceFilter, readonly removeColumns: string[]) {}
+export interface Table {
+    sourceName: string, 
+    sourceFilter: SourceFilter, 
+    removeColumns: string[]
 }
 
-export class Options {
-    constructor(readonly sourceSchema: string, readonly destSchema: string, readonly tables: Table[]) {}
+export interface Options {
+    sourceSchema: string,
+    destSchema: string, 
+    tables: Table[]
 }
 
 export function generateTaskConfig(options: Options): any {
