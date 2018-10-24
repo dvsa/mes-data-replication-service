@@ -1,0 +1,14 @@
+{
+    "sourceSchema": "SOURCE",
+    "destSchema": "dest",
+    "tables": [ 
+        {
+            "sourceName": "TABLE1",
+            "sourceFilter": {
+                "column": "COL",
+                "operator": "eq",
+                "value": "42"
+            }
+        }
+    ]
+}
