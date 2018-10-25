@@ -4,6 +4,7 @@
     "description": "DVSA Mobile Examiner Services - Generates and runs DMS tasks",
     "dependencies": {
         "aws-sdk": "^2.341.0",
+        "escape-json-node": "^2.0.0",
         "winston": "^3.1.0"
     },
     "devDependencies": {

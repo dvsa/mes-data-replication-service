@@ -1,6 +1,7 @@
 /**
  * Common utility functionality.
  */
+import * as fs from 'fs'
 import { createLogger, Logger, format, transports } from 'winston';
 
 /**
@@ -24,4 +25,13 @@ export function getLogger(name: string, logLevel: string): Logger {
     });
 
     return logger;
+}
+
+/**
+ * Loads the specified file, and parses to JSON object. Any exceptions are thrown.
+ * @param name      The file name
+ */
+export function loadJSON(name: string): any {
+    const resultText = fs.readFileSync(name);
+    return JSON.parse(resultText.toString('utf8'));
 }

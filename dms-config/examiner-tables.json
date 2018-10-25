@@ -1,0 +1,29 @@
+{
+    "sourceSchema": "TARSUAT",
+    "destSchema": "tarsuat1repl",
+    "tables": [ 
+        {
+            "sourceName": "EXAMINER",
+            "removeColumns": [ 
+                "PROB_PER_START_DATE",
+                "PROB_PER_END_DATE",
+                "DSA_BIKE_IND",
+                "DSA_RADIO_IND",
+                "WELSH_SPKG_CODE",
+                "DEPLOY_IND",
+                "NON_DEPLOY_TEXT",
+                "SKILL_TEXT",
+                "MAN_PROG_START_DATE",
+                "MAN_PROG_END_DATE",
+                "UPDATED_ON",
+                "CREATED_ON",
+                "UPDATED_BY",
+                "CREATED_BY",
+                "MOBILE_IND",
+                "EMAIL_JOURNALS_IND",
+                "DVSA_EMAIL",
+                "STOP_JOURNALS_IND"
+            ]
+        }
+    ]
+}
