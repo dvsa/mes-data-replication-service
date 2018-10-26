@@ -21,6 +21,11 @@ describe('generateTableMapping', () => {
         expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-with-filter'));
     });
 
+    it('handles a single table with between filter', () => {
+        const input: Options = loadTestJSON('input-single-table-with-between');
+        expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-with-between'));
+    });
+
     it('handles a single table removing columns', () => {
         const input: Options = loadTestJSON('input-single-table-remove-columns');
         expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-remove-columns'));

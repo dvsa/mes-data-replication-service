@@ -6,11 +6,20 @@ import { DmsApi } from './dms';
 import { generateTableMapping } from './table-mapping';
 
 const logger = getLogger('cli-app', 'debug');
+const dms = new DmsApi('eu-west-1');
 
-async function createTask(): Promise<void> {
+async function createTask(taskName: string, inputFilename: string, replicationInstanceArn: string,
+                          sourceEndpointArn: string, destEndpointArn: string): Promise<void> {
+    const tableMappingInput = loadJSON(inputFilename);
+    const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
+
+    const status = await dms.createFullLoadTask(taskName, replicationInstanceArn, 
+                                                sourceEndpointArn, destEndpointArn, tableMapping);
+    logger.debug("%s task status is %s", taskName, status);
+}
+
+async function createAllTasks(): Promise<void> {
     try {
-        const dms = new DmsApi('eu-west-1');
-
         const sourceEndpointArn = await dms.getEndpointArn('tarsuat1-endpoint');
         logger.debug("source endpoint arn is %s", sourceEndpointArn);
 
@@ -20,12 +29,11 @@ async function createTask(): Promise<void> {
         const replicationInstanceArn = await dms.getReplicationInstanceArn('tarsuat1-dms');
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
-        const tableMappingInput = loadJSON('../table-mappings/examiner-tables.json');
-        const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
+        createTask('examiner-full-load', '../table-mappings/examiner-tables.json',
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
-        const status = await dms.createFullLoadTask('examiner-full-load', replicationInstanceArn, 
-                                                    sourceEndpointArn, destEndpointArn, tableMapping);
-        logger.debug("examiner-full-load task status is %s", status);
+        createTask('slot-full-load', '../table-mappings/slot-tables.json',
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);
@@ -33,4 +41,4 @@ async function createTask(): Promise<void> {
 }
 
 logger.debug("App started...");
-createTask();
+createAllTasks();

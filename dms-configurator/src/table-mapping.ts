@@ -4,7 +4,9 @@
 export interface SourceFilter {
     column: string,
     operator: string, 
-    value: string
+    value: string,
+    start: string,
+    end: string
 }
 
 export interface Table {
@@ -50,14 +52,28 @@ export function generateTableMapping(options: Options): any {
         };
 
         if (element.sourceFilter) {
-            rule.filters = [{
-                "filter-type": "source",
-                "column-name": element.sourceFilter.column,
-                "filter-conditions": [{
-                    "filter-operator": element.sourceFilter.operator,
-                    "value": element.sourceFilter.value
-                }]
-            }];
+            if (element.sourceFilter.start) {
+                // filter with two values
+                rule.filters = [{
+                    "filter-type": "source",
+                    "column-name": element.sourceFilter.column,
+                    "filter-conditions": [{
+                        "filter-operator": element.sourceFilter.operator,
+                        "start-value": element.sourceFilter.start,
+                        "end-value": element.sourceFilter.end
+                    }]
+                }];
+            } else {
+                // filter with one value
+                rule.filters = [{
+                    "filter-type": "source",
+                    "column-name": element.sourceFilter.column,
+                    "filter-conditions": [{
+                        "filter-operator": element.sourceFilter.operator,
+                        "value": element.sourceFilter.value
+                    }]
+                }];
+            }
         }
 
         config.rules.push(rule);
