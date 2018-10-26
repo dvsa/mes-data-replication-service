@@ -41,7 +41,7 @@ EXAMINER e left join
     where STR_TO_DATE('14/08/2017', '%d/%m/%Y') between DATE(p.start_date) and DATE(p.end_date)
     and p.tc_id = tcn.tc_id
     and p.tc_id = tc.tc_id
-    and tcn.display_order = 1
+--    and tcn.display_order = 1
     ) active_posting on e.individual_id = active_posting.posting_indv_id
 where e.individual_id = i.individual_id
 -- and e.mobile_ind = 1

@@ -20,12 +20,12 @@ async function createTask(): Promise<void> {
         const replicationInstanceArn = await dms.getReplicationInstanceArn('tarsuat1-dms');
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
-        const tableMappingInput = loadJSON('../dms-config/examiner-tables.json');
+        const tableMappingInput = loadJSON('../table-mappings/examiner-tables.json');
         const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
 
         const status = await dms.createFullLoadTask('examiner-full-load', replicationInstanceArn, 
                                                     sourceEndpointArn, destEndpointArn, tableMapping);
-        logger.debug("new task status is %s", status);
+        logger.debug("examiner-full-load task status is %s", status);
 
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);
