@@ -1,2 +1,2 @@
-destination/*.sql
-source/*.sql
+destination-db/*.sql
+source-db/*.sql
