@@ -287,3 +287,31 @@ CREATE TABLE BOOKING
 	CONSTRAINT BO_AI_BSN_PK PRIMARY KEY (BOOKING_ID),
 	CONSTRAINT BKG_SLOT_ID_UNIQUE UNIQUE (SLOT_ID)
 );
+
+-- helps the select work_schedule_slots query
+ALTER TABLE BOOKING ADD INDEX BKG_STATE_CODE(STATE_CODE);
+
+-- create the work_schedule_slots as a view so that other legacy queries can be kept
+-- as simple as possible
+CREATE VIEW WORK_SCHEDULE_SLOTS AS
+    select ps.slot_id, DATE(p.programme_date) as programme_date, ps.start_time, ps.minutes,
+        ps.individual_id, ps.tc_id, ps.vst_code, ps.non_test_activity_code,
+        IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) as examiner_end_date
+    from PROGRAMME p join PROGRAMME_SLOT ps on
+        (DATE(ps.programme_date) = DATE(p.programme_date)
+            and ps.individual_id = p.individual_id
+            and ps.tc_id = p.tc_id)
+        join EXAMINER e on e.individual_id = p.individual_id
+        join EXAMINER_STATUS es on es.individual_id = e.individual_id
+    where (p.state_code not in (2, 3)
+            or exists (select book.booking_id
+                from BOOKING book, PROGRAMME_SLOT slot
+                where slot.slot_id = book.slot_id
+                and DATE(slot.programme_date) = DATE(p.programme_date)
+                and slot.individual_id = p.individual_id
+                and slot.tc_id = p.tc_id
+                and book.state_code = 1)
+    )
+    and ps.tc_closed_ind != 1
+    and IFNULL(ps.deployed_to_from_code, 0) != 1
+    and IFNULL(e.grade_code, 'ZZZ') != 'DELE';

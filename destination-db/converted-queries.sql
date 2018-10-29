@@ -2,31 +2,38 @@
 -- converted from the iBatis work schedule DAO Sql Map
 
 -- insert into work_schedule_slots
-select ps.slot_id, DATE(p.programme_date), ps.start_time, ps.minutes,
-    ps.individual_id, ps.tc_id, ps.vst_code, ps.non_test_activity_code
-from PROGRAMME p join PROGRAMME_SLOT ps on
-    (DATE(ps.programme_date) = DATE(p.programme_date)
-        and ps.individual_id = p.individual_id
-        and ps.tc_id = p.tc_id)
-    join EXAMINER e on e.individual_id = p.individual_id
-where DATE(p.programme_date) between STR_TO_DATE('14/08/2017', '%d/%m/%Y') and STR_TO_DATE('15/08/2017', '%d/%m/%Y')
-and (p.state_code not in (2, 3)
-        or exists (select book.booking_id
-            from BOOKING book, PROGRAMME_SLOT slot
-            where slot.slot_id = book.slot_id
-            and DATE(slot.programme_date) = DATE(p.programme_date)
-            and slot.individual_id = p.individual_id
-            and slot.tc_id = p.tc_id
-            and book.state_code = 1)
-)
-and ps.tc_closed_ind != 1
-and IFNULL(ps.deployed_to_from_code, 0) != 1
-and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
-and exists (
-    select end_date from EXAMINER_STATUS es
-        where es.individual_id = e.individual_id
-        and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('14/08/2017', '%d/%m/%Y')
-)
+-- select ps.slot_id, DATE(p.programme_date), ps.start_time, ps.minutes,
+--     ps.individual_id, ps.tc_id, ps.vst_code, ps.non_test_activity_code
+-- from PROGRAMME p join PROGRAMME_SLOT ps on
+--     (DATE(ps.programme_date) = DATE(p.programme_date)
+--         and ps.individual_id = p.individual_id
+--         and ps.tc_id = p.tc_id)
+--     join EXAMINER e on e.individual_id = p.individual_id
+-- where DATE(p.programme_date) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('08/08/2017', '%d/%m/%Y')
+-- and (p.state_code not in (2, 3)
+--         or exists (select book.booking_id
+--             from BOOKING book, PROGRAMME_SLOT slot
+--             where slot.slot_id = book.slot_id
+--             and DATE(slot.programme_date) = DATE(p.programme_date)
+--             and slot.individual_id = p.individual_id
+--             and slot.tc_id = p.tc_id
+--             and book.state_code = 1)
+-- )
+-- and ps.tc_closed_ind != 1
+-- and IFNULL(ps.deployed_to_from_code, 0) != 1
+-- and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
+-- and exists (
+--     select end_date from EXAMINER_STATUS es
+--         where es.individual_id = e.individual_id
+--         and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('08/08/2017', '%d/%m/%Y')
+-- )
+-- using the view
+-- Note: only filter programme_date if need less data than the total replicated
+select slot_id, programme_date, start_time, minutes, individual_id, tc_id, vst_code, 
+    non_test_activity_code, examiner_end_date
+from WORK_SCHEDULE_SLOTS
+where programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('08/08/2017', '%d/%m/%Y')
+and examiner_end_date > STR_TO_DATE('08/08/2017', '%d/%m/%Y')
 
  -- select examinerDataSet
  -- todo: no mysql equiv of initcap(..) for name fields, do in code...
