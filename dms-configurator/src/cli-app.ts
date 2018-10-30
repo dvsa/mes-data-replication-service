@@ -13,8 +13,8 @@ async function createTask(taskName: string, inputFilename: string, replicationIn
     const tableMappingInput = loadJSON(inputFilename);
     const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
 
-    const status = await dms.createFullLoadTask(taskName, replicationInstanceArn, 
-                                                sourceEndpointArn, destEndpointArn, tableMapping);
+    const status = await dms.createOrUpdateFullLoadTask(taskName, replicationInstanceArn, 
+                                 sourceEndpointArn, destEndpointArn, tableMapping);
     logger.debug("%s task status is %s", taskName, status);
 }
 
@@ -29,11 +29,13 @@ async function createAllTasks(): Promise<void> {
         const replicationInstanceArn = await dms.getReplicationInstanceArn('tarsuat1-dms');
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
-        createTask('examiner-full-load', '../table-mappings/examiner-tables.json',
+        await createTask('examiner-full-load', '../table-mappings/examiner-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn);
+        logger.debug("after create examiner-full-load");
 
-        createTask('slot-full-load', '../table-mappings/slot-tables.json',
+        await createTask('slot-full-load', '../table-mappings/slot-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn);
+        logger.debug("after create slot-full-load");
 
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);
