@@ -41,20 +41,25 @@ select e.individual_id, e.staff_number, title_ref.item_desc1 as title,
         i.first_forename as first_forename, i.second_forename as second_forename,
         i.third_forename as third_forename, i.family_name as family_name,
         active_posting.tc_id, active_posting.tc_name, active_posting.tc_cost_centre_code
-from INDIVIDUAL i left join REF_DATA_ITEM_MASTER title_ref on i.title_code = title_ref.item_id,
-EXAMINER e left join
-    (select p.individual_id as posting_indv_id, p.tc_id as tc_id, tcn.tc_name as tc_name, tc.tc_cost_centre_code
-    from POSTING p, TEST_CENTRE tc, TEST_CENTRE_NAME tcn
-    where STR_TO_DATE('14/08/2017', '%d/%m/%Y') between DATE(p.start_date) and DATE(p.end_date)
-    and p.tc_id = tcn.tc_id
-    and p.tc_id = tc.tc_id
---    and tcn.display_order = 1
-    ) active_posting on e.individual_id = active_posting.posting_indv_id
-where e.individual_id = i.individual_id
+from INDIVIDUAL i 
+    left join REF_DATA_ITEM_MASTER title_ref on i.title_code = title_ref.item_id
+    left join EXAMINER e on e.individual_id = i.individual_id
+    left join (
+        select p.individual_id as posting_indv_id, p.tc_id as tc_id, tcn.tc_name as tc_name, tc.tc_cost_centre_code
+        from POSTING p
+          left join TEST_CENTRE tc on p.tc_id = tc.tc_id
+          left join TEST_CENTRE_NAME tcn on p.tc_id = tcn.tc_id
+        where STR_TO_DATE('14/08/2017', '%d/%m/%Y') between DATE(p.start_date) and DATE(p.end_date)
+        -- and p.tc_id = tcn.tc_id
+        -- and p.tc_id = tc.tc_id
+    --    and tcn.display_order = 1
+        ) active_posting on e.individual_id = active_posting.posting_indv_id
+-- where e.individual_id = i.individual_id
 -- and e.mobile_ind = 1
 -- and i.title_code = title_ref.item_id
 -- and e.individual_id = active_posting.posting_indv_id
-and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
+-- and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
+where IFNULL(e.grade_code, 'ZZZ') != 'DELE'
 and exists (
     select end_date from EXAMINER_STATUS es
     where es.individual_id = e.individual_id
@@ -199,7 +204,8 @@ and exists (
 
 -- select personalCommitmentDataSet
 select e.individual_id, pc.commitment_id, pc.start_date_time, pc.end_date_time, pc.non_test_activity_code, reason.reason_desc
-from EXAMINER e left join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
+from EXAMINER e 
+    left join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
     left join NON_TEST_ACTIVITY_REASON reason on pc.non_test_activity_code = reason.non_test_activity_code
 -- where pc.non_test_activity_code = reason.non_test_activity_code
 -- and e.individual_id = pc.individual_id
@@ -221,12 +227,15 @@ and exists (
 -- select nonTestActivityDataSet
 select w.individual_id, w.slot_id, w.start_time, w.minutes, w.non_test_activity_code,
     reason.reason_desc, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code
-from work_schedule_slots w, non_test_activity_reason reason, test_centre tc, test_centre_name tcn
-where w.programme_date between to_date('07/08/2017', 'DD/MM/YYYY') and to_date('11/08/2017', 'DD/MM/YYYY')
-and w.non_test_activity_code = reason.non_test_activity_code
-and w.tc_id = tc.tc_id
-and w.tc_id = tcn.tc_id
-and tcn.display_order = 1
+from WORK_SCHEDULE_SLOTS w
+    left join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
+    left join TEST_CENTRE tc on w.tc_id = tc.tc_id
+    left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+-- and w.non_test_activity_code = reason.non_test_activity_code
+-- and w.tc_id = tc.tc_id
+-- and w.tc_id = tcn.tc_id
+-- and tcn.display_order = 1
 
 
 -- select advanceTestSlotDataSet
