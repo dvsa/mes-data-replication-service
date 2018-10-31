@@ -35,7 +35,7 @@ from WORK_SCHEDULE_SLOTS
 where programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('08/08/2017', '%d/%m/%Y')
 and examiner_end_date > STR_TO_DATE('08/08/2017', '%d/%m/%Y')
 
- -- select examinerDataSet
+ -- select examinerDataSet - for a single day
  -- todo: no mysql equiv of initcap(..) for name fields, do in code...
 select e.individual_id, e.staff_number, title_ref.item_desc1 as title,
         i.first_forename as first_forename, i.second_forename as second_forename,
@@ -199,23 +199,24 @@ and exists (
 
 -- select personalCommitmentDataSet
 select e.individual_id, pc.commitment_id, pc.start_date_time, pc.end_date_time, pc.non_test_activity_code, reason.reason_desc
-from examiner e, personal_commitment pc, non_test_activity_reason reason
-where pc.non_test_activity_code = reason.non_test_activity_code
-and e.individual_id = pc.individual_id
+from EXAMINER e left join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
+    left join NON_TEST_ACTIVITY_REASON reason on pc.non_test_activity_code = reason.non_test_activity_code
+-- where pc.non_test_activity_code = reason.non_test_activity_code
+-- and e.individual_id = pc.individual_id
 -- and e.mobile_ind = 1
-and
-    (
-    trunc(pc.start_date_time) between to_date('07/08/2017', 'DD/MM/YYYY') and to_date('11/08/2017', 'DD/MM/YYYY')
-    or trunc(pc.end_date_time) between to_date('07/08/2017', 'DD/MM/YYYY') and to_date('11/08/2017', 'DD/MM/YYYY')
-    )
-and pc.state_code = 1
-and nvl(e.grade_code, 'ZZZ') != 'DELE'
+-- and
+where (
+    DATE(pc.start_date_time) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+    or DATE(pc.end_date_time) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+)
+-- and pc.state_code = 1
+and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
 and exists (
-            select end_date from examiner_status es
-            where es.individual_id = e.individual_id
-            and nvl(es.end_date, to_date('01/01/4000', 'DD/MM/YYYY')) > to_date('07/08/2017', 'DD/MM/YYYY')
-        )
-
+    select end_date 
+    from EXAMINER_STATUS es
+    where es.individual_id = e.individual_id
+    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('07/08/2017', '%d/%m/%Y')
+)
 
 -- select nonTestActivityDataSet
 select w.individual_id, w.slot_id, w.start_time, w.minutes, w.non_test_activity_code,

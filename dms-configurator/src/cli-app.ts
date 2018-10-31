@@ -35,6 +35,9 @@ async function createAllTasks(): Promise<void> {
         await dms.createTask('slot-full-load', '../table-mappings/slot-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotDateRange);
 
+        await dms.createTask('personal-commitment-full-load', '../table-mappings/personal-commitment-tables.json',
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);           
+
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);
     }
