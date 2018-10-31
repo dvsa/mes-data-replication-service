@@ -3,8 +3,10 @@
  */
 import * as DMS from 'aws-sdk/clients/dms'; // just the DMS apis, not the whole SDK
 import * as escapeJSON from 'escape-json-node';
-import { getLogger } from './util';
-import { resolve } from 'url';
+import { generateTableMapping, Options } from './table-mapping';
+import { getLogger, loadJSON } from './util';
+
+type UpdateTableMappingCallback = (options: Options) => void;
 
 export class DmsApi {
     private dms;
@@ -70,9 +72,24 @@ export class DmsApi {
         });
     }
 
-    async createOrUpdateFullLoadTask(taskName: string, replicationInstanceArn: string, 
-                                     sourceEndpointArn: string, destEndpointArn: string,
-                                     tableMappings: string): Promise<string> {
+    async createTask(taskName: string, inputFilename: string, replicationInstanceArn: string,
+                     sourceEndpointArn: string, destEndpointArn: string,
+                     callback?: UpdateTableMappingCallback): Promise<void> {
+        const tableMappingInput: Options = loadJSON(inputFilename);
+        if (callback) {
+            callback(tableMappingInput);
+        }
+        const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
+
+        const status = await this.createOrUpdateFullLoadTask(taskName, replicationInstanceArn, 
+                                    sourceEndpointArn, destEndpointArn, tableMapping);
+        this.logger.debug("%s task status is %s", taskName, status);
+    }
+
+
+    private async createOrUpdateFullLoadTask(taskName: string, replicationInstanceArn: string, 
+                                             sourceEndpointArn: string, destEndpointArn: string,
+                                             tableMappings: string): Promise<string> {
         try {
             const taskArn = await this.getTaskArn(taskName);
             this.logger.debug("Task %s already exists, so updating it...", taskName);

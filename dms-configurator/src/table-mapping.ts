@@ -1,7 +1,10 @@
 /**
  * Handles generating DMS table mappings from a much simpler logical input.
  */
+import { getLogger } from './util';
 import { DateTime } from 'luxon';
+
+const logger = getLogger('table-mapping', 'debug');
 
 export interface SourceFilter {
     column: string,
@@ -114,4 +117,5 @@ export function addBetweenFilter(options: Options, tableName: string, columnName
     };
 
     options.tables.find((table) => table.sourceName === tableName).sourceFilter = filter;
+    logger.debug("Filtering %s on %s from %s to %s", tableName, columnName, start.toISODate(), end.toISODate());
 }
