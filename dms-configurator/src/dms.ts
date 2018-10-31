@@ -26,12 +26,14 @@ export class DmsApi {
 
             this.dms.describeEndpoints(params, (err, data) => {
                 if (err) {
-                    this.logger.error('Error calling describeEndpoints: %j', err);
-                    reject(err);
+                    if (err.code === 'ResourceNotFoundFault') {
+                        this.logger.error('Endpoint %s not found', identifier);
+                        reject('No such endpoint');
 
-                } else if (data.Endpoints.length === 0) {
-                    this.logger.error('Endpoint %s not found', identifier);
-                    reject('No such endpoint');
+                    } else {
+                        this.logger.error('Error calling describeEndpoints: %j', err);
+                        reject(err);
+                    }
 
                 } else {
                     resolve(data.Endpoints[0].EndpointArn);
@@ -52,12 +54,14 @@ export class DmsApi {
 
             this.dms.describeReplicationInstances(params, (err, data) => {
                 if (err) {
-                    this.logger.error("Error calling describeReplicationInstances: %j", err);
-                    reject(err);
+                    if (err.code === 'ResourceNotFoundFault') {
+                        this.logger.error("Replication Instance %s not found", identifier);
+                        reject('No such instance');
 
-                } else if (data.ReplicationInstances.length === 0) {
-                    this.logger.error("Replication Instance %s not found", identifier);
-                    reject('No such instance');
+                    } else {
+                        this.logger.error("Error calling describeReplicationInstances: %j", err);
+                        reject(err);
+                    }
 
                 } else {
                     resolve(data.ReplicationInstances[0].ReplicationInstanceArn);
@@ -142,12 +146,14 @@ export class DmsApi {
 
             this.dms.describeReplicationTasks(params, (err, data) => {
                 if (err) {
-                    this.logger.error("Error calling describeReplicationTasks: %j", err);
-                    reject(err);
+                    if (err.code === 'ResourceNotFoundFault') {
+                        this.logger.error("Replication Task %s not found", taskName);
+                        reject('No such task');
 
-                } else if (data.ReplicationTasks.length === 0) {
-                    this.logger.error("Replication Task %s not found", taskName);
-                    reject('No such task');
+                    } else {
+                        this.logger.error("Error calling describeReplicationTasks: %j", err);
+                        reject(err);
+                    }
 
                 } else {
                     resolve(data.ReplicationTasks[0].ReplicationTaskArn);

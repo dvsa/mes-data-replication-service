@@ -6,13 +6,7 @@
             "sourceName": "PROGRAMME",
             "removeColumns": [ 
                 "CHANGE_IND", "MODIFICATION_SEQ_NUMBER"
-            ],
-            "sourceFilter": {
-                "column": "PROGRAMME_DATE",
-                "operator": "between",
-                "start": "2017-08-07",
-                "end": "2017-08-08"
-            }
+            ]
         },
         {
             "sourceName": "PROGRAMME_SLOT",
@@ -21,13 +15,7 @@
                 "CLOSURE_CODE", "REPEATED_CLOSURE_CODE", "SUSPENDED_IND", "DEPLOYMENT_ID",
                 "INSTRUCTOR_ID", "RESERVED_USER_NAME", "RESERVED_DATE_TIME", 
                 "CANCELLED_DEPLOYMENT_IND", "MODIFICATION_SEQ_NUMBER"
-            ],
-            "sourceFilter": {
-                "column": "PROGRAMME_DATE",
-                "operator": "between",
-                "start": "2017-08-07",
-                "end": "2017-08-08"
-            }
+            ]
         },
         {
             "sourceName": "BOOKING",

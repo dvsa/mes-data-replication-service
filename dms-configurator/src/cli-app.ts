@@ -3,14 +3,34 @@
  */
 import { getLogger, loadJSON } from './util';
 import { DmsApi } from './dms';
-import { generateTableMapping } from './table-mapping';
+import { addBetweenFilter, generateTableMapping, Options } from './table-mapping';
+import { DateTime } from 'luxon';
 
 const logger = getLogger('cli-app', 'debug');
 const dms = new DmsApi('eu-west-1');
 
+type UpdateTableMappingCallback = (options: Options) => void;
+
+function addSlotDateRange(options: Options) {
+    const startDate = DateTime.fromISO('2017-08-10');
+    
+    // 4 elaspsed days is the maximum amount of detailed journal data (e.g. on thursday - fri/sat/sun/mon)
+    const endDate = startDate.plus({ days: 3 }); 
+
+    addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate);
+    logger.debug("Filtering PROGRAMME on PROGRAMME_DATE from %s to %s", startDate.toISODate(), endDate.toISODate());
+
+    addBetweenFilter(options, 'PROGRAMME_SLOT', 'PROGRAMME_DATE', startDate, endDate);
+    logger.debug("Filtering PROGRAMME_SLOT on PROGRAMME_DATE from %s to %s", startDate.toISODate(), endDate.toISODate());
+}
+
 async function createTask(taskName: string, inputFilename: string, replicationInstanceArn: string,
-                          sourceEndpointArn: string, destEndpointArn: string): Promise<void> {
-    const tableMappingInput = loadJSON(inputFilename);
+                          sourceEndpointArn: string, destEndpointArn: string,
+                          callback?: UpdateTableMappingCallback): Promise<void> {
+   const tableMappingInput: Options = loadJSON(inputFilename);
+    if (callback) {
+        callback(tableMappingInput);
+    }
     const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
 
     const status = await dms.createOrUpdateFullLoadTask(taskName, replicationInstanceArn, 
@@ -31,11 +51,9 @@ async function createAllTasks(): Promise<void> {
 
         await createTask('examiner-full-load', '../table-mappings/examiner-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn);
-        logger.debug("after create examiner-full-load");
 
         await createTask('slot-full-load', '../table-mappings/slot-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
-        logger.debug("after create slot-full-load");
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotDateRange);
 
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);

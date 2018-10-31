@@ -3,8 +3,10 @@
     "version": "0.0.1",
     "description": "DVSA Mobile Examiner Services - Generates and runs DMS tasks",
     "dependencies": {
+        "@types/luxon": "^1.4.0",
         "aws-sdk": "^2.341.0",
         "escape-json-node": "^2.0.0",
+        "luxon": "^1.4.5",
         "winston": "^3.1.0"
     },
     "devDependencies": {

@@ -1,18 +1,20 @@
 /**
  * Handles generating DMS table mappings from a much simpler logical input.
  */
+import { DateTime } from 'luxon';
+
 export interface SourceFilter {
     column: string,
     operator: string, 
-    value: string,
-    start: string,
-    end: string
+    value?: string,
+    start?: string,
+    end?: string
 }
 
 export interface Table {
     sourceName: string, 
-    sourceFilter: SourceFilter, 
-    removeColumns: string[]
+    sourceFilter?: SourceFilter, 
+    removeColumns?: string[]
 }
 
 export interface Options {
@@ -101,4 +103,15 @@ export function generateTableMapping(options: Options): any {
     });
 
     return config;
+}
+
+export function addBetweenFilter(options: Options, tableName: string, columnName: string, start: DateTime, end: DateTime) {
+    const filter = {
+        "column": columnName,
+        "operator": "between",
+        "start": start.toISODate(),
+        "end": end.toISODate()
+    };
+
+    options.tables.find((table) => table.sourceName === tableName).sourceFilter = filter;
 }
