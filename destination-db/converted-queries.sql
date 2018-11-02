@@ -240,32 +240,40 @@ where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_
 
 -- select advanceTestSlotDataSet
 select w.individual_id, w.slot_id, w.start_time, w.minutes, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code, vst.short_vst_desc
-from work_schedule_slots w, test_centre tc, test_centre_name tcn, vehicle_slot_type vst
-where w.programme_date between to_date('07/08/2017', 'DD/MM/YYYY') and to_date('11/08/2017', 'DD/MM/YYYY')
-and w.tc_id = tc.tc_id
-and w.tc_id = tcn.tc_id
-and tcn.display_order = 1
-and w.vst_code = vst.vst_code
+from WORK_SCHEDULE_SLOTS w
+    left join TEST_CENTRE tc on w.tc_id = tc.tc_id
+    left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+    left join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
+where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+-- and w.tc_id = tc.tc_id
+-- and w.tc_id = tcn.tc_id
+-- and tcn.display_order = 1
+-- and w.vst_code = vst.vst_code
 
  -- select deploymentDataSet
 select d.deployment_id, e.individual_id, d.tc_id, tcn.tc_name, tc.tc_cost_centre_code, p.programme_date
-from examiner e, deployment d, test_centre tc, test_centre_name tcn, programme p
-where e.individual_id = d.individual_id
+from EXAMINER e
+    left join DEPLOYMENT d on e.individual_id = d.individual_id
+    left join TEST_CENTRE tc on d.tc_id = tc.tc_id
+    left join TEST_CENTRE_NAME tcn on d.tc_id = tcn.tc_id
+    left join PROGRAMME p on p.individual_id = e.individual_id
+-- where e.individual_id = d.individual_id
 -- and e.mobile_ind = 1
-and (
-    trunc(d.start_date) between to_date('07/08/2017', 'DD/MM/YYYY') and to_date('11/08/2017', 'DD/MM/YYYY')
-    or trunc(d.end_date) between to_date('07/08/2017', 'DD/MM/YYYY') and to_date('11/08/2017', 'DD/MM/YYYY')
-    )
-and d.state_code = 1002
-and d.tc_id = tc.tc_id
-and d.tc_id = tcn.tc_id
-and tcn.display_order = 1
-and trunc(p.programme_date) between trunc(d.start_date) and trunc(d.end_date)
-and p.individual_id = e.individual_id
+where (
+    DATE(d.start_date) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+    or DATE(d.end_date) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+)
+-- and d.state_code = 1002
+-- and d.tc_id = tc.tc_id
+-- and d.tc_id = tcn.tc_id
+-- and tcn.display_order = 1
+and DATE(p.programme_date) between DATE(d.start_date) and DATE(d.end_date)
+-- and p.individual_id = e.individual_id
 and p.tc_id = d.tc_id
-and nvl(e.grade_code, 'ZZZ') != 'DELE'
+and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
 and exists (
-            select end_date from examiner_status es
-            where es.individual_id = e.individual_id
-            and nvl(es.end_date, to_date('01/01/4000', 'DD/MM/YYYY')) > to_date('11/08/2017', 'DD/MM/YYYY')
-        )
+    select end_date 
+    from EXAMINER_STATUS es
+    where es.individual_id = e.individual_id
+    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+)
