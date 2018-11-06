@@ -6,17 +6,21 @@ import { DateTime } from 'luxon';
 
 const logger = getLogger('table-mapping', 'debug');
 
-export interface SourceFilter {
-    column: string,
+export interface OrCondition {
     operator: string, 
     value?: string,
     start?: string,
     end?: string
 }
 
+export interface AndFilter {
+    column: string,
+    orConditions: OrCondition[]
+}
+
 export interface Table {
     sourceName: string, 
-    sourceFilter?: SourceFilter, 
+    andFilters?: AndFilter[], 
     removeColumns?: string[]
 }
 
@@ -56,29 +60,35 @@ export function generateTableMapping(options: Options): any {
             "rule-action": "include"
         };
 
-        if (element.sourceFilter) {
-            if (element.sourceFilter.start) {
-                // filter with two values
-                rule.filters = [{
+        if (element.andFilters) {
+            rule["filters"] = [];
+
+            element.andFilters.forEach((andFilter: AndFilter) => {
+                const filter: any = {
                     "filter-type": "source",
-                    "column-name": element.sourceFilter.column,
-                    "filter-conditions": [{
-                        "filter-operator": element.sourceFilter.operator,
-                        "start-value": element.sourceFilter.start,
-                        "end-value": element.sourceFilter.end
-                    }]
-                }];
-            } else {
-                // filter with one value
-                rule.filters = [{
-                    "filter-type": "source",
-                    "column-name": element.sourceFilter.column,
-                    "filter-conditions": [{
-                        "filter-operator": element.sourceFilter.operator,
-                        "value": element.sourceFilter.value
-                    }]
-                }];
-            }
+                    "column-name": andFilter.column,
+                    "filter-conditions": []
+                };
+
+                andFilter.orConditions.forEach((condition: OrCondition) => {
+                    if (condition.start) {
+                        // filter with two values
+                        filter["filter-conditions"].push({
+                            "filter-operator": condition.operator,
+                            "start-value": condition.start,
+                            "end-value": condition.end
+                        });
+                    } else {
+                        // filter with one value
+                        filter["filter-conditions"].push({
+                            "filter-operator": condition.operator,
+                            "value": condition.value
+                        });
+                    }
+                });
+
+                rule["filters"].push(filter);
+            });
         }
 
         config.rules.push(rule);
@@ -111,11 +121,19 @@ export function generateTableMapping(options: Options): any {
 export function addBetweenFilter(options: Options, tableName: string, columnName: string, start: DateTime, end: DateTime) {
     const filter = {
         "column": columnName,
-        "operator": "between",
-        "start": start.toISODate(),
-        "end": end.toISODate()
+        "orConditions": [{
+            "operator": "between",
+            "start": start.toISODate(),
+            "end": end.toISODate()
+        }]
     };
 
-    options.tables.find((table) => table.sourceName === tableName).sourceFilter = filter;
+    const table: Table = options.tables.find((table) => table.sourceName === tableName);
+    let andFilters: AndFilter[] = table.andFilters;
+    if (!andFilters) {
+        andFilters = [];
+        table.andFilters = andFilters;
+    }
+    andFilters.push(filter);
     logger.debug("Filtering %s on %s from %s to %s", tableName, columnName, start.toISODate(), end.toISODate());
 }

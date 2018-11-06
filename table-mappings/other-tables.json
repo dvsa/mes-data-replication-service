@@ -7,11 +7,14 @@
             "removeColumns": [ 
                 "COMMITMENT_TEXT", "STATE_CODE", "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON"
             ],
-            "sourceFilter": {
+            "andFilters": [
+            {
                 "column": "STATE_CODE",
-                "operator": "eq",
-                "value": "1"
-            }
+                "orConditions": [{
+                    "operator": "eq",
+                    "value": "1"
+                }]
+            }]
         },
         {
             "sourceName": "NON_TEST_ACTIVITY_REASON",
@@ -37,11 +40,14 @@
                 "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON", "DEPLOYMENT_REASON_ID", 
                 "NUM_CANCELLATIONS_SAVED"
             ],
-            "sourceFilter": {
+            "andFilters": [
+            {
                 "column": "STATE_CODE",
-                "operator": "eq",
-                "value": "1002"
-            }
+                "orConditions": [{
+                    "operator": "eq",
+                    "value": "1002"
+                }]
+            }]
         }
     ]
 }

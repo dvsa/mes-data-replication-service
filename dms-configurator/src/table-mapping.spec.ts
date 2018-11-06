@@ -21,6 +21,16 @@ describe('generateTableMapping', () => {
         expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-with-filter'));
     });
 
+    it('handles a single table with or filter', () => {
+        const input: Options = loadTestJSON('input-single-table-with-or-filter');
+        expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-with-or-filter'));
+    });
+
+    it('handles a single table with and filter', () => {
+        const input: Options = loadTestJSON('input-single-table-with-and-filter');
+        expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-with-and-filter'));
+    });
+
     it('handles a single table with between filter', () => {
         const input: Options = loadTestJSON('input-single-table-with-between');
         expect(generateTableMapping(input)).toEqual(loadTestJSON('output-single-table-with-between'));

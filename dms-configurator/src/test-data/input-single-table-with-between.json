@@ -4,12 +4,14 @@
     "tables": [ 
         {
             "sourceName": "TABLE1",
-            "sourceFilter": {
+            "andFilters": [{
                 "column": "COL",
-                "operator": "between",
-                "start": "01-02-2000",
-                "end": "03-04-2000"
-            }
+                "orConditions": [{
+                    "operator": "between",
+                    "start": "01-02-2000",
+                    "end": "03-04-2000"
+                }]
+            }]
         }
     ]
 }

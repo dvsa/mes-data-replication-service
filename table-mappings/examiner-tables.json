@@ -72,11 +72,14 @@
             "removeColumns": [ 
                 "DISPLAY_ORDER", "UPDATED_ON", "CREATED_ON", "CREATED_BY", "UPDATED_BY"
             ],
-            "sourceFilter": {
+            "andFilters": [
+            {
                 "column": "DISPLAY_ORDER",
-                "operator": "eq",
-                "value": "1"
-            }
+                "orConditions": [ {
+                    "operator": "eq",
+                    "value": "1"
+                }]
+            }]
         }
     ]
 }
