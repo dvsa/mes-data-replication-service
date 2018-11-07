@@ -49,7 +49,7 @@ from INDIVIDUAL i
         from POSTING p
           left join TEST_CENTRE tc on p.tc_id = tc.tc_id
           left join TEST_CENTRE_NAME tcn on p.tc_id = tcn.tc_id
-        where STR_TO_DATE('14/08/2017', '%d/%m/%Y') between DATE(p.start_date) and DATE(p.end_date)
+        -- where STR_TO_DATE('14/08/2017', '%d/%m/%Y') between DATE(p.start_date) and DATE(p.end_date)
         -- and p.tc_id = tcn.tc_id
         -- and p.tc_id = tc.tc_id
     --    and tcn.display_order = 1

@@ -3,14 +3,18 @@
  */
 import { getLogger } from './util';
 import { DmsApi } from './dms';
-import { addBetweenFilter, Options } from './table-mapping';
+import { addBetweenFilter, addOnOrAfterFilter, addOnOrBeforeFilter, Options } from './table-mapping';
 import { DateTime } from 'luxon';
 
 const logger = getLogger('cli-app', 'debug');
 const dms = new DmsApi('eu-west-1');
 
+function addExaminerFilters(options: Options) {
+    addOnOrBeforeFilter(options, 'POSTING', 'START_DATE', startDate);
+    addOnOrAfterFilter(options, 'POSTING', 'END_DATE', startDate);
+}
 
-function addSlotDateRange(options: Options) {
+function addSlotFilters(options: Options) {
     const endDate =  startDate.plus({ days: slotDateRangeDays });
 
     addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate);
@@ -30,10 +34,10 @@ async function createAllTasks(): Promise<void> {
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
         await dms.createTask('examiner-full-load', '../table-mappings/examiner-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addExaminerFilters);
 
         await dms.createTask('slot-full-load', '../table-mappings/slot-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotDateRange);
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotFilters);
 
         await dms.createTask('other-full-load', '../table-mappings/other-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn);           

@@ -118,6 +118,16 @@ export function generateTableMapping(options: Options): any {
     return config;
 }
 
+function findFilters(options: Options, tableName: string): AndFilter[] {
+    const table: Table = options.tables.find((table) => table.sourceName === tableName);
+    let andFilters: AndFilter[] = table.andFilters;
+    if (!andFilters) {
+        andFilters = [];
+        table.andFilters = andFilters;
+    }
+    return andFilters;
+}
+
 export function addBetweenFilter(options: Options, tableName: string, columnName: string, start: DateTime, end: DateTime) {
     const filter = {
         "column": columnName,
@@ -127,13 +137,30 @@ export function addBetweenFilter(options: Options, tableName: string, columnName
             "end": end.toISODate()
         }]
     };
-
-    const table: Table = options.tables.find((table) => table.sourceName === tableName);
-    let andFilters: AndFilter[] = table.andFilters;
-    if (!andFilters) {
-        andFilters = [];
-        table.andFilters = andFilters;
-    }
-    andFilters.push(filter);
+    findFilters(options, tableName).push(filter);
     logger.debug("Filtering %s on %s from %s to %s", tableName, columnName, start.toISODate(), end.toISODate());
+}
+
+export function addOnOrAfterFilter(options: Options, tableName: string, columnName: string, value: DateTime) {
+    const filter = {
+        "column": columnName,
+        "orConditions": [{
+            "operator": "gte",
+            "value": value.toISODate()
+        }]
+    };
+    findFilters(options, tableName).push(filter);
+    logger.debug("Filtering %s on %s on or after %s", tableName, columnName, value.toISODate());
+}
+
+export function addOnOrBeforeFilter(options: Options, tableName: string, columnName: string, value: DateTime) {
+    const filter = {
+        "column": columnName,
+        "orConditions": [{
+            "operator": "ste",
+            "value": value.toISODate()
+        }]
+    };
+    findFilters(options, tableName).push(filter);
+    logger.debug("Filtering %s on %s on or before %s", tableName, columnName, value.toISODate());
 }
