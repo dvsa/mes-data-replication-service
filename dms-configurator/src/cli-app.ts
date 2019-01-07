@@ -21,6 +21,10 @@ function addSlotFilters(options: Options) {
     addBetweenFilter(options, 'PROGRAMME_SLOT', 'PROGRAMME_DATE', startDate, endDate);
 }
 
+function addslotDetailFilters(options: Options) {
+    // todo add filters for slotDetail here
+}
+
 
 async function createAllTasks(): Promise<void> {
     try {
@@ -40,7 +44,10 @@ async function createAllTasks(): Promise<void> {
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotFilters);
 
         await dms.createTask('other-full-load', '../table-mappings/other-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);           
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);      
+
+        await dms.createTask('slotDetail-full-load', '../table-mappings/slotDetail-tables.json',
+                  replicationInstanceArn, sourceEndpointArn, destEndpointArn); 
 
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);

@@ -83,7 +83,7 @@
         {
             "sourceName": "ADDRESS",
             "removeColumns": [
-                "ADDRESS_TYPE_CODE", "AREA_ID", "PREMISES_ID", "PP_PUPILS_ID", "TEST_CENTRE_ID",
+                "AREA_ID", "PREMISES_ID", "PP_PUPILS_ID", "TEST_CENTRE_ID",
                 "VALID_FROM", "VALID_TO", "CARE_OF", "IS_HISTORIC", "IS_VANITY_ADDRESS", "IS_WELSH_ADDRESS",
                 "COUNTRY_CODE", "IS_INSECURE_ADDRESS", "BARRACKS", "BFPO_NUMBER", "RANK", "REGIMENT",
                 "SERVICE_NUMBER", "UNIT", "UNKNOWN_ADDRESS", "CREATED_BY", "CREATED_ON", "UPDATED_BY",
