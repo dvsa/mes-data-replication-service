@@ -44,7 +44,7 @@
         {
             "sourceName": "APPLICATION_RSIS_INFO",
             "removeColumns": [
-                "APP_ID", "SENT_FOR_SCANNING"
+                "SENT_FOR_SCANNING"
 
             ]
         }
