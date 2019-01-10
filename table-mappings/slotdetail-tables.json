@@ -29,7 +29,7 @@
             "sourceName": "CONTACT_DETAILS",
             "removeColumns": [
                 "ORGANISATION_ID", "REGISTER_ID", "PP_PUPILS_ID", "TEST_CENTRE_ID", "PREMISES_ID",
-                "CONTACT_TYPE_CODE", "CONTACT_NAME", "EMAIL_ADDRESS", "FAX_NUMBER", "VALID_FROM",
+                "CONTACT_TYPE_CODE", "CONTACT_NAME", "FAX_NUMBER", "VALID_FROM",
                 "VALID_TO", "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON", "PREF_CONTACT_MODE",
                 "AREA_ID", "EMERGENCY_CONTACT_NUMBER", "SC_ID"
             ]

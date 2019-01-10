@@ -80,7 +80,7 @@ select w.slot_id, w.start_time as start_time, w.minutes as minutes,
     round((w.programme_date - booking_details.date_of_birth) / 365) as candidate_age,
     booking_details.candidate_title, booking_details.candidate_first_name, booking_details.candidate_second_name,
     booking_details.candidate_third_name, booking_details.candidate_surname, booking_details.candidate_driver_number,
-    booking_details.cand_primary_tel, booking_details.cand_secondary_tel, booking_details.cand_mobile_tel,
+    booking_details.cand_primary_tel, booking_details.cand_secondary_tel, booking_details.cand_mobile_tel, booking_details.cand_email,
     booking_details.address_line_1 as candidate_addr_line1, booking_details.address_line_2 as candidate_addr_line2,
     booking_details.address_line_3 as candidate_addr_line3, booking_details.address_line_4 as candidate_addr_line4,
     booking_details.address_line_5 as candidate_addr_line5, booking_details.post_code as candidate_post_code,
@@ -115,7 +115,7 @@ from WORK_SCHEDULE_SLOTS w
             initcap(title_ref.item_desc1) as candidate_title, initcap(i.first_forename) as candidate_first_name,
             initcap(i.second_forename) as candidate_second_name, initcap(i.third_forename) as candidate_third_name,
             initcap(i.family_name) as candidate_surname, i.driver_number as candidate_driver_number,
-            cand_cd.contact_details_id as candidate_cd_id, cand_cd.cand_primary_tel, cand_cd.cand_secondary_tel, cand_cd.cand_mobile_tel,
+            cand_cd.contact_details_id as candidate_cd_id, cand_cd.cand_primary_tel, cand_cd.cand_secondary_tel, cand_cd.cand_mobile_tel, cand_cd.cand_email,
             cand_addr.address_id as candidate_addr_id, cand_addr.address_line_1, cand_addr.address_line_2, cand_addr.address_line_3,
             cand_addr.address_line_4, cand_addr.address_line_5, cand_addr.post_code,
             gender_ref.item_desc1 as candidate_gender,
@@ -145,7 +145,8 @@ from WORK_SCHEDULE_SLOTS w
                     select ccd.contact_details_id, ccd.individual_id,
 						case when ccd.prim_tel_voicemail_ind = 1 then ccd.primary_tel_number else null end as cand_primary_tel,
                         case when ccd.sec_tel_voicemail_ind = 1 then ccd.secondary_tel_number else null end as cand_secondary_tel,
-						case when ccd.mobile_voicemail_ind = 1 then ccd.mobile_tel_number else null end as cand_mobile_tel
+						case when ccd.mobile_voicemail_ind = 1 then ccd.mobile_tel_number else null end as cand_mobile_tel,
+                        ccd.email_address as cand_email
                     from CONTACT_DETAILS  ccd
                 ) cand_cd on a.individual_id = cand_cd.individual_id
                 left join (
