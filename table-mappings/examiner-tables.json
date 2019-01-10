@@ -44,7 +44,7 @@
         {
             "sourceName": "REF_DATA_ITEM_MASTER",
             "removeColumns": [ 
-                "ITEM_DESC2", "EXT_DESC", "CATEGORY_ID", "VALID_FROM_DATE", "VALID_TO_DATE",
+                "EXT_DESC", "VALID_FROM_DATE", "VALID_TO_DATE",
                 "PARENT_ITEM_ID", "SORTING_ORDER", "ACTIVE_FLG", "CREATED_BY", "CREATED_ON",
                 "UPDATED_BY", "UPDATED_ON", "DSA_UPDATABLE"
             ]
