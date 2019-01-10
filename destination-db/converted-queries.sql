@@ -43,7 +43,7 @@ select e.individual_id, e.staff_number, title_ref.item_desc1 as title,
         active_posting.tc_id, active_posting.tc_name, active_posting.tc_cost_centre_code
 from INDIVIDUAL i 
     left join REF_DATA_ITEM_MASTER title_ref on i.title_code = title_ref.item_id
-    left join EXAMINER e on e.individual_id = i.individual_id
+    join EXAMINER e on e.individual_id = i.individual_id
     left join (
         select p.individual_id as posting_indv_id, p.tc_id as tc_id, tcn.tc_name as tc_name, tc.tc_cost_centre_code
         from POSTING p
