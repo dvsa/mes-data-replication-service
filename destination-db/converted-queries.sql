@@ -32,8 +32,8 @@
 select slot_id, programme_date, start_time, minutes, individual_id, tc_id, vst_code, 
     non_test_activity_code, examiner_end_date
 from WORK_SCHEDULE_SLOTS
-where programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('08/08/2017', '%d/%m/%Y')
-and examiner_end_date > STR_TO_DATE('08/08/2017', '%d/%m/%Y')
+where programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('06/08/2017', '%d/%m/%Y')
+and examiner_end_date > STR_TO_DATE('06/08/2017', '%d/%m/%Y')
 
  -- select examinerDataSet - for a single day
  -- todo: no mysql equiv of initcap(..) for name fields, do in code...
@@ -221,8 +221,8 @@ from EXAMINER e
 -- and e.mobile_ind = 1
 -- and
 where (
-    DATE(pc.start_date_time) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
-    or DATE(pc.end_date_time) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+    DATE(pc.start_date_time) between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
+    or DATE(pc.end_date_time) between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
 )
 -- and pc.state_code = 1
 and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
@@ -230,7 +230,7 @@ and exists (
     select end_date 
     from EXAMINER_STATUS es
     where es.individual_id = e.individual_id
-    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('07/08/2017', '%d/%m/%Y')
+    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('16/08/2017', '%d/%m/%Y')
 )
 
 -- select nonTestActivityDataSet
@@ -240,7 +240,7 @@ from WORK_SCHEDULE_SLOTS w
     left join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
     left join TEST_CENTRE tc on w.tc_id = tc.tc_id
     left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
-where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
 -- and w.non_test_activity_code = reason.non_test_activity_code
 -- and w.tc_id = tc.tc_id
 -- and w.tc_id = tcn.tc_id
@@ -253,7 +253,7 @@ from WORK_SCHEDULE_SLOTS w
     left join TEST_CENTRE tc on w.tc_id = tc.tc_id
     left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     left join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
-where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
 -- and w.tc_id = tc.tc_id
 -- and w.tc_id = tcn.tc_id
 -- and tcn.display_order = 1
@@ -269,8 +269,8 @@ from EXAMINER e
 -- where e.individual_id = d.individual_id
 -- and e.mobile_ind = 1
 where (
-    DATE(d.start_date) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
-    or DATE(d.end_date) between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+    DATE(d.start_date) between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('02/02/2018', '%d/%m/%Y')
+    or DATE(d.end_date) between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('02/02/2018', '%d/%m/%Y')
 )
 -- and d.state_code = 1002
 -- and d.tc_id = tc.tc_id
@@ -284,5 +284,5 @@ and exists (
     select end_date 
     from EXAMINER_STATUS es
     where es.individual_id = e.individual_id
-    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('11/08/2017', '%d/%m/%Y')
+    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('02/02/2018', '%d/%m/%Y')
 )
