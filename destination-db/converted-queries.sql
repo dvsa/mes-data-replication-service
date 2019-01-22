@@ -242,6 +242,7 @@ from WORK_SCHEDULE_SLOTS w
     left join TEST_CENTRE tc on w.tc_id = tc.tc_id
     left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
 where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
+and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 -- and w.non_test_activity_code = reason.non_test_activity_code
 -- and w.tc_id = tc.tc_id
 -- and w.tc_id = tcn.tc_id
@@ -255,6 +256,7 @@ from WORK_SCHEDULE_SLOTS w
     left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     left join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
 where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
+and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 -- and w.tc_id = tc.tc_id
 -- and w.tc_id = tcn.tc_id
 -- and tcn.display_order = 1
