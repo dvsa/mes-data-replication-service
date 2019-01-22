@@ -215,8 +215,8 @@ and (booking_details.organisation_id is null or booking_details.business_addr_id
 -- select personalCommitmentDataSet
 select e.individual_id, pc.commitment_id, pc.start_date_time, pc.end_date_time, pc.non_test_activity_code, reason.reason_desc
 from EXAMINER e 
-    left join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
-    left join NON_TEST_ACTIVITY_REASON reason on pc.non_test_activity_code = reason.non_test_activity_code
+    join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
+    join NON_TEST_ACTIVITY_REASON reason on pc.non_test_activity_code = reason.non_test_activity_code
 -- where pc.non_test_activity_code = reason.non_test_activity_code
 -- and e.individual_id = pc.individual_id
 -- and e.mobile_ind = 1
@@ -231,16 +231,16 @@ and exists (
     select end_date 
     from EXAMINER_STATUS es
     where es.individual_id = e.individual_id
-    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('16/08/2017', '%d/%m/%Y')
+    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 )
 
 -- select nonTestActivityDataSet
 select w.individual_id, w.slot_id, w.start_time, w.minutes, w.non_test_activity_code,
     reason.reason_desc, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code
 from WORK_SCHEDULE_SLOTS w
-    left join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
-    left join TEST_CENTRE tc on w.tc_id = tc.tc_id
-    left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+    join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
+    join TEST_CENTRE tc on w.tc_id = tc.tc_id
+    join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
 where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
 and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 -- and w.non_test_activity_code = reason.non_test_activity_code
@@ -252,9 +252,9 @@ and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 -- select advanceTestSlotDataSet
 select w.individual_id, w.slot_id, w.start_time, w.minutes, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code, vst.short_vst_desc
 from WORK_SCHEDULE_SLOTS w
-    left join TEST_CENTRE tc on w.tc_id = tc.tc_id
-    left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
-    left join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
+    join TEST_CENTRE tc on w.tc_id = tc.tc_id
+    join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+    join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
 where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
 and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 -- and w.tc_id = tc.tc_id
@@ -265,10 +265,10 @@ and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
  -- select deploymentDataSet
 select d.deployment_id, e.individual_id, d.tc_id, tcn.tc_name, tc.tc_cost_centre_code, p.programme_date
 from EXAMINER e
-    left join DEPLOYMENT d on e.individual_id = d.individual_id
-    left join TEST_CENTRE tc on d.tc_id = tc.tc_id
-    left join TEST_CENTRE_NAME tcn on d.tc_id = tcn.tc_id
-    left join PROGRAMME p on p.individual_id = e.individual_id
+    join DEPLOYMENT d on e.individual_id = d.individual_id
+    join TEST_CENTRE tc on d.tc_id = tc.tc_id
+    join TEST_CENTRE_NAME tcn on d.tc_id = tcn.tc_id
+    join PROGRAMME p on p.individual_id = e.individual_id
 -- where e.individual_id = d.individual_id
 -- and e.mobile_ind = 1
 where (
@@ -287,5 +287,5 @@ and exists (
     select end_date 
     from EXAMINER_STATUS es
     where es.individual_id = e.individual_id
-    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('02/02/2018', '%d/%m/%Y')
+    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
 )
