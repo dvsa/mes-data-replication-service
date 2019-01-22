@@ -36,8 +36,10 @@ function addSlotFilters(options: Options) {
  */
 function addOtherTablesFilters(options: Options) {
     // all personal commitments that overlap with our time window of interest
-    const highLevelEndDate = startDate.plus(highLevelSlotTimeWindow);
-    addOnOrBeforeFilter(options, 'PERSONAL_COMMITMENT', 'START_DATE_TIME', highLevelEndDate); // i.e. start before or during
+    const personalCommitmentEndDate = startDate.plus(highLevelSlotTimeWindow);
+    // As we're querying PersonalCommitment on DateTime, we need to include the whole day
+    const personalCommitmentEndDateTime = personalCommitmentEndDate.plus({ hours: 23, minutes: 59, seconds: 59 });
+    addOnOrBeforeFilter(options, 'PERSONAL_COMMITMENT', 'START_DATE_TIME', personalCommitmentEndDateTime); // i.e. start before or during
     addOnOrAfterFilter(options, 'PERSONAL_COMMITMENT', 'END_DATE_TIME', startDate); // i.e. end during or after
 
     // all deployments that overlap with our time window of interest
