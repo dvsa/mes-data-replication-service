@@ -190,6 +190,7 @@ from WORK_SCHEDULE_SLOTS w
     ) booking_details on w.slot_id = booking_details.slot_id
     
 where w.programme_date between CAST('2017-08-14' AS DATE) and CAST('2017-08-15' AS DATE)
+and w.examiner_end_date > CAST('2017-08-14' AS DATE)
 -- and tcn.display_order = 1
 and (w.non_test_activity_code is null or booking_details.slot_id is not null)
 and (booking_details.candidate_id is null or booking_details.candidate_cd_id  = (
