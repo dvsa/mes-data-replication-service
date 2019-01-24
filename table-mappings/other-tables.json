@@ -1,6 +1,6 @@
 {
     "sourceSchema": "TARSUAT",
-    "destSchema": "tarsuat1repl",
+    "destSchema": "tarsreplica",
     "tables": [ 
         {
             "sourceName": "PERSONAL_COMMITMENT",

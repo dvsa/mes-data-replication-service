@@ -158,7 +158,7 @@ export function addOnOrBeforeFilter(options: Options, tableName: string, columnN
         "column": columnName,
         "orConditions": [{
             "operator": "ste",
-            "value": value.toISO()  //Had to change this from 'value.toISODate()' as it was excluding any Personal Commitments that started during the final day of extract"
+            "value": value.toISO()  // Had to change this from 'value.toISODate()' as it was excluding any Personal Commitments that started during the final day of extract"
         }]
     };
     findFilters(options, tableName).push(filter);

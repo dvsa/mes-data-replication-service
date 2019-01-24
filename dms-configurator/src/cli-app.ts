@@ -53,28 +53,28 @@ function addOtherTablesFilters(options: Options) {
  */
 async function createAllTasks(): Promise<void> {
     try {
-        const sourceEndpointArn = await dms.getEndpointArn('tarsuat1-endpoint');
+        const sourceEndpointArn = await dms.getEndpointArn('mes-dev-dms-source');
         logger.debug("source endpoint arn is %s", sourceEndpointArn);
 
-        const destEndpointArn = await dms.getEndpointArn('tarsuat1-repl-endpoint');
+        const destEndpointArn = await dms.getEndpointArn('mes-dev-dms-target');
         logger.debug("dest endpoint arn is %s", destEndpointArn);
 
-        const replicationInstanceArn = await dms.getReplicationInstanceArn('tarsuat1-dms');
+        const replicationInstanceArn = await dms.getReplicationInstanceArn('mes-dev-dms-replicator');
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
-        await dms.createTask('examiner-full-load', '../table-mappings/examiner-tables.json',
+        await dms.createTask('examiner-full-load-and-cdc', '../table-mappings/examiner-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn, addExaminerFilters);
 
-        await dms.createTask('slot-full-load', '../table-mappings/slot-tables.json',
+        await dms.createTask('slot-full-load-and-cdc', '../table-mappings/slot-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotFilters);
 
-        await dms.createTask('other-full-load', '../table-mappings/other-tables.json',
+        await dms.createTask('other-full-load-and-cdc', '../table-mappings/other-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn, addOtherTablesFilters);      
 
-        await dms.createTask('slotDetail-full-load', '../table-mappings/slotDetail-tables.json',
+        await dms.createTask('slotDetail-full-load-and-cdc', '../table-mappings/slotDetail-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn); 
 
-        await dms.createTask('application-full-load', '../table-mappings/application-tables.json',
+        await dms.createTask('application-full-load-and-cdc', '../table-mappings/application-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
     } catch (e) {
