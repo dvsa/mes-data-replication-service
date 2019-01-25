@@ -111,7 +111,7 @@ export class DmsApi {
         return new Promise<string>((resolve, reject) => {
 
             const params = {
-                MigrationType: 'full-load',
+                MigrationType: 'full-load-and-cdc',
                 ReplicationInstanceArn: replicationInstanceArn,
                 ReplicationTaskIdentifier: taskName,
                 SourceEndpointArn: sourceEndpointArn,
