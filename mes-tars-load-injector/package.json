@@ -15,7 +15,6 @@
   "devDependencies": {
     "@types/dotenv": "^6.1.0",
     "@types/oracledb": "^1.11.34",
-    "@types/sleep": "0.0.7",
     "ts-node": "^8.0.1",
     "typescript": "^3.2.4"
   },
