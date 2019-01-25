@@ -134,20 +134,24 @@ export const getBookings = (connPool: IConnectionPool, activeDate: Date, individ
       INDIVIDUAL I
     WHERE
       TRUNC(P.PROGRAMME_DATE) = :active_date
-      AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)}) AND (P.STATE_CODE NOT IN (2, 3)
-      OR EXISTS
+      AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
+      AND 
         (
-          SELECT
-            BOOK.BOOKING_ID
-          FROM
-            BOOKING BOOK,
-            PROGRAMME_SLOT SLOT
-          WHERE
-            SLOT.SLOT_ID = BOOK.SLOT_ID
-            AND TRUNC(SLOT.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
-            AND SLOT.INDIVIDUAL_ID = P.INDIVIDUAL_ID
-            AND SLOT.TC_ID = P.TC_ID
-            AND BOOK.STATE_CODE = 1)
+          P.STATE_CODE NOT IN (2, 3)
+          OR EXISTS
+            (
+              SELECT
+                BOOK.BOOKING_ID
+              FROM
+                BOOKING BOOK,
+                PROGRAMME_SLOT SLOT
+              WHERE
+                SLOT.SLOT_ID = BOOK.SLOT_ID
+                AND TRUNC(SLOT.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
+                AND SLOT.INDIVIDUAL_ID = P.INDIVIDUAL_ID
+                AND SLOT.TC_ID = P.TC_ID
+                AND BOOK.STATE_CODE = 1
+            )
         )
       AND TRUNC(PS.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
       AND PS.INDIVIDUAL_ID = P.INDIVIDUAL_ID
