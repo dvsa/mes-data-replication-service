@@ -11,14 +11,6 @@ import { DateTime, Duration } from 'luxon';
 const logger = getLogger('cli-app', 'debug');
 const dms = new DmsApi('eu-west-1');
 
-/**
- * Adds source filters to the "Examiner" dataset.
- * @param options - the options to add to
- */
-function addExaminerFilters(options: Options) {
-    addOnOrBeforeFilter(options, 'POSTING', 'START_DATE', startDate);
-    addOnOrAfterFilter(options, 'POSTING', 'END_DATE', startDate);
-}
 
 /**
  * Adds source filters to the "Slot" dataset.
@@ -63,7 +55,7 @@ async function createAllTasks(): Promise<void> {
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
         await dms.createTask('examiner-full-load-and-cdc', '../table-mappings/examiner-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addExaminerFilters);
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
         await dms.createTask('slot-full-load-and-cdc', '../table-mappings/slot-tables.json',
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotFilters);
