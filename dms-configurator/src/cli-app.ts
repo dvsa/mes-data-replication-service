@@ -13,27 +13,19 @@ const dms = new DmsApi('eu-west-1');
 
 
 /**
- * Adds source filters to the "Slot" dataset.
+ * Adds source filters to the "datefiltered" dataset.
  * @param options - the options to add to
  */
-function addSlotFilters(options: Options) {
+function addDateFilters(options: Options) {
     const endDate =  startDate.plus(highLevelSlotTimeWindow);
     addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate);
     addBetweenFilter(options, 'PROGRAMME_SLOT', 'PROGRAMME_DATE', startDate, endDate);
-}
-
-/**
- * Adds source filters to the "Other" dataset.
- * @param options - the options to add to
- */
-function addOtherTablesFilters(options: Options) {
     // all personal commitments that overlap with our time window of interest
     const personalCommitmentEndDate = startDate.plus(highLevelSlotTimeWindow);
     // As we're querying PersonalCommitment on DateTime, we need to include the whole day
     const personalCommitmentEndDateTime = personalCommitmentEndDate.plus({ hours: 23, minutes: 59, seconds: 59 });
     addOnOrBeforeFilter(options, 'PERSONAL_COMMITMENT', 'START_DATE_TIME', personalCommitmentEndDateTime); // i.e. start before or during
     addOnOrAfterFilter(options, 'PERSONAL_COMMITMENT', 'END_DATE_TIME', startDate); // i.e. end during or after
-
     // all deployments that overlap with our time window of interest
     const deploymentEndDate =  startDate.plus(deploymentTimeWindow);
     addOnOrBeforeFilter(options, 'DEPLOYMENT', 'START_DATE', deploymentEndDate); // i.e. start before or during
@@ -58,16 +50,19 @@ async function createAllTasks(): Promise<void> {
                    replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
         await dms.createTask('slot-full-load-and-cdc', '../table-mappings/slot-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addSlotFilters);
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
         await dms.createTask('other-full-load-and-cdc', '../table-mappings/other-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addOtherTablesFilters);      
+                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);      
 
         await dms.createTask('slotDetail-full-load-and-cdc', '../table-mappings/slotDetail-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn); 
 
         await dms.createTask('application-full-load-and-cdc', '../table-mappings/application-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
+
+        await dms.createTask('dateFiltered-full-load-and-cdc', '../table-mappings/dateFiltered-tables.json',
+                  replicationInstanceArn, sourceEndpointArn, destEndpointArn, addDateFilters);
 
     } catch (e) {
         logger.error("Error creating DMS task: %s", e);

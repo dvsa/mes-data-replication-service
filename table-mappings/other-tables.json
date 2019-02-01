@@ -1,21 +1,7 @@
 {
     "sourceSchema": "TARSUAT",
     "destSchema": "tarsreplica",
-    "tables": [ 
-        {
-            "sourceName": "PERSONAL_COMMITMENT",
-            "removeColumns": [ 
-                "COMMITMENT_TEXT", "STATE_CODE", "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON"
-            ],
-            "andFilters": [
-            {
-                "column": "STATE_CODE",
-                "orConditions": [{
-                    "operator": "eq",
-                    "value": "1"
-                }]
-            }]
-        },
+    "tables": [
         {
             "sourceName": "NON_TEST_ACTIVITY_REASON",
             "removeColumns": [ 
@@ -30,24 +16,6 @@
                 "VEHICLE_TYPE_CODE", "MINUTES", "VST_DESC", "CREATED_ON", "CREATED_BY", 
                 "UPDATED_ON", "UPDATED_BY"
             ]
-        },
-        {
-            "sourceName": "DEPLOYMENT",
-            "removeColumns": [ 
-                "STATE_CODE", "REQUEST_DATE", "DEPLOYMENT_TYPE_CODE", "ALLOWED_TRAVEL_MINUTES", 
-                "AREA_ID", "AREA_DEPLOYMENT_NUMBER", "CANCELLED_DATE", "FINANCIAL_YEAR", 
-                "VERSION_NUMBER", "WELSH_IND", "COMMENTS_TEXT", "AREA_DECISION_DATE", 
-                "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON", "DEPLOYMENT_REASON_ID", 
-                "NUM_CANCELLATIONS_SAVED"
-            ],
-            "andFilters": [
-            {
-                "column": "STATE_CODE",
-                "orConditions": [{
-                    "operator": "eq",
-                    "value": "1002"
-                }]
-            }]
         }
     ]
 }

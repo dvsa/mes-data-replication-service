@@ -3,21 +3,6 @@
     "destSchema": "tarsreplica",
     "tables": [ 
         {
-            "sourceName": "PROGRAMME",
-            "removeColumns": [ 
-                "CHANGE_IND", "MODIFICATION_SEQ_NUMBER"
-            ]
-        },
-        {
-            "sourceName": "PROGRAMME_SLOT",
-            "removeColumns": [ 
-                "STATE_CODE", "GHOST_IND", "SLOT_TYPE_CODE", "DEPLOYED_TO_FROM_TC_COST_CODE",
-                "CLOSURE_CODE", "REPEATED_CLOSURE_CODE", "SUSPENDED_IND", "DEPLOYMENT_ID",
-                "INSTRUCTOR_ID", "RESERVED_USER_NAME", "RESERVED_DATE_TIME", 
-                "CANCELLED_DEPLOYMENT_IND", "MODIFICATION_SEQ_NUMBER"
-            ]
-        },
-        {
             "sourceName": "BOOKING",
             "removeColumns": [ 
                 "ACTUAL_TEST_FEE_AMOUNT", "BOOKED_DATE", "CANCELLED_DATE_TIME", "CANCELLED_TC_ID", "LOST_FEE_IND",
