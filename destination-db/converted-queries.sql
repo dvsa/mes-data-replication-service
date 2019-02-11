@@ -4,40 +4,47 @@
 -- using the view
 -- Note: only filter programme_date if need less data than the total replicated
 select slot_id, programme_date, start_time, minutes, individual_id, tc_id, vst_code, 
-    non_test_activity_code, examiner_end_date
+    non_test_activity_code
 from WORK_SCHEDULE_SLOTS
-where programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('06/08/2017', '%d/%m/%Y')
-and examiner_end_date > STR_TO_DATE('06/08/2017', '%d/%m/%Y')
+where programme_date between '2017-08-03' and '2017-08-16'
+and examiner_end_date >= '2017-08-03'
 
  -- select examinerDataSet - for a single day
  -- no mysql equiv of initcap(..) for name fields, catered for with user defined function
 select e.individual_id, e.staff_number, title_ref.item_desc1 as title,
         i.first_forename as first_forename, i.second_forename as second_forename,
         i.third_forename as third_forename, i.family_name as family_name
-from INDIVIDUAL i 
-    left join REF_DATA_ITEM_MASTER title_ref on i.title_code = title_ref.item_id
+from INDIVIDUAL i
     join EXAMINER e on e.individual_id = i.individual_id
-where IFNULL(e.grade_code, 'ZZZ') != 'DELE'
-and exists (
-    select end_date from EXAMINER_STATUS es
-    where es.individual_id = e.individual_id
-    and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('14/08/2017', '%d/%m/%Y')
-)
+    left join EXAMINER_STATUS es on es.individual_id = e.individual_id
+    left join REF_DATA_ITEM_MASTER title_ref on i.title_code = title_ref.item_id
+where IFNULL(e.grade_code, 'ZZZ') <> 'DELE'
+and IFNULL(es.end_date, '4000-01-01') >= '2017-08-03'
 
  -- select testSlotDataSet
 select w.slot_id, w.start_time as start_time, w.minutes as minutes,
     vst.short_vst_desc as vehicle_slot_type, w.tc_id, tc.tc_cost_centre_code, tcn.tc_name,
-    w.individual_id, w.programme_date ,
+    w.individual_id, w.programme_date,
     booking_details.booking_id,
     booking_details.app_id, booking_details.booking_seq, booking_details.check_digit,
     booking_details.welsh_test_ind, booking_details.ext_req_ind, booking_details.progressive_access,
-    booking_details.meeting_place, booking_details.special_needs, booking_details.ent_check_ind,
+    booking_details.meeting_place, booking_details.special_needs, getEntitlementCheckIndicator(booking_details.app_id) as ent_check_ind,
     booking_details.cab_seat_count, booking_details.passenger_seat_count,
     booking_details.height_metres, booking_details.length_metres, booking_details.width_metres,
-    booking_details.vehicle_category, booking_details.gearbox_type, booking_details.candidate_id,
+    booking_details.vehicle_category,                                                 
+    case
+		when booking_details.gearbox_code=1 then 'Manual'
+		when booking_details.gearbox_code=2 then 'Automatic'
+		when booking_details.gearbox_code=3 then 'Semi-Automatic'
+		else null
+				end as gearbox_type,
+	booking_details.candidate_id,
     booking_details.candidate_title, booking_details.candidate_first_name, booking_details.candidate_second_name,
     booking_details.candidate_third_name, booking_details.candidate_surname, booking_details.candidate_driver_number,
-    booking_details.cand_primary_tel, booking_details.cand_secondary_tel, booking_details.cand_mobile_tel, booking_details.cand_email,
+	case when booking_details.prim_tel_voicemail_ind = 1 then booking_details.primary_tel_number else null end as cand_primary_tel,
+	case when booking_details.sec_tel_voicemail_ind = 1 then booking_details.secondary_tel_number else null end as cand_secondary_tel,
+	case when booking_details.mobile_voicemail_ind = 1 then booking_details.mobile_tel_number else null end as cand_mobile_tel,
+	booking_details.cand_email,
     booking_details.address_line_1 as candidate_addr_line1, booking_details.address_line_2 as candidate_addr_line2,
     booking_details.address_line_3 as candidate_addr_line3, booking_details.address_line_4 as candidate_addr_line4,
     booking_details.address_line_5 as candidate_addr_line5, booking_details.post_code as candidate_post_code,
@@ -52,98 +59,67 @@ select w.slot_id, w.start_time as start_time, w.minutes as minutes,
     booking_details.business_telephone,
     booking_details.cancel_booking_id, booking_details.cancel_initiator
 from WORK_SCHEDULE_SLOTS w
+    join TEST_CENTRE tc on w.tc_id = tc.tc_id
+    join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     left join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
-    join  TEST_CENTRE tc on w.tc_id = tc.tc_id
-    join  TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     left join (
-        select b.booking_id as booking_id, b.app_id as app_id, b.slot_id as slot_id,
-            a.welsh_test_ind as welsh_test_ind, a.ext_req_ind as ext_req_ind, a.progressive_access,
-            getEntitlementCheckIndicator(b.app_id) as ent_check_ind,
-            a.meeting_place_req_text as meeting_place, a.special_needs_text as special_needs, ari.booking_seq as booking_seq,
-            ari.check_digit as check_digit, v.cab_seat_count, v.passenger_seat_count,
-            v.height_m as height_metres, v.length_m as length_metres, v.width_m as width_metres,
-                                                case
-                when v.gearbox_code=1 then 'Manual'
-                when v.gearbox_code=2 then 'Automatic'
-                when v.gearbox_code=3 then 'Semi-Automatic'
-                else null
-                                                end as gearbox_type,
-            ts.test_category_ref as vehicle_category, i.individual_id as candidate_id,
-            initcap(title_ref.item_desc1) as candidate_title, initcap(i.first_forename) as candidate_first_name,
-            initcap(i.second_forename) as candidate_second_name, initcap(i.third_forename) as candidate_third_name,
-            initcap(i.family_name) as candidate_surname, i.driver_number as candidate_driver_number,
-            cand_cd.contact_details_id as candidate_cd_id, cand_cd.cand_primary_tel, cand_cd.cand_secondary_tel, cand_cd.cand_mobile_tel, cand_cd.cand_email,
-            cand_addr.address_id as candidate_addr_id, cand_addr.address_line_1, cand_addr.address_line_2, cand_addr.address_line_3,
-            cand_addr.address_line_4, cand_addr.address_line_5, cand_addr.post_code,
-            case when ts.test_category_ref like 'ADI%' then cand_adi.prn else null end as candidate_prn,
-            case
-                                    when co.booker_type_code = 'B' then co.business_id
-            when co.booker_type_code = 'T' then co.business_id
-            else null
-                                                end as business_id,
-            business_details.business_name, business_details.organisation_id, business_details.organisation_register_id,
-            business_details.address_id as business_addr_id, business_details.contact_details_id as business_cd_id,
-            business_details.address_line_1 as business_addr_line1, business_details.address_line_2 as business_addr_line2,
-            business_details.address_line_3 as business_addr_line3, business_details.address_line_4 as business_addr_line4,
-            business_details.address_line_5 as business_addr_line5, business_details.post_code as business_post_code,
-            business_details.primary_tel_number as business_telephone,
-            cancellations.cancel_booking_id, cancellations.cancel_initiator
-        from BOOKING  b
-                join APPLICATION a on a.app_id = b.app_id
-                join APPLICATION_RSIS_INFO ari on b.booking_id = ari.booking_id
-                left join VEHICLE v on a.vehicle_id = v.vehicle_id
-                left join TEST_SERVICE ts on a.test_service_id = ts.test_service_id
-                left join INDIVIDUAL  i on a.individual_id = i.individual_id
-                left join REF_DATA_ITEM_MASTER  title_ref on i.title_code = title_ref.item_id
-                join CUSTOMER_ORDER co on a.order_id = co.order_id
-                left join (
-                    select ccd.contact_details_id, ccd.individual_id,
-                        case when ccd.prim_tel_voicemail_ind = 1 then ccd.primary_tel_number else null end as cand_primary_tel,
-                        case when ccd.sec_tel_voicemail_ind = 1 then ccd.secondary_tel_number else null end as cand_secondary_tel,
-                        case when ccd.mobile_voicemail_ind = 1 then ccd.mobile_tel_number else null end as cand_mobile_tel,
-                        ccd.email_address as cand_email
-                    from CONTACT_DETAILS  ccd
-                ) cand_cd on a.individual_id = cand_cd.individual_id
-                left join (
-                select caddr.individual_id, caddr.address_id,
-                            caddr.address_line_1, caddr.address_line_2, caddr.address_line_3,
-                            caddr.address_line_4, caddr.address_line_5, caddr.post_code
-                from ADDRESS caddr
-                where caddr.address_type_code = 1263
-                ) cand_addr on a.individual_id = cand_addr.individual_id
-                left join (
-                    select reg.individual_id, reg.prn
-                    from REGISTER reg
-                ) cand_adi on a.individual_id = cand_adi.individual_id
-                left join (
-                        select org_reg.business_id as business_id, org.organisation_name as business_name,
-                        org.organisation_id, bus_addr.address_id,
-                        bus_addr.address_line_1, bus_addr.address_line_2, bus_addr.address_line_3,
-                        bus_addr.address_line_4, bus_addr.address_line_5, bus_addr.post_code,
-                        bus_cd.contact_details_id, org_reg.organisation_register_id, bus_cd.primary_tel_number
-                        from ORGANISATION_REGISTER org_reg
-                        join ORGANISATION org on org_reg.organisation_id = org.organisation_id
-                        left join (
-                                select baddr.organisation_id, baddr.address_id,
-                                            baddr.address_line_1, baddr.address_line_2, baddr.address_line_3,
-                                            baddr.address_line_4, baddr.address_line_5, baddr.post_code
-                                from ADDRESS  baddr
-                                where baddr.address_type_code = 1280
-                        ) bus_addr on org.organisation_id = bus_addr.organisation_id
-                        left join CONTACT_DETAILS  bus_cd on bus_cd.organisation_register_id = org_reg.organisation_register_id
-                    ) business_details on co.booker_type_code in ('B','T') and co.business_id = business_details.business_id
-                left join (
-                select cancelled_bookings.booking_id as cancel_booking_id, cancelled_bookings.app_id,
-                        bcr.initiator_code as cancel_initiator
-                from BOOKING  cancelled_bookings, BOOKING_CANCELLATION_REASON bcr
-                where cancelled_bookings.booking_cancel_reason_code = bcr.booking_cancel_reason_code
-                and bcr.initiator_code in ('Act of nature', 'DSA')
-                ) cancellations on cancellations.app_id = a.app_id
-                                where b.state_code !=2
-    ) booking_details on w.slot_id = booking_details.slot_id
-    
-where w.programme_date between CAST('2017-08-14' AS DATE) and CAST('2017-08-15' AS DATE)
-and w.examiner_end_date > CAST('2017-08-14' AS DATE)
+			select b.booking_id as booking_id, b.app_id as app_id, b.slot_id as slot_id,
+				a.welsh_test_ind as welsh_test_ind, a.ext_req_ind as ext_req_ind, a.progressive_access,
+				a.meeting_place_req_text as meeting_place, a.special_needs_text as special_needs, ari.booking_seq as booking_seq,
+				ari.check_digit as check_digit, v.cab_seat_count, v.passenger_seat_count,
+				v.height_m as height_metres, v.length_m as length_metres, v.width_m as width_metres,
+				v.gearbox_code,
+				ts.test_category_ref as vehicle_category, i.individual_id as candidate_id,
+				title_ref.item_desc1 as candidate_title, i.first_forename as candidate_first_name,
+				i.second_forename as candidate_second_name, i.third_forename as candidate_third_name,
+				i.family_name as candidate_surname, i.driver_number as candidate_driver_number,
+				ccd.contact_details_id as candidate_cd_id, ccd.prim_tel_voicemail_ind, ccd.primary_tel_number,
+				ccd.sec_tel_voicemail_ind, ccd.secondary_tel_number, ccd.mobile_voicemail_ind, ccd.mobile_tel_number, ccd.email_address as cand_email,
+				cand_addr.address_id as candidate_addr_id, cand_addr.address_line_1, cand_addr.address_line_2, cand_addr.address_line_3,
+				cand_addr.address_line_4, cand_addr.address_line_5, cand_addr.post_code,
+				case when ts.test_category_ref like 'ADI%' then cand_adi.prn else null end as candidate_prn,
+				case when co.booker_type_code IN ('B','T') then co.business_id else null end as business_id,
+				business_details.business_name, business_details.organisation_id, business_details.organisation_register_id,
+				business_details.address_id as business_addr_id, business_details.contact_details_id as business_cd_id,
+				business_details.address_line_1 as business_addr_line1, business_details.address_line_2 as business_addr_line2,
+				business_details.address_line_3 as business_addr_line3, business_details.address_line_4 as business_addr_line4,
+				business_details.address_line_5 as business_addr_line5, business_details.post_code as business_post_code,
+				business_details.primary_tel_number as business_telephone,
+				cancellations.cancel_booking_id, cancellations.cancel_initiator
+			from BOOKING  b
+				join APPLICATION a on a.app_id = b.app_id
+				join APPLICATION_RSIS_INFO ari on b.booking_id = ari.booking_id
+				join CUSTOMER_ORDER co on a.order_id = co.order_id
+				left join VEHICLE v on a.vehicle_id = v.vehicle_id
+				left join TEST_SERVICE ts on a.test_service_id = ts.test_service_id
+				left join INDIVIDUAL  i on a.individual_id = i.individual_id
+				left join REF_DATA_ITEM_MASTER  title_ref on i.title_code = title_ref.item_id
+				left join CONTACT_DETAILS ccd on a.individual_id = ccd.individual_id
+				left join ADDRESS cand_addr on cand_addr.address_type_code = 1263 and a.individual_id = cand_addr.individual_id
+				left join REGISTER cand_adi on a.individual_id = cand_adi.individual_id
+				left join (
+							select org_reg.business_id as business_id, org.organisation_name as business_name,
+									org.organisation_id, bus_addr.address_id,
+							bus_addr.address_line_1, bus_addr.address_line_2, bus_addr.address_line_3,
+							bus_addr.address_line_4, bus_addr.address_line_5, bus_addr.post_code,
+							bus_cd.contact_details_id, org_reg.organisation_register_id, bus_cd.primary_tel_number
+							from ORGANISATION_REGISTER org_reg
+							join ORGANISATION org on org_reg.organisation_id = org.organisation_id
+							left join ADDRESS bus_addr on bus_addr.address_type_code = 1280 and org.organisation_id = bus_addr.organisation_id
+							left join CONTACT_DETAILS  bus_cd on bus_cd.organisation_register_id = org_reg.organisation_register_id
+							) business_details on co.booker_type_code in ('B','T') and co.business_id = business_details.business_id
+				left join (
+							select cancelled_bookings.booking_id as cancel_booking_id, cancelled_bookings.app_id,
+									bcr.initiator_code as cancel_initiator
+							from BOOKING cancelled_bookings
+							join BOOKING_CANCELLATION_REASON bcr
+							on cancelled_bookings.booking_cancel_reason_code = bcr.booking_cancel_reason_code
+							where bcr.initiator_code in ('Act of nature', 'DSA')
+							) cancellations on cancellations.app_id = a.app_id
+			where b.state_code !=2
+			) booking_details on w.slot_id = booking_details.slot_id
+where w.programme_date between '2017-08-03' and '2017-08-06'
+and w.examiner_end_date >= '2017-08-03'
 and (w.non_test_activity_code is null or booking_details.slot_id is not null)
 and (booking_details.candidate_id is null or booking_details.candidate_cd_id  = (
                 select max(contact_details_id)
@@ -186,10 +162,10 @@ select w.individual_id, w.slot_id, w.start_time, w.minutes, w.non_test_activity_
     reason.reason_desc, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code
 from WORK_SCHEDULE_SLOTS w
     join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
-    join TEST_CENTRE tc on w.tc_id = tc.tc_id
-    join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
-where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
-and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
+    left join TEST_CENTRE tc on w.tc_id = tc.tc_id
+    left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+where w.programme_date between '2017-08-03' and '2017-08-06'
+and w.examiner_end_date >= '2017-08-03'
 
 -- select advanceTestSlotDataSet
 select w.individual_id, w.slot_id, w.start_time, w.minutes, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code, vst.short_vst_desc
@@ -197,8 +173,8 @@ from WORK_SCHEDULE_SLOTS w
     join TEST_CENTRE tc on w.tc_id = tc.tc_id
     join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
-where w.programme_date between STR_TO_DATE('03/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
-and w.examiner_end_date > STR_TO_DATE('03/08/2017', '%d/%m/%Y')
+where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
+and w.examiner_end_date > STR_TO_DATE('07/08/2017', '%d/%m/%Y')
 
  -- select deploymentDataSet
 select d.deployment_id, e.individual_id, d.tc_id, tcn.tc_name, tc.tc_cost_centre_code, p.programme_date
@@ -215,7 +191,7 @@ and DATE(p.programme_date) between DATE(d.start_date) and DATE(d.end_date)
 and p.tc_id = d.tc_id
 and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
 and exists (
-    select end_date 
+    select end_date
     from EXAMINER_STATUS es
     where es.individual_id = e.individual_id
     and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE('03/08/2017', '%d/%m/%Y')

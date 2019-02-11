@@ -37,28 +37,16 @@ function addDateFilters(options: Options) {
  */
 async function createAllTasks(): Promise<void> {
     try {
-        const sourceEndpointArn = await dms.getEndpointArn('mes-dev-dms-source');
+        const sourceEndpointArn = await dms.getEndpointArn('mes-perf-dms-source');
         logger.debug("source endpoint arn is %s", sourceEndpointArn);
 
-        const destEndpointArn = await dms.getEndpointArn('mes-dev-dms-target');
+        const destEndpointArn = await dms.getEndpointArn('mes-perf-dms-target');
         logger.debug("dest endpoint arn is %s", destEndpointArn);
 
-        const replicationInstanceArn = await dms.getReplicationInstanceArn('mes-dev-dms-replicator');
+        const replicationInstanceArn = await dms.getReplicationInstanceArn('mes-perf-dms-replicator');
         logger.debug("repl instance arn is %s", replicationInstanceArn);
 
-        await dms.createTask('examiner-full-load-and-cdc', '../table-mappings/examiner-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
-
-        await dms.createTask('slot-full-load-and-cdc', '../table-mappings/slot-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
-
-        await dms.createTask('other-full-load-and-cdc', '../table-mappings/other-tables.json',
-                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);      
-
-        await dms.createTask('slotDetail-full-load-and-cdc', '../table-mappings/slotDetail-tables.json',
-                  replicationInstanceArn, sourceEndpointArn, destEndpointArn); 
-
-        await dms.createTask('application-full-load-and-cdc', '../table-mappings/application-tables.json',
+        await dms.createTask('static-full-load-and-cdc', '../table-mappings/static-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
         await dms.createTask('dateFiltered-full-load-and-cdc', '../table-mappings/dateFiltered-tables.json',
