@@ -9,7 +9,7 @@ import { getNonTestActivities } from './repo/mysql/non-test-activity-repository'
 import { getPersonalCommitments } from './repo/mysql/personal-commitment-repository';
 import { getAdvanceTestSlots } from './repo/mysql/advance-test-slots-repository';
 import { getDeployments } from './repo/mysql/deployment-repository';
-import { transform } from '../applications/transformer';
+import { transform } from '../application/transformer';
 import { ExaminerAdvanceTestSlot } from '../domain/examiner-advance-test-slot';
 import { ExaminerDeployment } from '../domain/examiner-deployment';
 import { ExaminerNonTestActivity } from '../domain/examiner-non-test-activity';
