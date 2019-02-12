@@ -15,4 +15,7 @@ describe('integration test', () => {
   afterAll(() => {
     stopSlsOffline();
   });
+  it('should have a working lifecycle', () => {
+
+  });
 });

@@ -1,4 +1,4 @@
-describe('cacheJournals handler', () => {
+describe('pollJournals handler', () => {
   it('be testable', async () => {
     expect(true).toBe(true);
   });
