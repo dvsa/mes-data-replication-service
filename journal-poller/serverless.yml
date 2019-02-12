@@ -1,0 +1,48 @@
+service: journal-poller-service
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+package:
+  individually: true
+
+functions:
+  pollJournals:
+    timeout: 3600
+    handler: src/functions/pollJournals/framework/handler.handler
+    events:
+      - http:
+          path: /
+          method: get
+
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+  webpack:
+    webpackConfig: 'webpack-sls-offline.config.js'
+
+resources:
+  Resources:
+    penaltyDocuments:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:JOURNALS_DDB_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: staffNumber
+            AttributeType: S
+        KeySchema:
+          - AttributeName: staffNumber
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
