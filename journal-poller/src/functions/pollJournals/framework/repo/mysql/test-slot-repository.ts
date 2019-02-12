@@ -3,6 +3,7 @@ import { blockingQuery } from '../database';
 import { VehicleGearbox } from '../../../../../common/domain/Schema';
 import { ExaminerTestSlot } from '../../../domain/examiner-test-slot';
 import { flatten } from 'lodash';
+import * as moment from 'moment';
 
 export const getTestSlots = async (
   connectionPool: mysql.Pool,
@@ -11,18 +12,23 @@ export const getTestSlots = async (
   const startAt = new Date();
   console.log(`STARTING AT: ${startAt}`);
 
+  const sqlYearFormat = 'YYYY-MM-DD';
+  const windowStart = moment().format(sqlYearFormat);
+  const windowEnd = moment().add(3, 'days').format(sqlYearFormat);
   const queries = examinerIdGroups.map(idGroup => getQueryForExaminerIdGroup(idGroup));
   const numberOfExaminersQueried = examinerIdGroups.reduce((acc, group) => acc + group.length, 0);
   console.log(`Quering ${numberOfExaminersQueried} examiners`);
 
-  const promises = queries.map(query => blockingQuery(connectionPool, query));
+  // No support for named parameters
+  const windowParams = [windowStart, windowEnd, windowStart];
+  const promises = queries.map(query => blockingQuery(connectionPool, query, windowParams));
 
   const results = await Promise.all(promises);
 
   const finishedAt = new Date();
   console.log(`FINISHED AT: ${finishedAt}`);
 
-  const numSlots = results.reduce((acc, result) => acc + result.length, 0)
+  const numSlots = results.reduce((acc, result) => acc + result.length, 0);
   console.log(`GOT ${numSlots} slots`);
   const slotsPerSecond = numSlots / ((finishedAt.getTime() - startAt.getTime()) / 1000);
   console.log(`THATS ${slotsPerSecond} per second`);
@@ -130,8 +136,8 @@ from WORK_SCHEDULE_SLOTS w
 							) cancellations on cancellations.app_id = a.app_id
 			where b.state_code !=2
 			) booking_details on w.slot_id = booking_details.slot_id
-where w.programme_date between '2017-08-03' and '2017-08-06'
-and w.examiner_end_date >= '2017-08-03'
+where w.programme_date between ? and ?
+and w.examiner_end_date >= ?
 and (w.non_test_activity_code is null or booking_details.slot_id is not null)
 and (booking_details.candidate_id is null or booking_details.candidate_cd_id  = (
                 select max(contact_details_id)
