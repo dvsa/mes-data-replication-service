@@ -10,14 +10,13 @@ export const getTestSlots = async (
   examinerIdGroups: number[][],
 ): Promise<ExaminerTestSlot[]> => {
   const startAt = new Date();
-  console.log(`STARTING AT: ${startAt}`);
 
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(3, 'days').format(sqlYearFormat);
   const queries = examinerIdGroups.map(idGroup => getQueryForExaminerIdGroup(idGroup));
   const numberOfExaminersQueried = examinerIdGroups.reduce((acc, group) => acc + group.length, 0);
-  console.log(`Quering ${numberOfExaminersQueried} examiners`);
+  console.log(`Querying ${numberOfExaminersQueried} examiners`);
 
   // No support for named parameters
   const windowParams = [windowStart, windowEnd, windowStart];
