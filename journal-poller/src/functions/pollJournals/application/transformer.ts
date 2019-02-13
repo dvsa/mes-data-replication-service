@@ -21,7 +21,7 @@ export const transform = (examiners: any[], datasets: AllDatasets): JournalWrapp
   );
 
   const journals: JournalWrapper[] = examiners.map((examiner) => {
-    const staffNumber = examiner.individual_id.toString();
+    const staffNumber = examiner.staff_number.toString();
     const journal: ExaminerWorkSchedule = {
       examiner: {
         staffNumber,
