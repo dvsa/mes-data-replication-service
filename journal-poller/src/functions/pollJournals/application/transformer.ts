@@ -1,6 +1,6 @@
 import { AllDatasets } from '../framework/handler';
 import { groupBy, get } from 'lodash';
-import { ExaminerWorkSchedule, PersonalCommitment } from '../../../common/domain/Schema';
+import { ExaminerWorkSchedule } from '../../../common/domain/Schema';
 import { JournalWrapper } from '../domain/journal-wrapper';
 import * as crypto from 'crypto';
 import { ExaminerNonTestActivity } from '../domain/examiner-non-test-activity';
