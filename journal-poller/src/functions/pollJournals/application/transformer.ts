@@ -21,6 +21,7 @@ export const transform = (examiners: any[], datasets: AllDatasets): JournalWrapp
   );
 
   const journals: JournalWrapper[] = examiners.map((examiner) => {
+    const individualId = examiner.individual_id.toString();
     const staffNumber = examiner.staff_number.toString();
     const journal: ExaminerWorkSchedule = {
       examiner: {
@@ -28,28 +29,28 @@ export const transform = (examiners: any[], datasets: AllDatasets): JournalWrapp
       },
     };
 
-    if (testSlotsByExaminer[staffNumber]) {
-      journal.testSlots = testSlotsByExaminer[staffNumber]
+    if (testSlotsByExaminer[individualId]) {
+      journal.testSlots = testSlotsByExaminer[individualId]
         .map(examinerTestSlot => examinerTestSlot.testSlot);
     }
 
-    if (personalCommitmentsByExaminer[staffNumber]) {
-      journal.personalCommitments = personalCommitmentsByExaminer[staffNumber]
+    if (personalCommitmentsByExaminer[individualId]) {
+      journal.personalCommitments = personalCommitmentsByExaminer[individualId]
         .map(examinerPersonalCommitment => examinerPersonalCommitment.personalCommitment);
     }
 
-    if (nonTestActivitiesByExaminer[staffNumber]) {
-      journal.nonTestActivities = nonTestActivitiesByExaminer[staffNumber]
+    if (nonTestActivitiesByExaminer[individualId]) {
+      journal.nonTestActivities = nonTestActivitiesByExaminer[individualId]
         .map(examinerNonTestActivity => examinerNonTestActivity.nonTestActivity);
     }
 
-    if (advanceTestSlotByExaminer[staffNumber]) {
-      journal.advanceTestSlots = advanceTestSlotByExaminer[staffNumber]
+    if (advanceTestSlotByExaminer[individualId]) {
+      journal.advanceTestSlots = advanceTestSlotByExaminer[individualId]
         .map(examinerAdvanceTestSlot => examinerAdvanceTestSlot.advanceTestSlot);
     }
 
-    if (deploymentsByExaminer[staffNumber]) {
-      journal.deployments = deploymentsByExaminer[staffNumber]
+    if (deploymentsByExaminer[individualId]) {
+      journal.deployments = deploymentsByExaminer[individualId]
         .map(examinerDeployment => examinerDeployment.deployment);
     }
     const hash = crypto.createHash('sha256').update(JSON.stringify(journal)).digest('hex');
