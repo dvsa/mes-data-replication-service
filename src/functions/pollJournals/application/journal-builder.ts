@@ -23,7 +23,7 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalW
   );
 
   const journals: JournalWrapper[] = examiners.map((examiner) => {
-    const indId = examiner.individual_id.toString();
+    const individualId = examiner.individual_id.toString();
     const staffNumber = examiner.staff_number.toString();
     let journal: ExaminerWorkSchedule = {
       examiner: {
@@ -31,12 +31,12 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalW
       },
     };
 
-    const enrichWithDataset = enrichJournalWithDataset(journal, indId);
-    journal = enrichWithDataset(testSlotsByExaminer, 'testSlot');
-    journal = enrichWithDataset(commitmentsByExaminer, 'personalCommitment');
-    journal = enrichWithDataset(nonTestActByExaminer, 'nonTestActivity');
-    journal = enrichWithDataset(advanceTestsByExaminer, 'advanceTestSlot');
-    journal = enrichWithDataset(deploymentsByExaminer, 'deployment');
+    const enrichWithDataset = enrichJournalWithDataset(individualId);
+    journal = enrichWithDataset(journal, testSlotsByExaminer, 'testSlot', 'testSlots');
+    journal = enrichWithDataset(journal, commitmentsByExaminer, 'personalCommitment', 'personalCommitments');
+    journal = enrichWithDataset(journal, nonTestActByExaminer, 'nonTestActivity', 'nonTestActivities');
+    journal = enrichWithDataset(journal, advanceTestsByExaminer, 'advanceTestSlot', 'advanceTestSlots');
+    journal = enrichWithDataset(journal, deploymentsByExaminer, 'deployment', 'deployments');
 
     const hash = crypto.createHash('sha256').update(JSON.stringify(journal)).digest('hex');
     const lastUpdatedAt = Date.now();
@@ -47,9 +47,9 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalW
 };
 
 const enrichJournalWithDataset = (
-  journal: ExaminerWorkSchedule,
   individualId: string,
 ) => (
+  journal: ExaminerWorkSchedule,
   dataset: { [key: string]: (
     ExaminerTestSlot
     | ExaminerPersonalCommitment
@@ -58,12 +58,13 @@ const enrichJournalWithDataset = (
     | ExaminerDeployment
   )[] },
   datasetKey: string,
+  journalKey: string,
 ): ExaminerWorkSchedule => {
   let enrichedJournal = journal;
   if (dataset[individualId]) {
-    enrichedJournal =  {
+    enrichedJournal = {
       ...journal,
-      [datasetKey]: dataset[individualId].map(ds => get(ds, datasetKey)),
+      [journalKey]: dataset[individualId].map(ds => get(ds, datasetKey)),
     };
   }
   return enrichedJournal;
