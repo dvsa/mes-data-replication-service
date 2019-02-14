@@ -1,4 +1,3 @@
-import { AllDatasets } from '../framework/handler';
 import { groupBy, get } from 'lodash';
 import { ExaminerWorkSchedule } from '../../../common/domain/Schema';
 import { JournalWrapper } from '../domain/journal-wrapper';
@@ -8,8 +7,9 @@ import { ExaminerAdvanceTestSlot } from '../domain/examiner-advance-test-slot';
 import { ExaminerDeployment } from '../domain/examiner-deployment';
 import { ExaminerTestSlot } from '../domain/examiner-test-slot';
 import { ExaminerPersonalCommitment } from '../domain/examiner-personal-commitment';
+import { AllDatasets } from '../domain/all-datasets';
 
-export const transform = (examiners: any[], datasets: AllDatasets): JournalWrapper[] => {
+export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalWrapper[] => {
   const testSlotsByExaminer = groupBy(datasets.testSlots, test => test.examinerId);
   const advanceTestsByExaminer = groupBy(datasets.advanceTestSlots, ats => ats.examinerId);
   const deploymentsByExaminer = groupBy(datasets.deployments, deployment => deployment.examinerId);

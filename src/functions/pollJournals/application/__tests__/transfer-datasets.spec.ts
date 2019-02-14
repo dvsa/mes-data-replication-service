@@ -1,28 +1,24 @@
-import { handler } from '../handler';
-import { APIGatewayProxyEvent, Context } from 'aws-lambda';
-const lambdaTestUtils = require('aws-lambda-test-utils');
-import * as examinerRepo from '../repo/mysql/examiner-repository';
-import * as testSlotRepo from '../repo/mysql/test-slot-repository';
-import * as personalCommitmentRepo from '../repo/mysql/personal-commitment-repository';
-import * as nonTestActivityRepo from '../repo/mysql/non-test-activity-repository';
-import * as advanceTestSlotsRepo from '../repo/mysql/advance-test-slots-repository';
-import * as deploymentRepo from '../repo/mysql/deployment-repository';
-import * as journalRepo from '../repo/dynamodb/journal-repository';
-import * as transformer from '../../application/transformer';
+import * as examinerRepo from '../../framework/repo/mysql/examiner-repository';
+import * as testSlotRepo from '../../framework/repo/mysql/test-slot-repository';
+import * as personalCommitmentRepo from '../../framework/repo/mysql/personal-commitment-repository';
+import * as nonTestActivityRepo from '../../framework/repo/mysql/non-test-activity-repository';
+import * as advanceTestSlotsRepo from '../../framework/repo/mysql/advance-test-slots-repository';
+import * as deploymentRepo from '../../framework/repo/mysql/deployment-repository';
+import * as journalRepo from '../../framework/repo/dynamodb/journal-repository';
+import * as journalBuilder from '../journal-builder';
+import { transferDatasets } from '../transfer-datasets';
 
 const dummyNonTestActivityDataset = [{ examinerId: 3, nonTestActivity: {} }];
 const dummyAdvanceTestSlotDataset = [{ examinerId: 4, advanceTestSlot: {} }];
 const dummyDeploymentDataset = [{ examinerId: 5, deployment: {} }];
-describe('pollJournals handler', () => {
-  let dummyApigwEvent: APIGatewayProxyEvent;
-  let dummyContext: Context;
 
+describe('transferDatasets', () => {
   let getTestSlotSpy: jasmine.Spy;
   let getPersonalCommitmentsSpy: jasmine.Spy;
   let getNonTestActivitesSpy: jasmine.Spy;
   let getAdvanceTestSlotsSpy: jasmine.Spy;
   let getDeploymentsSpy: jasmine.Spy;
-  let transformerSpy: jasmine.Spy;
+  let journalBuilderSpy: jasmine.Spy;
   let saveJournalsSpy: jasmine.Spy;
 
   const dummyExaminers = [
@@ -37,8 +33,6 @@ describe('pollJournals handler', () => {
   const dummyTransformedJournals = { transformed: 'object' };
 
   beforeEach(() => {
-    dummyApigwEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent();
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
     spyOn(examinerRepo, 'getExaminers')
       .and.returnValue(dummyExaminers);
     getTestSlotSpy = spyOn(testSlotRepo, 'getTestSlots')
@@ -51,13 +45,13 @@ describe('pollJournals handler', () => {
       .and.returnValue(Promise.resolve(dummyAdvanceTestSlotDataset));
     getDeploymentsSpy = spyOn(deploymentRepo, 'getDeployments')
       .and.returnValue(Promise.resolve(dummyDeploymentDataset));
-    transformerSpy = spyOn(transformer, 'transform')
+    journalBuilderSpy = spyOn(journalBuilder, 'buildJournals')
       .and.returnValue(dummyTransformedJournals);
     saveJournalsSpy = spyOn(journalRepo, 'saveJournals');
   });
 
   it('should retrieve all the datasets and transform into a journal and save', async () => {
-    await handler(dummyApigwEvent, dummyContext);
+    await transferDatasets();
 
     expect(getTestSlotSpy).toHaveBeenCalled();
     expect(getPersonalCommitmentsSpy).toHaveBeenCalled();
@@ -72,7 +66,7 @@ describe('pollJournals handler', () => {
       advanceTestSlots: dummyAdvanceTestSlotDataset,
       deployments: dummyDeploymentDataset,
     };
-    expect(transformerSpy).toHaveBeenCalledWith(dummyExaminers, expectedDatasets);
+    expect(journalBuilderSpy).toHaveBeenCalledWith(dummyExaminers, expectedDatasets);
     expect(saveJournalsSpy).toHaveBeenCalledWith(dummyTransformedJournals);
   });
 });
