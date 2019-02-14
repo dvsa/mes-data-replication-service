@@ -1,21 +1,19 @@
 {
-  "name": "mes-microservices-starter-template",
+  "name": "mes-data-replication-service",
   "version": "0.1.0",
   "author": "DVSA",
   "license": "MIT",
-  "description": "A starter template for lambda microservices in the MES project",
-  "homepage": "https://github.com/dvsa/mes-microservices-starter-template#README.md",
+  "description": "All the code for moving data between TARS the caches in the MES estate",
+  "homepage": "https://github.com/dvsa/mes-data-replication-service",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dvsa/mes-microservices-starter-template.git"
+    "url": "git+https://github.com/dvsa/mes-data-replication-service.git"
   },
   "dependencies": {
     "aws-sdk": "^2.389.0",
     "lodash": "^4.17.11",
     "moment": "^2.23.0",
-    "mysql": "^2.16.0",
-    "rxjs": "^6.4.0",
-    "rxjs-stream": "^3.0.1"
+    "mysql": "^2.16.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.13",
@@ -59,6 +57,6 @@
     "test:integration": "npm run compile && jasmine build/spec/example.spec.js"
   },
   "bugs": {
-    "url": "https://github.com/dvsa/mes-microservices-starter-template/issues"
+    "url": "https://github.com/dvsa/mes-data-replication-service/issues"
   }
 }
