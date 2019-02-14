@@ -1,5 +1,4 @@
 import * as mysql from 'mysql';
-import { streamToRx } from 'rxjs-stream';
 
 export const streamQuery = (
   connection: mysql.Connection,
@@ -31,17 +30,4 @@ export const blockingQuery = async (
       resolve(rows);
     });
   });
-};
-
-export const pipeQuery = (
-  connection: mysql.Connection,
-  sql: string,
-  rowCb: any,
-  finalCb: any,
-  args?: any,
-) => {
-  const ob = streamToRx(
-    connection.query(sql).stream(),
-  );
-  return ob;
 };
