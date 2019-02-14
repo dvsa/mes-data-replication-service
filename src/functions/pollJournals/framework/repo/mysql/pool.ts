@@ -1,11 +1,13 @@
 import * as mysql from 'mysql';
+import { config } from '../../config/config';
 
 export const createConnectionPool = (): mysql.Pool => {
+  const configuration = config();
   return mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    database: process.env.MYSQL_DATABASE,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
+    host: configuration.tarsReplicaDatabaseHostname,
+    database: configuration.tarsReplicaDatabaseName,
+    user: configuration.tarsReplicaDatabaseUsername,
+    password: configuration.tarsReplicaDatabasePassword,
     connectionLimit: 50,
   });
 };

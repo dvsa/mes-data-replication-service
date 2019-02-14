@@ -10,9 +10,10 @@ import { JournalWrapper } from '../domain/journal-wrapper';
 import { buildJournals } from './journal-builder';
 import { chunk } from 'lodash';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
+import { config } from '../framework/config/config';
 
 export const transferDatasets = async (): Promise<void> => {
-  const examinerBatchSize = Number.parseInt(process.env.EXAMINER_BATCH_SIZE || '250', 10);
+  const { examinerBatchSize } = config();
   const connectionPool = createConnectionPool();
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
