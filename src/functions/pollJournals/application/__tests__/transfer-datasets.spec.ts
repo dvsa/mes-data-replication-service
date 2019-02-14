@@ -7,6 +7,8 @@ import * as deploymentRepo from '../../framework/repo/mysql/deployment-repositor
 import * as journalRepo from '../../framework/repo/dynamodb/journal-repository';
 import * as journalBuilder from '../journal-builder';
 import { transferDatasets } from '../transfer-datasets';
+import * as config from '../../framework/config/config';
+import { dummyConfig } from '../../framework/config/__mocks__/config';
 
 const dummyNonTestActivityDataset = [{ examinerId: 3, nonTestActivity: {} }];
 const dummyAdvanceTestSlotDataset = [{ examinerId: 4, advanceTestSlot: {} }];
@@ -32,7 +34,9 @@ describe('transferDatasets', () => {
   const dummyPersonalCommitmentDataset = [{ examinerId: 2, personalCommitment: {} }];
   const dummyTransformedJournals = { transformed: 'object' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    spyOn(config, 'bootstrapConfig');
+    spyOn(config, 'config').and.returnValue(dummyConfig);
     spyOn(examinerRepo, 'getExaminers')
       .and.returnValue(dummyExaminers);
     getTestSlotSpy = spyOn(testSlotRepo, 'getTestSlots')
