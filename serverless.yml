@@ -27,7 +27,7 @@ custom:
 
 resources:
   Resources:
-    penaltyDocuments:
+    journals:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${env:JOURNALS_DDB_TABLE_NAME}
