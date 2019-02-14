@@ -21,7 +21,13 @@ export const transferDatasets = async (): Promise<void> => {
   const examinerIds = examiners.map(examiner => examiner.individual_id);
   const examinerIdGroups = chunk(examinerIds, examinerBatchSize);
 
-  const queryResults = await Promise.all([
+  const [
+    testSlots,
+    personalCommitments,
+    nonTestActivities,
+    advanceTestSlots,
+    deployments,
+  ] = await Promise.all([
     getTestSlots(connectionPool, examinerIdGroups),
     getPersonalCommitments(connectionPool),
     getNonTestActivities(connectionPool),
@@ -30,12 +36,13 @@ export const transferDatasets = async (): Promise<void> => {
   ]);
 
   const datasets: AllDatasets = {
-    testSlots: queryResults[0],
-    personalCommitments: queryResults[1],
-    nonTestActivities: queryResults[2],
-    advanceTestSlots: queryResults[3],
-    deployments: queryResults[4],
+    testSlots,
+    personalCommitments,
+    nonTestActivities,
+    advanceTestSlots,
+    deployments,
   };
+
   console.log(`FINISHED QUERY PHASE: ${new Date()}`);
   console.log(`STARTING TRANSFORM PHASE: ${new Date()}`);
   const journals: JournalWrapper[] = buildJournals(examiners, datasets);
