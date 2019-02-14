@@ -31,11 +31,12 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalW
       },
     };
 
-    journal = enrichJournalWithDataset(journal, indId, testSlotsByExaminer, 'testSlot');
-    journal = enrichJournalWithDataset(journal, indId, commitmentsByExaminer, 'personalCommitment');
-    journal = enrichJournalWithDataset(journal, indId, nonTestActByExaminer, 'nonTestActivity');
-    journal = enrichJournalWithDataset(journal, indId, advanceTestsByExaminer, 'advanceTestSlot');
-    journal = enrichJournalWithDataset(journal, indId, deploymentsByExaminer, 'deployment');
+    const enrichWithDataset = enrichJournalWithDataset(journal, indId);
+    journal = enrichWithDataset(testSlotsByExaminer, 'testSlot');
+    journal = enrichWithDataset(commitmentsByExaminer, 'personalCommitment');
+    journal = enrichWithDataset(nonTestActByExaminer, 'nonTestActivity');
+    journal = enrichWithDataset(advanceTestsByExaminer, 'advanceTestSlot');
+    journal = enrichWithDataset(deploymentsByExaminer, 'deployment');
 
     const hash = crypto.createHash('sha256').update(JSON.stringify(journal)).digest('hex');
     const lastUpdatedAt = Date.now();
@@ -48,6 +49,7 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalW
 const enrichJournalWithDataset = (
   journal: ExaminerWorkSchedule,
   individualId: string,
+) => (
   dataset: { [key: string]: (
     ExaminerTestSlot
     | ExaminerPersonalCommitment
