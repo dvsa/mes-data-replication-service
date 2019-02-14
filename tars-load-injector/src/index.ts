@@ -13,7 +13,6 @@ import {
   getBookings,
 } from './repo';
 
-
 const run = async () => {
   const config: Config = getConfig();
   const connectionPool = await createConnectionPool(config);
@@ -27,12 +26,12 @@ const run = async () => {
   console.log(`Making a change every ${changeInterval}ms`);
   const ticks = interval(changeInterval);
 
-  ticks.subscribe(_ => {
+  ticks.subscribe((_) => {
     changeApplicationDataset(connectionPool, bookings);
     changeOtherDataset(connectionPool, examiners, activeDate);
     changeSlotDataset(connectionPool, bookings);
     changeSlotDetailDataset(connectionPool, bookings);
   });
-}
+};
 
 run();

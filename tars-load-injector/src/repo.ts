@@ -1,7 +1,11 @@
 import { IConnectionPool } from 'oracledb';
 import { query } from './database';
 
-export const changeSpecialNeedsText = async (connPool: IConnectionPool, applicationId: number, specialNeedsText: string) => {
+export const changeSpecialNeedsText = async (
+  connPool: IConnectionPool,
+  applicationId: number,
+  specialNeedsText: string,
+) => {
   return query(
     connPool,
     `
@@ -20,7 +24,7 @@ export const changePersonalCommitmentActivityCode = async (
   connPool: IConnectionPool,
   examinerId: number,
   startDate: Date,
-  activityCode: string
+  activityCode: string,
 ) => {
   return query(
     connPool,
@@ -30,7 +34,7 @@ export const changePersonalCommitmentActivityCode = async (
     SET
       NON_TEST_ACTIVITY_CODE = :activityCode
     WHERE
-      COMMITMENT_ID = 
+      COMMITMENT_ID =
         (
           SELECT
             COMMITMENT_ID
@@ -38,7 +42,7 @@ export const changePersonalCommitmentActivityCode = async (
           WHERE
             INDIVIDUAL_ID = :examinerId
             AND START_DATE_TIME > :startDate
-          ORDER BY START_DATE_TIME 
+          ORDER BY START_DATE_TIME
           OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
         )
     `,
@@ -46,11 +50,15 @@ export const changePersonalCommitmentActivityCode = async (
       activityCode,
       examinerId,
       startDate,
-    }
-  )
+    },
+  );
 };
 
-export const changeSlotNonTestActivityCode = async (connPool: IConnectionPool, slotId: number, nonTestActivityCode: number) => {
+export const changeSlotNonTestActivityCode = async (
+  connPool: IConnectionPool,
+  slotId: number,
+  nonTestActivityCode: number,
+) => {
   return query(
     connPool,
     `
@@ -65,7 +73,11 @@ export const changeSlotNonTestActivityCode = async (connPool: IConnectionPool, s
   );
 };
 
-export const changeTelephoneNumber = async (connPool: IConnectionPool, individualId: number, telephoneNumber: string) => {
+export const changeTelephoneNumber = async (
+  connPool: IConnectionPool,
+  individualId: number,
+  telephoneNumber: string,
+) => {
   return query(
     connPool,
     `
@@ -76,7 +88,7 @@ export const changeTelephoneNumber = async (connPool: IConnectionPool, individua
     {
       telephoneNumber,
       individualId,
-    }
+    },
   );
 };
 
@@ -111,11 +123,15 @@ export const getActiveExaminers = async (connPool: IConnectionPool, activeDate: 
     `,
     {
       activeDate,
-    }
+    },
   );
-}
+};
 
-export const getBookings = (connPool: IConnectionPool, activeDate: Date, individualIds: number[]): Promise<Object[]> => {
+export const getBookings = (
+  connPool: IConnectionPool,
+  activeDate: Date,
+  individualIds: number[],
+): Promise<Object[]> => {
   return query(
     connPool,
     `
@@ -135,7 +151,7 @@ export const getBookings = (connPool: IConnectionPool, activeDate: Date, individ
     WHERE
       TRUNC(P.PROGRAMME_DATE) = :active_date
       AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
-      AND 
+      AND
         (
           P.STATE_CODE NOT IN (2, 3)
           OR EXISTS
@@ -163,15 +179,16 @@ export const getBookings = (connPool: IConnectionPool, activeDate: Date, individ
       AND A.APP_ID = B.APP_ID
       AND I.INDIVIDUAL_ID = A.INDIVIDUAL_ID
     `,
-    ([ activeDate ] as any[]).concat(individualIds)
+    ([activeDate] as any[]).concat(individualIds),
   );
-}
+};
 
 const generateInClause = (objects: Object[]): string => {
   const length = (objects == null) ? 0 : objects.length;
-  let clause = "";
+  let clause = '';
   for (let i = 0; i < length; i += 1) {
-    clause += ((i > 0) ? ", " : "") + ":" + i;
+    // tslint:disable-next-line:prefer-template
+    clause += ((i > 0) ? ', ' : '') + ':' + i;
   }
   return clause;
 };
@@ -180,11 +197,11 @@ export const getExaminerSubset = (results: Object[], count: number): number[] =>
   let subset = [];
 
   if (results != null) {
-      results.slice(0, Math.min(count, results.length)).forEach((result) => {
-          if ('INDIVIDUAL_ID' in result) {
-              subset = subset.concat(result['INDIVIDUAL_ID']);
-          }
-      });
+    results.slice(0, Math.min(count, results.length)).forEach((result) => {
+      if ('INDIVIDUAL_ID' in result) {
+        subset = subset.concat(result['INDIVIDUAL_ID']);
+      }
+    });
   }
   return subset;
-}
+};
