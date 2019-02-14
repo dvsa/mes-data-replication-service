@@ -40,17 +40,16 @@ describe('buildJournals', () => {
     const result = buildJournals(examiners, datasets);
 
     expect(result.length).toBe(2);
-    expect(result[0].staffNumber).toBe('222');
-    // @ts-ignore
-    expect(result[0].journal.testSlots.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.nonTestActivities.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.personalCommitments.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.advanceTestSlots.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.deployments.length).toBe(1);
+    expect(result[0].journal).toEqual(
+      {
+        examiner: { staffNumber: '222' },
+        testSlots: [{ slotDetail: { slotId: 999 } }],
+        nonTestActivities: [{ slotDetail: { slotId: 888 } }],
+        personalCommitments: [{ commitmentId: 777 }],
+        advanceTestSlots: [{ slotDetail: { slotId: 666 } }],
+        deployments: [{ deploymentId: 555 }],
+      },
+    );
   });
 
   it('should merge datasets including multiple examiners into the journal for each', () => {
@@ -80,27 +79,25 @@ describe('buildJournals', () => {
     const result = buildJournals(examiners, datasets);
 
     expect(result.length).toBe(2);
-    expect(result[0].staffNumber).toBe('222');
-    expect(result[1].staffNumber).toBe('444');
-    // @ts-ignore
-    expect(result[0].journal.testSlots.length).toBe(1);
-    // @ts-ignore
-    expect(result[1].journal.testSlots.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.nonTestActivities.length).toBe(1);
-    // @ts-ignore
-    expect(result[1].journal.nonTestActivities.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.personalCommitments.length).toBe(1);
-    // @ts-ignore
-    expect(result[1].journal.personalCommitments.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.advanceTestSlots.length).toBe(1);
-    // @ts-ignore
-    expect(result[1].journal.advanceTestSlots.length).toBe(1);
-    // @ts-ignore
-    expect(result[0].journal.deployments.length).toBe(1);
-    // @ts-ignore
-    expect(result[1].journal.deployments.length).toBe(1);
+    expect(result[0].journal).toEqual(
+      {
+        examiner: { staffNumber: '222' },
+        testSlots: [{ slotDetail: { slotId: 991 } }],
+        nonTestActivities: [{ slotDetail: { slotId: 881 } }],
+        personalCommitments: [{ commitmentId: 771 }],
+        advanceTestSlots: [{ slotDetail: { slotId: 661 } }],
+        deployments: [{ deploymentId: 551 }],
+      },
+    );
+    expect(result[1].journal).toEqual(
+      {
+        examiner: { staffNumber: '444' },
+        testSlots: [{ slotDetail: { slotId: 992 } }],
+        nonTestActivities: [{ slotDetail: { slotId: 882 } }],
+        personalCommitments: [{ commitmentId: 772 }],
+        advanceTestSlots: [{ slotDetail: { slotId: 662 } }],
+        deployments: [{ deploymentId: 552 }],
+      },
+    );
   });
 });
