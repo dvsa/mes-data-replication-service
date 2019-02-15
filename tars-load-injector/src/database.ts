@@ -1,5 +1,5 @@
-import { IConnectionPool, createPool, OBJECT, IConnection } from 'oracledb'
-import { Config } from "./config";
+import { IConnectionPool, createPool, OBJECT, IConnection } from 'oracledb';
+import { Config } from './config';
 
 export const createConnectionPool = async (config: Config): Promise<IConnectionPool> => {
   try {
@@ -7,11 +7,11 @@ export const createConnectionPool = async (config: Config): Promise<IConnectionP
       user: config.username,
       password: config.password,
       connectString: config.connectionString,
-    })
-  } catch(error) {
+    });
+  } catch (error) {
     console.error(error);
   }
-}
+};
 
 /**
  * Runs a single SQL query on a connection yielded by a connection pool
@@ -23,14 +23,14 @@ export const createConnectionPool = async (config: Config): Promise<IConnectionP
 export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: any): Promise<Object[]> {
   return new Promise((resolve, reject) => {
     let conn: IConnection;
-    connPool.getConnection().then(connection => {
+    connPool.getConnection().then((connection) => {
       conn = connection;
       // return each row as an object rather than an array
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
       // direct fetch of all rows as objects
       resolve(result.rows);
-    }, (err) => {
+    },      (err) => {
       reject(err);
     })
     .then(() => {
