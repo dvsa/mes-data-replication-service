@@ -25,7 +25,7 @@ describe('getAdvanceTestSlots', () => {
     );
   });
 
-  it('should return all of the rows mapped to our domain objects', async () => {
+  it('should return all of the rows mapped to an ExaminerAdvanceTestSlot domain object', async () => {
     const result = await getAdvanceTestSlots(connectionPoolMock.object);
     expect(databaseSpy).toHaveBeenCalled();
     expect(result).toEqual([

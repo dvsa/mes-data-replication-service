@@ -23,7 +23,7 @@ describe('getPersonalCommitments', () => {
     );
   });
 
-  it('should return all of the rows mapped to our domain objects', async () => {
+  it('should return all of the rows mapped to an ExaminerPersonalCommitment domain object', async () => {
     const result = await getPersonalCommitments(connectionPoolMock.object);
     expect(databaseSpy).toHaveBeenCalled();
     expect(result).toEqual([
