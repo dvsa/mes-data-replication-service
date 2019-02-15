@@ -1,5 +1,5 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
+import { query } from '../database';
 import { ExaminerPersonalCommitment } from '../../../domain/examiner-personal-commitment';
 import * as moment from 'moment';
 
@@ -9,7 +9,7 @@ export const getPersonalCommitments = async (connectionPool: mysql.Pool)
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(13, 'days').format(sqlYearFormat);
 
-  const res = await blockingQuery(
+  const res = await query(
     connectionPool,
     /* tslint:disable */
     `

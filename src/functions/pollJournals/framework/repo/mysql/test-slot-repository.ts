@@ -1,5 +1,5 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
+import { query } from '../database';
 import { VehicleGearbox } from '../../../../../common/domain/Schema';
 import { ExaminerTestSlot } from '../../../domain/examiner-test-slot';
 import { flatten } from 'lodash';
@@ -14,13 +14,13 @@ export const getTestSlots = async (
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(3, 'days').format(sqlYearFormat);
-  const queries = examinerIdGroups.map(idGroup => getQueryForExaminerIdGroup(idGroup));
+  const sqlQueries = examinerIdGroups.map(idGroup => getQueryForExaminerIdGroup(idGroup));
   const numberOfExaminersQueried = examinerIdGroups.reduce((acc, group) => acc + group.length, 0);
   console.log(`Querying ${numberOfExaminersQueried} examiners`);
 
   // No support for named parameters
   const windowParams = [windowStart, windowEnd, windowStart];
-  const promises = queries.map(query => blockingQuery(connectionPool, query, windowParams));
+  const promises = sqlQueries.map(sql => query(connectionPool, sql, windowParams));
 
   const results = await Promise.all(promises);
 

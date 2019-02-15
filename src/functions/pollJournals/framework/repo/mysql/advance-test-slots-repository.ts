@@ -1,5 +1,5 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
+import { query } from '../database';
 import { ExaminerAdvanceTestSlot } from '../../../domain/examiner-advance-test-slot';
 import * as moment from 'moment';
 
@@ -9,7 +9,7 @@ export const getAdvanceTestSlots = async (connectionPool: mysql.Pool):
   const windowStart = moment().add(4, 'days').format(sqlYearFormat);
   const windowEnd = moment().add(13, 'days').format(sqlYearFormat);
 
-  const res =  await blockingQuery(
+  const res =  await query(
     connectionPool,
     /* tslint:disable */
     `

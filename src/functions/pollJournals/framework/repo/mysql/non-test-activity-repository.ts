@@ -1,5 +1,5 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
+import { query } from '../database';
 import { ExaminerNonTestActivity } from '../../../domain/examiner-non-test-activity';
 import * as moment from 'moment';
 
@@ -8,7 +8,7 @@ export const getNonTestActivities = async (connectionPool: mysql.Pool)
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(3, 'days').format(sqlYearFormat);
-  const res = await blockingQuery(
+  const res = await query(
     connectionPool,
     `
     select w.individual_id, w.slot_id, w.start_time, w.minutes, w.non_test_activity_code,

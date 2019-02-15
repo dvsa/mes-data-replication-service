@@ -9,7 +9,7 @@ describe('getDeployments', () => {
 
   beforeEach(() => {
     connectionPoolMock = Mock.ofType<mysql.Pool>();
-    databaseSpy = spyOn(database, 'blockingQuery').and.returnValue(
+    databaseSpy = spyOn(database, 'query').and.returnValue(
       Promise.resolve([
         {
           deployment_id: 1,

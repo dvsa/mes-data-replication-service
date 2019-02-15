@@ -1,12 +1,12 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
+import { query } from '../database';
 import * as moment from 'moment';
 
 export const getExaminers = async (connectionPool: mysql.Pool): Promise<any[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
 
-  const res = await blockingQuery(
+  const res = await query(
     connectionPool,
     `
     select e.individual_id, e.staff_number, title_ref.item_desc1 as title,

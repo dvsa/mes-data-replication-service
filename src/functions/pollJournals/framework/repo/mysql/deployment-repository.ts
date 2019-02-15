@@ -1,5 +1,5 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
+import { query } from '../database';
 import { ExaminerDeployment } from '../../../domain/examiner-deployment';
 import * as moment from 'moment';
 
@@ -8,7 +8,7 @@ export const getDeployments = async (connectionPool: mysql.Pool): Promise<Examin
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(6, 'months').format(sqlYearFormat);
 
-  const res = await blockingQuery(
+  const res = await query(
     connectionPool,
     /* tslint:disable */
     `

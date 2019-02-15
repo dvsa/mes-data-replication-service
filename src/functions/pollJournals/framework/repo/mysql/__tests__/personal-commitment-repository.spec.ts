@@ -9,7 +9,7 @@ describe('getPersonalCommitments', () => {
 
   beforeEach(() => {
     connectionPoolMock = Mock.ofType<mysql.Pool>();
-    databaseSpy = spyOn(database, 'blockingQuery').and.returnValue(
+    databaseSpy = spyOn(database, 'query').and.returnValue(
       Promise.resolve([
         {
           individual_id: 1,
