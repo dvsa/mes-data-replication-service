@@ -8,7 +8,7 @@
     "gitSecrets": "git secrets --scan",
     "scanRepo": "git log -p -n 15 | scanrepo",
     "securityScan": "npm run gitSecrets && npm run scanRepo",
-    "start": "ts-node src/index.ts"
+    "start": "LD_LIBRARY_PATH=~/mes_load_injector/instantclient_12_2 ts-node src/index.ts"
   },
   "author": "",
   "license": "MIT",
