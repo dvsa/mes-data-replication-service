@@ -9,7 +9,7 @@ export const changeSpecialNeedsText = async (
   return query(
     connPool,
     `
-    UPDATE APPLICATION
+    UPDATE TARSUAT.APPLICATION
     SET SPECIAL_NEEDS_TEXT = :specialNeedsText
     WHERE APP_ID = :applicationId
     `,
@@ -30,7 +30,7 @@ export const changePersonalCommitmentActivityCode = async (
     connPool,
     `
     UPDATE
-      PERSONAL_COMMITMENT
+      TARSUAT.PERSONAL_COMMITMENT
     SET
       NON_TEST_ACTIVITY_CODE = :activityCode
     WHERE
@@ -38,7 +38,7 @@ export const changePersonalCommitmentActivityCode = async (
         (
           SELECT
             COMMITMENT_ID
-          FROM PERSONAL_COMMITMENT
+          FROM TARSUAT.PERSONAL_COMMITMENT
           WHERE
             INDIVIDUAL_ID = :examinerId
             AND START_DATE_TIME > :startDate
@@ -62,7 +62,7 @@ export const changeSlotNonTestActivityCode = async (
   return query(
     connPool,
     `
-    UPDATE PROGRAMME_SLOT
+    UPDATE TARSUAT.PROGRAMME_SLOT
     SET NON_TEST_ACTIVITY_CODE = :nonTestActivityCode
     WHERE SLOT_ID = :slotId
     `,
@@ -81,7 +81,7 @@ export const changeTelephoneNumber = async (
   return query(
     connPool,
     `
-    UPDATE CONTACT_DETAILS
+    UPDATE TARSUAT.CONTACT_DETAILS
     SET MOBILE_TEL_NUMBER = :telephoneNumber
     WHERE INDIVIDUAL_ID = :individualId
     `,
@@ -102,11 +102,11 @@ export const getActiveExaminers = async (connPool: IConnectionPool, activeDate: 
       ACTIVE_POSTING.TC_ID,
       E.GRADE_CODE
     FROM
-      EXAMINER E,
-      INDIVIDUAL I,
+      TARSUAT.EXAMINER E,
+      TARSUAT.INDIVIDUAL I,
       (
         SELECT P.INDIVIDUAL_ID AS POSTING_INDV_ID, P.TC_ID AS TC_ID
-        FROM POSTING P
+        FROM TARSUAT.POSTING P
         WHERE :activeDate BETWEEN TRUNC(P.START_DATE) AND TRUNC(P.END_DATE)
       ) ACTIVE_POSTING
     WHERE
@@ -116,7 +116,7 @@ export const getActiveExaminers = async (connPool: IConnectionPool, activeDate: 
       AND EXISTS
         (
           SELECT END_DATE
-          FROM EXAMINER_STATUS ES
+          FROM TARSUAT.EXAMINER_STATUS ES
           WHERE ES.INDIVIDUAL_ID = E.INDIVIDUAL_ID
           AND NVL(ES.END_DATE, TO_DATE('01/01/4000', 'DD/MM/YYYY')) > :activeDate
         )
@@ -143,11 +143,11 @@ export const getBookings = (
       I.FIRST_FORENAME,
       I.FAMILY_NAME
     FROM
-      PROGRAMME P,
-      PROGRAMME_SLOT PS,
-      BOOKING B,
-      APPLICATION A,
-      INDIVIDUAL I
+      TARSUAT.PROGRAMME P,
+      TARSUAT.PROGRAMME_SLOT PS,
+      TARSUAT.BOOKING B,
+      TARSUAT.APPLICATION A,
+      ITARSUAT.NDIVIDUAL I
     WHERE
       TRUNC(P.PROGRAMME_DATE) = :active_date
       AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
@@ -159,8 +159,8 @@ export const getBookings = (
               SELECT
                 BOOK.BOOKING_ID
               FROM
-                BOOKING BOOK,
-                PROGRAMME_SLOT SLOT
+                TARSUAT.BOOKING BOOK,
+                TARSUAT.PROGRAMME_SLOT SLOT
               WHERE
                 SLOT.SLOT_ID = BOOK.SLOT_ID
                 AND TRUNC(SLOT.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
