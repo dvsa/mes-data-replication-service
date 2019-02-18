@@ -2,6 +2,7 @@ import * as mysql from 'mysql';
 import { query } from '../database';
 import { ExaminerDeployment } from '../../../domain/examiner-deployment';
 import * as moment from 'moment';
+import { mapRow } from './row-mappers/deployment-row-mapper';
 
 export const getDeployments = async (connectionPool: mysql.Pool): Promise<ExaminerDeployment[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
@@ -36,28 +37,4 @@ export const getDeployments = async (connectionPool: mysql.Pool): Promise<Examin
     [windowStart, windowEnd, windowStart, windowEnd, windowStart],
   );
   return res.map(mapRow);
-};
-
-interface DeploymentRow {
-  deployment_id: number;
-  individual_id: number;
-  tc_id: number;
-  tc_name: string;
-  tc_cost_centre_code: string;
-  programme_date: string;
-}
-
-const mapRow = (row: DeploymentRow): ExaminerDeployment => {
-  return {
-    examinerId: row.individual_id,
-    deployment: {
-      deploymentId: row.deployment_id,
-      testCentre: {
-        centreId: row.tc_id,
-        centreName: row.tc_name,
-        costCode: row.tc_cost_centre_code,
-      },
-      date: row.programme_date,
-    },
-  };
 };
