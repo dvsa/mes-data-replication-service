@@ -78,7 +78,6 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       booking: {
         candidate: {
           candidateId: row.candidate_id,
-          age: 0, // TODO: Find out the age
           candidateName: {
             title: row.candidate_title,
             firstName: row.candidate_first_name,
@@ -87,7 +86,6 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
             lastName: row.candidate_surname,
           },
           driverNumber: row.candidate_driver_number,
-          gender: 'either', // TODO: Find the gender
           candidateAddress: {
             addressLine1: row.candidate_addr_line1,
             addressLine2: row.candidate_addr_line2,

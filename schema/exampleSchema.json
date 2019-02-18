@@ -3,6 +3,7 @@
     "examiner": {
       "description": "The examiner details",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "staffNumber": {
           "$id": "#/properties/staffNumber",
@@ -12,15 +13,13 @@
         },
         "examinerName": {
           "$ref": "#/definitions/name"
-        },
-        "permTestCentre": {
-          "$ref": "#/definitions/testCentre"
         }
       }
     },
     "testCentre": {
       "description": "Details of the test centre",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "centreId": {
           "description": "Identifier for the test centre",
@@ -41,6 +40,7 @@
     "testSlot": {
       "description": "Details of the test slot",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "slotDetail": {
           "$ref": "#/definitions/slotDetail"
@@ -61,6 +61,7 @@
     "personalCommitment": {
       "description": "Details of the test slot",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "commitmentId": {
           "description": "The commitment id",
@@ -105,6 +106,7 @@
     "nonTestActivity": {
       "description": "An examiner's non test activity (associated with a test slot duration)",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "slotDetail": {
           "$ref": "#/definitions/slotDetail"
@@ -127,6 +129,7 @@
     "advanceTestSlot": {
       "description": "Details of an examiner's future test slot",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "slotDetail": {
           "$ref": "#/definitions/slotDetail"
@@ -144,6 +147,7 @@
     "deployment": {
       "description": "Temporary secondment of the examiner to an alternative test centre",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "deploymentId": {
           "description": "The deployment id",
@@ -163,6 +167,7 @@
     "slotDetail": {
       "description": "Identifier, start time and duration of the slot",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "slotId": {
           "description": "Unique identifier for the test slot",
@@ -183,11 +188,7 @@
     "name": {
       "description": "Details of the individual's name",
       "type": "object",
-      "required": [
-        "title",
-        "firstName",
-        "lastName"
-      ],
+      "additionalProperties": false,
       "properties": {
         "title": {
           "description": "The individual's title",
@@ -219,6 +220,7 @@
     "address": {
       "description": "Details of the address",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "addressLine1": {
           "description": "First line of address",
@@ -266,6 +268,7 @@
       "$id": "#/properties/testSlot/properties/booking/properties/application",
       "description": "Details of the test application",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "applicationId": {
           "description": "The application's id",
@@ -335,13 +338,10 @@
       "$id": "#/properties/testSlot/properties/booking/properties/candidate",
       "description": "Details of the candidate booked into the test slot",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "candidateId": {
           "description": "The id of the test candidate",
-          "type": "integer"
-        },
-        "age": {
-          "description": "The age of the test candidate on the day of the test",
           "type": "integer"
         },
         "candidateName": {
@@ -351,11 +351,6 @@
           "description": "The candidate's driver number if any, typically (though not always) 16 characters if UK, or 8 digits if NI",
           "type": "string",
           "maxLength": 24
-        },
-        "gender": {
-          "description": "The candidate's gender",
-          "type": "string",
-          "maxLength": 255
         },
         "candidateAddress": {
           "$ref": "#/definitions/address"
@@ -402,6 +397,7 @@
     "booking": {
       "description": "If this slot is booked, this contains the details",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "candidate": {
           "$ref": "#/definitions/candidate"
@@ -421,52 +417,13 @@
       "description": "The details of any previous test cancellations",
       "type": "array",
       "items": {
-        "properties": {
-          "initiator": {
-            "$ref": "#/definitions/initiator"
-          }
-        }
-      }
-    },
-    "personalCommitments": {
-      "$id": "#/properties/personalCommitments",
-      "description": "A collection of the examiner's personal commitment(s)",
-      "type": "array",
-      "items": {
-        "properties": {
-          "personalCommitment": {
-            "$ref": "#/definitions/personalCommitment"
-          }
-        }
-      }
-    },
-    "advanceTestSlots": {
-      "$id": "#/properties/advanceTestSlots",
-      "description": "A collection of an examiner's future test slots",
-      "type": "array",
-      "items": {
-        "properties": {
-          "advanceTestSlot": {
-            "$ref": "#/definitions/advanceTestSlot"
-          }
-        }
-      }
-    },
-    "deployments": {
-      "$id": "#/properties/deployments",
-      "description": "A collection of temporary secondments of the examiner to an alternative test centre",
-      "type": "array",
-      "items": {
-        "properties": {
-          "deployment": {
-            "$ref": "#/definitions/deployment"
-          }
-        }
+        "$ref": "#/definitions/initiator"
       }
     },
     "business": {
       "description": "The business details, only for tests that are booked by a business or trainer booker",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "businessId": {
           "description": "The business id",
@@ -492,6 +449,7 @@
   "id": "https://example.com/arrays.schema.json",
   "title": "Examiner Work Schedule",
   "type": "object",
+  "additionalProperties": false,
   "description": "JSON Schema definition for Examiner Work Schedule",
   "properties": {
     "examiner": {
@@ -505,7 +463,12 @@
       }
     },
     "personalCommitments": {
-      "$ref": "#/definitions/personalCommitments"
+      "$id": "#/properties/personalCommitments",
+      "description": "A collection of the examiner's personal commitment(s)",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/personalCommitment"
+      }
     },
     "nonTestActivities": {
       "description": "A collection of the examiner's non test activity(s) (associated with a test slot duration)",
@@ -515,10 +478,20 @@
       }
     },
     "advanceTestSlots": {
-      "$ref": "#/definitions/advanceTestSlots"
+      "$id": "#/properties/advanceTestSlots",
+      "description": "A collection of an examiner's future test slots",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/advanceTestSlot"
+      }
     },
     "deployments": {
-      "$ref": "#/definitions/deployments"
+      "$id": "#/properties/deployments",
+      "description": "A collection of temporary secondments of the examiner to an alternative test centre",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/deployment"
+      }
     }
   }
 }
