@@ -18,7 +18,7 @@ const run = async () => {
   const connectionPool = await createConnectionPool(config);
 
   const activeDate = config.startDate;
-  const examinerSubsetCount = 20;
+  const examinerSubsetCount = 100;
 
   console.log(`Loading examiners active on ${activeDate.toDateString()}`);
   const examiners = await getActiveExaminers(connectionPool, activeDate);
