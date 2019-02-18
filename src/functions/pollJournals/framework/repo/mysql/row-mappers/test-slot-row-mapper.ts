@@ -110,7 +110,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
           progressiveAccess: convertIndicator(row.progressive_access),
           specialNeeds: row.special_needs,
           entitlementCheck: convertIndicator(row.ent_check_ind),
-          vehicleSeats: row.passenger_seat_count,
+          vehicleSeats: row.cab_seat_count + row.passenger_seat_count,
           vehicleHeight: row.height_metres,
           vehicleWidth: row.width_metres,
           vehicleLength: row.length_metres,
