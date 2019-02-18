@@ -18,9 +18,16 @@ const run = async () => {
   const connectionPool = await createConnectionPool(config);
 
   const activeDate = config.startDate;
+  const examinerSubsetCount = 20;
+
+  console.log(`Loading examiners active on ${activeDate}`);
   const examiners = await getActiveExaminers(connectionPool, activeDate);
-  const examinerSubset = getExaminerSubset(examiners, 20);
+  console.log(`Found ${examiners.length} active examiners`);
+
+  console.log(`Loading bookings for first ${examinerSubsetCount} active examiners`);
+  const examinerSubset = getExaminerSubset(examiners, examinerSubsetCount);
   const bookings = await getBookings(connectionPool, activeDate, examinerSubset);
+  console.log(`Found ${bookings.length} bookings`);
 
   const changeInterval = 60000 / config.changesPerMinute;
   console.log(`Making a change every ${changeInterval}ms`);
