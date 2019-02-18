@@ -1,5 +1,5 @@
 import { ExaminerTestSlot } from '../../../../domain/examiner-test-slot';
-import { VehicleGearbox } from '../../../../../../common/domain/Schema';
+import { VehicleGearbox, PreviousCancellation } from '../../../../../../common/domain/Schema';
 
 interface TestSlotRow {
   slot_id: number;
@@ -56,7 +56,6 @@ interface TestSlotRow {
   business_addr_line5: string;
   business_post_code: string;
   business_telephone: string;
-  cancel_booking_id: number;
   cancel_initiator: string;
 }
 
@@ -118,9 +117,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
           testCategory: row.vehicle_category,
           vehicleGearbox: row.gearbox_type as VehicleGearbox,
         },
-        // TODO: Include previous cancellations once schema is clarified.
-        // previousCancellation: {
-        // },
+        previousCancellation: (row.cancel_initiator ? row.cancel_initiator.split(',') : []) as PreviousCancellation,
         business: {
           businessId: row.business_id,
           businessName: row.business_name,

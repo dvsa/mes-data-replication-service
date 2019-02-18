@@ -74,7 +74,7 @@ const getQueryForExaminerIdGroup = (idGroup: number[]) => {
     booking_details.business_addr_line3, booking_details.business_addr_line4,
     booking_details.business_addr_line5, booking_details.business_post_code,
     booking_details.business_telephone,
-    booking_details.cancel_booking_id, booking_details.cancel_initiator
+    booking_details.cancel_initiator
 from WORK_SCHEDULE_SLOTS w
     join TEST_CENTRE tc on w.tc_id = tc.tc_id
     join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
@@ -102,7 +102,7 @@ from WORK_SCHEDULE_SLOTS w
 				business_details.address_line_3 as business_addr_line3, business_details.address_line_4 as business_addr_line4,
 				business_details.address_line_5 as business_addr_line5, business_details.post_code as business_post_code,
 				business_details.primary_tel_number as business_telephone,
-				cancellations.cancel_booking_id, cancellations.cancel_initiator
+				cancellations.cancel_initiator
 			from BOOKING  b
 				join APPLICATION a on a.app_id = b.app_id
 				join APPLICATION_RSIS_INFO ari on b.booking_id = ari.booking_id
@@ -126,12 +126,13 @@ from WORK_SCHEDULE_SLOTS w
 							left join CONTACT_DETAILS  bus_cd on bus_cd.organisation_register_id = org_reg.organisation_register_id
 							) business_details on co.booker_type_code in ('B','T') and co.business_id = business_details.business_id
 				left join (
-							select cancelled_bookings.booking_id as cancel_booking_id, cancelled_bookings.app_id,
-									bcr.initiator_code as cancel_initiator
+							select cancelled_bookings.app_id,
+              group_concat(bcr.initiator_code) as cancel_initiator
 							from BOOKING cancelled_bookings
 							join BOOKING_CANCELLATION_REASON bcr
 							on cancelled_bookings.booking_cancel_reason_code = bcr.booking_cancel_reason_code
-							where bcr.initiator_code in ('Act of nature', 'DSA')
+              where bcr.initiator_code in ('Act of nature', 'DSA')
+              group by cancelled_bookings.app_id
 							) cancellations on cancellations.app_id = a.app_id
 			where b.state_code !=2
 			) booking_details on w.slot_id = booking_details.slot_id
