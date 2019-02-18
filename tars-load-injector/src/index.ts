@@ -20,7 +20,7 @@ const run = async () => {
   const activeDate = config.startDate;
   const examinerSubsetCount = 20;
 
-  console.log(`Loading examiners active on ${activeDate}`);
+  console.log(`Loading examiners active on ${activeDate.toDateString()}`);
   const examiners = await getActiveExaminers(connectionPool, activeDate);
   console.log(`Found ${examiners.length} active examiners`);
 

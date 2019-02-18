@@ -147,7 +147,7 @@ export const getBookings = (
       TARSUAT.PROGRAMME_SLOT PS,
       TARSUAT.BOOKING B,
       TARSUAT.APPLICATION A,
-      ITARSUAT.NDIVIDUAL I
+      TARSUAT.INDIVIDUAL I
     WHERE
       TRUNC(P.PROGRAMME_DATE) = :active_date
       AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
