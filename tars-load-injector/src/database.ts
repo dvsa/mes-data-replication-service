@@ -31,6 +31,7 @@ export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: 
       // direct fetch of all rows as objects
       resolve(result.rows);
     },      (err) => {
+      console.error(err);
       reject(err);
     })
     .then(() => {
