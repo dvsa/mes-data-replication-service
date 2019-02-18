@@ -5,7 +5,12 @@ import { transferDatasets } from '../application/transfer-datasets';
 import { bootstrapConfig } from './config/config';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
-  await bootstrapConfig();
-  await transferDatasets();
-  return createResponse({});
+  try {
+    await bootstrapConfig();
+    await transferDatasets();
+    return createResponse({});
+  } catch (error) {
+    console.error(error);
+    return createResponse({}, 500);
+  }
 }
