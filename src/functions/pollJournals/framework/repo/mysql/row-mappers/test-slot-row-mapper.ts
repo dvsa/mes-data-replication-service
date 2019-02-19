@@ -1,9 +1,10 @@
 import { ExaminerTestSlot } from '../../../../domain/examiner-test-slot';
 import { VehicleGearbox, PreviousCancellation } from '../../../../../../common/domain/Schema';
+import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
 interface TestSlotRow {
   slot_id: number;
-  start_time: string;
+  start_time: Date;
   minutes: number;
   vehicle_slot_type: string;
   tc_id: number;
@@ -65,7 +66,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
     testSlot: {
       slotDetail: {
         slotId: row.slot_id,
-        start: row.start_time,
+        start: formatDateToStartTime(row.start_time),
         duration: row.minutes,
       },
       vehicleSlotType: row.vehicle_slot_type,

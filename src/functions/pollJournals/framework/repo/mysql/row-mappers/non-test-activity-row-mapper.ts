@@ -1,9 +1,10 @@
 import { ExaminerNonTestActivity } from '../../../../domain/examiner-non-test-activity';
+import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
 interface NonTestActivityRow {
   individual_id: number;
   slot_id: number;
-  start_time: string;
+  start_time: Date;
   minutes: number;
   non_test_activity_code: string;
   reason_desc: string;
@@ -18,7 +19,7 @@ export const mapRow = (row: NonTestActivityRow): ExaminerNonTestActivity => {
     nonTestActivity: {
       slotDetail: {
         slotId: row.slot_id,
-        start: row.start_time,
+        start: formatDateToStartTime(row.start_time),
         duration: row.minutes,
       },
       activityCode: row.non_test_activity_code,

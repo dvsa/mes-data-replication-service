@@ -5,7 +5,7 @@ describe('TestSlot Row Mapper', () => {
   it('should map a TestSlotRow to an ExaminerTestSlot', () => {
     const result = mapRow({
       slot_id: 1,
-      start_time: '2019-02-12 08:20:00',
+      start_time: new Date('2019-02-12 08:20:00'),
       minutes: 57,
       vehicle_slot_type: 'B57Minutes',
       tc_id: 3,
@@ -128,7 +128,7 @@ describe('TestSlot Row Mapper', () => {
           slotDetail: {
             duration: 57,
             slotId: 1,
-            start: '2019-02-12 08:20:00',
+            start: '2019-02-12T08:20:00+00:00',
           },
           testCentre: {
             centreId: 3,

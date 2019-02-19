@@ -6,7 +6,7 @@ describe('NonTestActivity Row Mapper', () => {
     const result = mapRow({
       individual_id: 1,
       slot_id: 2,
-      start_time: '2019-02-15 08:20:00',
+      start_time: new Date('2019-02-15 08:20:00'),
       minutes: 57,
       non_test_activity_code: 'activitycode',
       reason_desc: 'reason',
@@ -23,7 +23,7 @@ describe('NonTestActivity Row Mapper', () => {
           slotDetail: {
             duration: 57,
             slotId: 2,
-            start: '2019-02-15 08:20:00',
+            start: '2019-02-15T08:20:00+00:00',
           },
           testCentre: {
             centreId: 3,

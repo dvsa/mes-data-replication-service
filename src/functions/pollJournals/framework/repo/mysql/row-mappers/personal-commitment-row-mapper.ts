@@ -1,10 +1,11 @@
 import { ExaminerPersonalCommitment } from '../../../../domain/examiner-personal-commitment';
+import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
 interface PersonalCommitmentRow {
   individual_id: number;
   commitment_id: number;
-  start_date_time: string;
-  end_date_time: string;
+  start_date_time: Date;
+  end_date_time: Date;
   non_test_activity_code: string;
   reason_desc: string;
 }
@@ -15,10 +16,10 @@ export const mapRow = (row: PersonalCommitmentRow): ExaminerPersonalCommitment =
     examinerId: row.individual_id,
     personalCommitment: {
       commitmentId: row.commitment_id,
-      startDate: row.start_date_time,
-      startTime: row.start_date_time,
-      endDate: row.end_date_time,
-      endTime: row.end_date_time,
+      startDate: formatDateToStartTime(row.start_date_time),
+      startTime: formatDateToStartTime(row.start_date_time),
+      endDate: formatDateToStartTime(row.end_date_time),
+      endTime: formatDateToStartTime(row.end_date_time),
       activityCode: row.non_test_activity_code,
       activityDescription: row.reason_desc,
     },

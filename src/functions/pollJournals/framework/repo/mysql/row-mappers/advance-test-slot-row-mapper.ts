@@ -1,9 +1,10 @@
 import { ExaminerAdvanceTestSlot } from '../../../../domain/examiner-advance-test-slot';
+import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
 interface AdvanceTestSlotRow {
   individual_id: number;
   slot_id: number;
-  start_time: string;
+  start_time: Date;
   minutes: number;
   tc_id: number;
   tc_name: string;
@@ -17,7 +18,7 @@ export const mapRow = (row: AdvanceTestSlotRow): ExaminerAdvanceTestSlot => {
     advanceTestSlot: {
       slotDetail: {
         slotId: row.slot_id,
-        start: row.start_time,
+        start: formatDateToStartTime(row.start_time),
         duration: row.minutes,
       },
       testCentre: {

@@ -5,8 +5,8 @@ describe('PersonalCommitment Row Mapper', () => {
     const result = mapRow({
       individual_id: 1,
       commitment_id: 2,
-      start_date_time: '2019-02-12 08:20:00',
-      end_date_time: '2019-02-12 09:20:00',
+      start_date_time: new Date('2019-02-12 08:20:00'),
+      end_date_time: new Date('2019-02-12 09:20:00'),
       non_test_activity_code: 'pcom',
       reason_desc: 'reason',
     });
@@ -17,10 +17,10 @@ describe('PersonalCommitment Row Mapper', () => {
           activityCode: 'pcom',
           activityDescription: 'reason',
           commitmentId: 2,
-          startDate: '2019-02-12 08:20:00',
-          startTime: '2019-02-12 08:20:00',
-          endDate: '2019-02-12 09:20:00',
-          endTime: '2019-02-12 09:20:00',
+          startDate: '2019-02-12T08:20:00+00:00',
+          startTime: '2019-02-12T08:20:00+00:00',
+          endDate: '2019-02-12T09:20:00+00:00',
+          endTime: '2019-02-12T09:20:00+00:00',
         },
       },
     );
