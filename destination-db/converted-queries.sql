@@ -163,15 +163,6 @@ from WORK_SCHEDULE_SLOTS w
 where w.programme_date between '2017-08-03' and '2017-08-06'
 and w.examiner_end_date >= '2017-08-03'
 
--- select advanceTestSlotDataSet
-select w.individual_id, w.slot_id, w.start_time, w.minutes, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code, vst.short_vst_desc
-from WORK_SCHEDULE_SLOTS w
-    join TEST_CENTRE tc on w.tc_id = tc.tc_id
-    join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
-    join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
-where w.programme_date between STR_TO_DATE('07/08/2017', '%d/%m/%Y') and STR_TO_DATE('16/08/2017', '%d/%m/%Y')
-and w.examiner_end_date > STR_TO_DATE('07/08/2017', '%d/%m/%Y')
-
  -- select deploymentDataSet
 select d.deployment_id, e.individual_id, d.tc_id, tcn.tc_name, tc.tc_cost_centre_code, p.programme_date
 from EXAMINER e
