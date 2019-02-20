@@ -29,9 +29,9 @@ const run = async () => {
   console.log(`examinerSubset has ${examinerSubset.length} ids`);
   console.log(`examinerSubset[0] is ${examinerSubset[0]}`);
 
-  for (let i = 0; i++; i < 10) {
-      console.log(`examiner ${i} is individual id ${examinerSubset[i]}`);
-  }
+  examinerSubset.slice(0, 10).forEach((item) => {
+      console.log(`individual id ${item}`);
+  });
 
   const bookings = await getBookings(connectionPool, activeDate, examinerSubset);
   console.log(`Found ${bookings.length} bookings`);
