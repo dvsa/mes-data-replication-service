@@ -6,7 +6,7 @@ import { mapRow } from './row-mappers/personal-commitment-row-mapper';
 
 export const getPersonalCommitments = async (connectionPool: mysql.Pool)
   : Promise<ExaminerPersonalCommitment[]> => {
-  const sqlYearFormat = 'DD/MM/YYYY';
+  const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(13, 'days').format(sqlYearFormat);
 
@@ -19,15 +19,15 @@ export const getPersonalCommitments = async (connectionPool: mysql.Pool)
         join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
         join NON_TEST_ACTIVITY_REASON reason on pc.non_test_activity_code = reason.non_test_activity_code
     where (
-        DATE(pc.start_date_time) between STR_TO_DATE(?, '%d/%m/%Y') and STR_TO_DATE(?, '%d/%m/%Y')
-        or DATE(pc.end_date_time) between STR_TO_DATE(?, '%d/%m/%Y') and STR_TO_DATE(?, '%d/%m/%Y')
+        DATE(pc.start_date_time) between ? and ?
+        or DATE(pc.end_date_time) between ? and ?
     )
     and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
     and exists (
         select end_date 
         from EXAMINER_STATUS es
         where es.individual_id = e.individual_id
-        and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE(?, '%d/%m/%Y')
+        and IFNULL(es.end_date, '4000-01-01') > ?
     )
     `,
     [windowStart, windowEnd, windowStart, windowEnd, windowStart]
