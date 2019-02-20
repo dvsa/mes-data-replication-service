@@ -13,11 +13,11 @@ export const getNonTestActivities = async (connectionPool: mysql.Pool)
     connectionPool,
     `
     select w.individual_id, w.slot_id, w.start_time, w.minutes, w.non_test_activity_code,
-    reason.reason_desc, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code
+        reason.reason_desc, w.tc_id, tcn.tc_name, tc.tc_cost_centre_code
     from WORK_SCHEDULE_SLOTS w
-    join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
-    left join TEST_CENTRE tc on w.tc_id = tc.tc_id
-    left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+        join NON_TEST_ACTIVITY_REASON reason on w.non_test_activity_code = reason.non_test_activity_code
+        left join TEST_CENTRE tc on w.tc_id = tc.tc_id
+        left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     where w.programme_date between ? and ?
     and w.examiner_end_date >= ?
     `,
