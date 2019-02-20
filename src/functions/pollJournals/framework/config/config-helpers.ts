@@ -21,7 +21,7 @@ const tryBootstrapSecretsManager = async () => {
     const secretName = process.env.ASM_SECRET_NAME;
     if (secretName && secretName.trim().length > 0) {
       console.debug(`Fetching secret named ${secretName} from ASM...`);
-      const client = new SecretsManager({ region: 'eu-west-1' });
+      const client = new SecretsManager({ region: process.env.AWS_REGION });
       client.getSecretValue({ SecretId: secretName }, (err, secretsManagerResponse) => {
         if (err || !secretsManagerResponse) {
           console.log(err);
