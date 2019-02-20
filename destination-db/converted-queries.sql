@@ -9,13 +9,6 @@ from WORK_SCHEDULE_SLOTS
 where programme_date between '2017-08-03' and '2017-08-16'
 and examiner_end_date >= '2017-08-03'
 
- -- select examinerDataSet - for a single day
-select e.individual_id, e.staff_number
-from EXAMINER e
-    left join EXAMINER_STATUS es on es.individual_id = e.individual_id
-where IFNULL(e.grade_code, 'ZZZ') <> 'DELE'
-and IFNULL(es.end_date, '4000-01-01') >= '2017-08-03'
-
  -- select testSlotDataSet
 select w.slot_id, w.start_time as start_time, w.minutes as minutes,
     NULLIF(vst.short_vst_desc,'') as vehicle_slot_type, w.tc_id, NULLIF(tc.tc_cost_centre_code,''), NULLIF(tcn.tc_name,''),
