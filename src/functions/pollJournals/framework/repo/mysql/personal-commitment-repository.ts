@@ -6,7 +6,7 @@ import { mapRow } from './row-mappers/personal-commitment-row-mapper';
 
 export const getPersonalCommitments = async (connectionPool: mysql.Pool)
   : Promise<ExaminerPersonalCommitment[]> => {
-  const sqlYearFormat = 'YYYY-MM-DD';
+  const sqlYearFormat = 'DD/MM/YYYY';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(13, 'days').format(sqlYearFormat);
 
