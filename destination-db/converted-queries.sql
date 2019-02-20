@@ -18,15 +18,15 @@ and IFNULL(es.end_date, '4000-01-01') >= '2017-08-03'
 
  -- select testSlotDataSet
 select w.slot_id, w.start_time as start_time, w.minutes as minutes,
-    vst.short_vst_desc as vehicle_slot_type, w.tc_id, tc.tc_cost_centre_code, tcn.tc_name,
+    NULLIF(vst.short_vst_desc,'') as vehicle_slot_type, w.tc_id, NULLIF(tc.tc_cost_centre_code,''), NULLIF(tcn.tc_name,''),
     w.individual_id, w.programme_date,
     booking_details.booking_id,
     booking_details.app_id, booking_details.booking_seq, booking_details.check_digit,
     booking_details.welsh_test_ind, booking_details.ext_req_ind, booking_details.progressive_access,
-    booking_details.meeting_place, booking_details.special_needs, getEntitlementCheckIndicator(booking_details.app_id) as ent_check_ind,
+    NULLIF(booking_details.meeting_place,''), NULLIF(booking_details.special_needs,''), getEntitlementCheckIndicator(booking_details.app_id) as ent_check_ind,
     booking_details.cab_seat_count, booking_details.passenger_seat_count,
     booking_details.height_metres, booking_details.length_metres, booking_details.width_metres,
-    booking_details.vehicle_category,                                                 
+    NULLIF(booking_details.vehicle_category,''),
     case
 		when booking_details.gearbox_code=1 then 'Manual'
 		when booking_details.gearbox_code=2 then 'Automatic'
@@ -34,24 +34,24 @@ select w.slot_id, w.start_time as start_time, w.minutes as minutes,
 		else null
 				end as gearbox_type,
 	booking_details.candidate_id,
-    booking_details.candidate_title, booking_details.candidate_first_name, booking_details.candidate_second_name,
-    booking_details.candidate_third_name, booking_details.candidate_surname, booking_details.candidate_driver_number,
-	case when booking_details.prim_tel_voicemail_ind = 1 then booking_details.primary_tel_number else null end as cand_primary_tel,
-	case when booking_details.sec_tel_voicemail_ind = 1 then booking_details.secondary_tel_number else null end as cand_secondary_tel,
-	case when booking_details.mobile_voicemail_ind = 1 then booking_details.mobile_tel_number else null end as cand_mobile_tel,
-	booking_details.cand_email,
-    booking_details.address_line_1 as candidate_addr_line1, booking_details.address_line_2 as candidate_addr_line2,
-    booking_details.address_line_3 as candidate_addr_line3, booking_details.address_line_4 as candidate_addr_line4,
-    booking_details.address_line_5 as candidate_addr_line5, booking_details.post_code as candidate_post_code,
+    NULLIF(booking_details.candidate_title,''), NULLIF(booking_details.candidate_first_name,''), NULLIF(booking_details.candidate_second_name,''),
+    NULLIF(booking_details.candidate_third_name,''), NULLIF(booking_details.candidate_surname,''), NULLIF(booking_details.candidate_driver_number,''),
+	case when booking_details.prim_tel_voicemail_ind = 1 then NULLIF(booking_details.primary_tel_number,'') else null end as cand_primary_tel,
+	case when booking_details.sec_tel_voicemail_ind = 1 then NULLIF(booking_details.secondary_tel_number,'') else null end as cand_secondary_tel,
+	case when booking_details.mobile_voicemail_ind = 1 then NULLIF(booking_details.mobile_tel_number,'') else null end as cand_mobile_tel,
+	NULLIF(booking_details.cand_email,''),
+    NULLIF(booking_details.address_line_1,'') as candidate_addr_line1, NULLIF(booking_details.address_line_2,'') as candidate_addr_line2,
+    NULLIF(booking_details.address_line_3,'') as candidate_addr_line3, NULLIF(booking_details.address_line_4,'') as candidate_addr_line4,
+    NULLIF(booking_details.address_line_5,'') as candidate_addr_line5, NULLIF(booking_details.post_code,'') as candidate_post_code,
     booking_details.candidate_prn,
     (case when booking_details.candidate_prn is not null
             then getPreviousADIAttempts(booking_details.candidate_id, booking_details.vehicle_category)
         else null end) as prev_attempts,
-    booking_details.business_id, booking_details.business_name,
-    booking_details.business_addr_line1, booking_details.business_addr_line2,
-    booking_details.business_addr_line3, booking_details.business_addr_line4,
-    booking_details.business_addr_line5, booking_details.business_post_code,
-    booking_details.business_telephone,
+    booking_details.business_id, NULLIF(booking_details.business_name,''),
+    NULLIF(booking_details.business_addr_line1,''), NULLIF(booking_details.business_addr_line2,''),
+    NULLIF(booking_details.business_addr_line3,''), NULLIF(booking_details.business_addr_line4,''),
+    NULLIF(booking_details.business_addr_line5,''), NULLIF(booking_details.business_post_code,''),
+    NULLIF(booking_details.business_telephone,''),
     booking_details.cancel_initiator
 from WORK_SCHEDULE_SLOTS w
     join TEST_CENTRE tc on w.tc_id = tc.tc_id
