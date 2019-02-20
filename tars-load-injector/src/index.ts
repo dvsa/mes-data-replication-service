@@ -26,6 +26,11 @@ const run = async () => {
 
   console.log(`Loading bookings for first ${examinerSubsetCount} active examiners`);
   const examinerSubset = getExaminerSubset(examiners, examinerSubsetCount);
+
+  for (let i = 0; i++; i < 10) {
+      console.log(`examiner ${i} is individual id ${examinerSubset[i]}`);
+  }
+
   const bookings = await getBookings(connectionPool, activeDate, examinerSubset);
   console.log(`Found ${bookings.length} bookings`);
 

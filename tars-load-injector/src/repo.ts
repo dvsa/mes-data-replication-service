@@ -149,7 +149,7 @@ export const getBookings = (
       TARSUAT.APPLICATION A,
       TARSUAT.INDIVIDUAL I
     WHERE
-      TRUNC(P.PROGRAMME_DATE) = :active_date
+      TRUNC(P.PROGRAMME_DATE) = :activeDate
       AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
       AND
         (
@@ -190,6 +190,7 @@ const generateInClause = (objects: Object[]): string => {
     // tslint:disable-next-line:prefer-template
     clause += ((i > 0) ? ', ' : '') + ':' + i;
   }
+  console.log(`in clause is ${clause}`);
   return clause;
 };
 
