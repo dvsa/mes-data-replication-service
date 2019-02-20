@@ -26,6 +26,8 @@ const run = async () => {
 
   console.log(`Loading bookings for first ${examinerSubsetCount} active examiners`);
   const examinerSubset = getExaminerSubset(examiners, examinerSubsetCount);
+  console.log(`examinerSubset has ${examinerSubset.length} ids`);
+  console.log(`examinerSubset[0] is ${examinerSubset[0]}`);
 
   for (let i = 0; i++; i < 10) {
       console.log(`examiner ${i} is individual id ${examinerSubset[i]}`);
