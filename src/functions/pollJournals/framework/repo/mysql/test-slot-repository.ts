@@ -135,9 +135,9 @@ const getQueryForExaminerIdGroup = (idGroup: number[]) => {
                ) cancellations on cancellations.app_id = a.app_id
        where b.state_code !=2
        ) booking_details on w.slot_id = booking_details.slot_id
- where w.programme_date between '2019-02-20' and '2019-02-23'
- and w.examiner_end_date >= '2019-02-20'
- and w.slot_id = 66558320
+ where w.programme_date between ? and ?
+ and w.examiner_end_date >= ?
+ and w.individual_id in (${idGroup.join(',')})
  and (w.non_test_activity_code is null or booking_details.slot_id is not null)
  and (booking_details.candidate_id is null or booking_details.candidate_cd_id  = (
                  select max(contact_details_id)
