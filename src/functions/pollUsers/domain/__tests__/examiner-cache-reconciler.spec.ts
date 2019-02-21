@@ -1,7 +1,7 @@
 /* tslint:disable:max-line-length */
 import { reconcileActiveAndCachedExaminers } from '../examiner-cache-reconciler';
 import { Mock, It, Times } from 'typemoq';
-import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cachedExaminerRepository';
+import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cached-examiner-repository';
 
 describe('examiner cache reconciler', () => {
   const moqCacheStaffNumbers = Mock.ofInstance(cachedExaminerRepository.cacheStaffNumbers);

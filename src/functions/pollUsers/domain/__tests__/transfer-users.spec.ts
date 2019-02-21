@@ -1,7 +1,7 @@
 import { Mock, It, Times } from 'typemoq';
-import * as examinerRepository from '../../framework/repo/mysql/examinerRepository';
+import * as examinerRepository from '../../framework/repo/mysql/examiner-repository';
 import { transferUsers } from '../transfer-users';
-import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cachedExaminerRepository';
+import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cached-examiner-repository';
 import * as examinerCacheReconciler from '../examiner-cache-reconciler';
 
 /* tslint:disable:max-line-length */
