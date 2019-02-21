@@ -1,5 +1,5 @@
-import { config } from '../../config';
 import { DynamoDB } from 'aws-sdk';
+import { config } from '../../../../pollUsers/framework/config';
 
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 const getDynamoClient = () => {
@@ -26,6 +26,10 @@ export const getCachedExaminers = async (): Promise<string[]> => {
   return scanResult.Items.map(item => item.staffNumber);
 };
 
-export const updateStaffNumberCache = async (cachedStaffNumbers: string[], uncachedStaffNumbers: string[]) => {
+export const cacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
+
+};
+
+export const uncacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
 
 };

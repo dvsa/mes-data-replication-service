@@ -4,12 +4,15 @@ import { Mock, It, Times } from 'typemoq';
 import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cached-examiner-repository';
 
 describe('examiner cache reconciler', () => {
-  const moqUpdateStaffNumberCache = Mock.ofInstance(cachedExaminerRepository.updateStaffNumberCache);
+  const moqCacheStaffNumbers = Mock.ofInstance(cachedExaminerRepository.cacheStaffNumbers);
+  const moqUncacheStaffNumbers = Mock.ofInstance(cachedExaminerRepository.uncacheStaffNumbers);
 
   beforeEach(() => {
-    moqUpdateStaffNumberCache.reset();
+    moqCacheStaffNumbers.reset();
+    moqUncacheStaffNumbers.reset();
 
-    spyOn(cachedExaminerRepository, 'updateStaffNumberCache').and.callFake(moqUpdateStaffNumberCache.object);
+    spyOn(cachedExaminerRepository, 'cacheStaffNumbers').and.callFake(moqCacheStaffNumbers.object);
+    spyOn(cachedExaminerRepository, 'uncacheStaffNumbers').and.callFake(moqUncacheStaffNumbers.object);
   });
 
   describe('reconcileActiveAndCachedExaminers', () => {
@@ -18,7 +21,8 @@ describe('examiner cache reconciler', () => {
       const cachedStaffNumbers: string[] = [];
       await reconcileActiveAndCachedExaminers(activeStaffNumbers, cachedStaffNumbers);
 
-      moqUpdateStaffNumberCache.verify(x => x(It.isValue(activeStaffNumbers), It.isValue(cachedStaffNumbers)), Times.once());
+      moqCacheStaffNumbers.verify(x => x(It.isValue(activeStaffNumbers)), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue(cachedStaffNumbers)), Times.once());
     });
 
     it('should cache active examiners not already in the cache and uncache those that are cached but not active', async () => {
@@ -26,7 +30,8 @@ describe('examiner cache reconciler', () => {
       const cachedStaffNumbers = ['1', '2', '3'];
       await reconcileActiveAndCachedExaminers(activeStaffNumbers, cachedStaffNumbers);
 
-      moqUpdateStaffNumberCache.verify(x => x(It.isValue([]), It.isValue(['2', '3'])), Times.once());
+      moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue(['2', '3'])), Times.once());
     });
   });
 });
