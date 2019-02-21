@@ -2,7 +2,7 @@ import {
   defaultIfNotPresent,
   throwIfNotPresent,
   tryFetchFromSecretsManager,
-} from './config-helpers';
+} from '../../../../common/framework/config/config-helpers';
 
 export type Config = {
   examinerBatchSize: number;
