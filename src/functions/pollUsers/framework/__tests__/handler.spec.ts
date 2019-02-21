@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { Mock, Times, It } from 'typemoq';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import * as config from '../config';
-import * as transferUsers from '../../domain/transferUsers';
+import * as transferUsers from '../../domain/transfer-users';
 import * as createResponse from '../../../../common/application/utils/createResponse';
 import Response from '../../../../common/application/api/Response';
 import { HttpStatus } from '../../../../common/application/api/HttpStatus';

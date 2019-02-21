@@ -1,8 +1,8 @@
 import { Mock, It, Times } from 'typemoq';
 import * as examinerRepository from '../../framework/repo/mysql/examinerRepository';
-import { transferUsers } from '../transferUsers';
+import { transferUsers } from '../transfer-users';
 import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cachedExaminerRepository';
-import * as examinerCacheReconciler from '../examinerCacheReconciler';
+import * as examinerCacheReconciler from '../examiner-cache-reconciler';
 
 /* tslint:disable:max-line-length */
 describe('transferUsers module', () => {

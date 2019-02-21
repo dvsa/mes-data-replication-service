@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import createResponse from '../../../common/application/utils/createResponse';
 import Response from '../../../common/application/api/Response';
 import { bootstrapConfig } from '../../pollUsers/framework/config';
-import { transferUsers } from '../domain/transferUsers';
+import { transferUsers } from '../domain/transfer-users';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {

@@ -1,6 +1,6 @@
 import { getActiveExaminers } from '../framework/repo/mysql/examinerRepository';
 import { getCachedExaminers } from '../framework/repo/dynamodb/cachedExaminerRepository';
-import { reconcileActiveAndCachedExaminers } from './examinerCacheReconciler';
+import { reconcileActiveAndCachedExaminers } from './examiner-cache-reconciler';
 
 export const transferUsers = async () => {
   const activeStaffNumbers = await getActiveExaminers();
