@@ -28,9 +28,9 @@ export const getCachedExaminers = async (): Promise<string[]> => {
 };
 
 export const cacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
+  console.log(`Caching ${staffNumbers.length} staff numbers...`);
   const ddb = getDynamoClient();
   const tableName = config().usersDynamodbTableName;
-  console.log(`caching ${staffNumbers.length} staff numbers`);
 
   const maxBatchWriteRequests = 25;
   const staffNumberWriteBatches = chunk(staffNumbers, maxBatchWriteRequests);
@@ -53,5 +53,19 @@ export const cacheStaffNumbers = async (staffNumbers: string[]): Promise<void> =
 };
 
 export const uncacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
+  console.log(`Uncaching ${staffNumbers.length} staff numbers...`);
+  const ddb = getDynamoClient();
+  const tableName = config().usersDynamodbTableName;
 
+  const deletePromises = staffNumbers.map((staffNumber) => {
+    const deleteParams = {
+      TableName: tableName,
+      Key: {
+        staffNumber,
+      },
+    };
+    return ddb.delete(deleteParams).promise();
+  });
+
+  await Promise.all(deletePromises);
 };
