@@ -1,8 +1,8 @@
 import * as mysql from 'mysql';
-import { query } from '../database';
 import { ExaminerDeployment } from '../../../domain/examiner-deployment';
 import * as moment from 'moment';
 import { mapRow } from './row-mappers/deployment-row-mapper';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getDeployments = async (connectionPool: mysql.Pool): Promise<ExaminerDeployment[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';

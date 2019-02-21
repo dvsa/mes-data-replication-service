@@ -1,8 +1,8 @@
 import * as mysql from 'mysql';
-import { query } from '../database';
 import { ExaminerNonTestActivity } from '../../../domain/examiner-non-test-activity';
 import * as moment from 'moment';
 import { mapRow } from './row-mappers/non-test-activity-row-mapper';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getNonTestActivities = async (connectionPool: mysql.Pool)
   : Promise<ExaminerNonTestActivity[]> => {

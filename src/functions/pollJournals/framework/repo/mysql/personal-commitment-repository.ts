@@ -1,8 +1,8 @@
 import * as mysql from 'mysql';
-import { query } from '../database';
 import { ExaminerPersonalCommitment } from '../../../domain/examiner-personal-commitment';
 import * as moment from 'moment';
 import { mapRow } from './row-mappers/personal-commitment-row-mapper';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getPersonalCommitments = async (connectionPool: mysql.Pool)
   : Promise<ExaminerPersonalCommitment[]> => {
