@@ -40,7 +40,7 @@ const run = async () => {
 
   ticks.subscribe((_) => {
     changeApplicationDataset(connectionPool, bookings);
-    //changeOtherDataset(connectionPool, examiners, activeDate);
+    changeOtherDataset(connectionPool, personalCommitments);
     changeSlotDataset(connectionPool, bookings);
     changeSlotDetailDataset(connectionPool, bookings);
   });

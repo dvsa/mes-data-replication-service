@@ -9,12 +9,12 @@ export const changeApplicationDataset = async (connPool: IConnectionPool, bookin
   return repo.changeSpecialNeedsText(connPool, applicationIdToChange, newSpecialNeedsText);
 };
 
-export const changeOtherDataset = async (connPool: IConnectionPool, examiners: Object[], activeDate: Date) => {
-  const examinerIdToChange = examiners[Math.floor(Math.random() * examiners.length)]['INDIVIDUAL_ID'];
+export const changeOtherDataset = async (connPool: IConnectionPool, personalCommitments: Object[]) => {
+  const commitmentIdToChange = personalCommitments[Math.floor(Math.random() * personalCommitments.length)]['COMMITMENT_ID'];
   const newActivityCode = `0${Math.floor(Math.random() * 99 + 1)}`;
   // tslint:disable-next-line:max-line-length
-  logChange('OTHER', 'PERSONAL_COMMITMENT', 'NON_TEST_ACTIVITY_CODE', 'INDIVIDUAL_ID', examinerIdToChange, newActivityCode);
-  return repo.changePersonalCommitmentActivityCode(connPool, examinerIdToChange, activeDate, newActivityCode);
+  logChange('OTHER', 'PERSONAL_COMMITMENT', 'NON_TEST_ACTIVITY_CODE', 'COMMITMENT_ID', commitmentIdToChange, newActivityCode);
+  return repo.changePersonalCommitmentActivityCode(connPool, commitmentIdToChange, newActivityCode);
 };
 
 export const changeSlotDataset = async (connPool: IConnectionPool, bookings: Object[]) => {

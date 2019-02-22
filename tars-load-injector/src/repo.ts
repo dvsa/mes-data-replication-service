@@ -23,8 +23,7 @@ export const changeSpecialNeedsText = async (
 
 export const changePersonalCommitmentActivityCode = async (
   connPool: IConnectionPool,
-  examinerId: number,
-  startDate: Date,
+  commitmentId: number,
   activityCode: string,
 ) => {
   return update(
@@ -35,23 +34,12 @@ export const changePersonalCommitmentActivityCode = async (
     SET
       NON_TEST_ACTIVITY_CODE = :activityCode
     WHERE
-      COMMITMENT_ID =
-        (
-          SELECT
-            COMMITMENT_ID
-          FROM TARSUAT.PERSONAL_COMMITMENT
-          WHERE
-            INDIVIDUAL_ID = :examinerId
-            AND START_DATE_TIME > :startDate
-          ORDER BY START_DATE_TIME
-          OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
-        )
+      COMMITMENT_ID = :commitmentId
     `,
     1,
     {
       activityCode,
-      examinerId,
-      startDate,
+      commitmentId
     },
   );
 };
