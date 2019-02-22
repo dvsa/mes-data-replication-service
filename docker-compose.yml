@@ -1,0 +1,13 @@
+version: '2'
+services:
+  data-replication-service-e2e-mysql:
+    image: mysql:5.7
+    container_name: data-replication-service-mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: Pa55word1
+  data-replication-service-e2e-migration:
+    build: .
+    depends_on:
+      - data-replication-service-e2e-mysql

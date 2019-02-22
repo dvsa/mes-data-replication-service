@@ -1,13 +1,20 @@
-import { DynamoDB } from 'aws-sdk';
+import { config as awsConfig, Credentials, DynamoDB } from 'aws-sdk';
 import { config } from '../../../../pollUsers/framework/config';
 import { chunk } from 'lodash';
 
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 const getDynamoClient = () => {
   if (!dynamoDocumentClient) {
-    dynamoDocumentClient = config().isOffline
-      ? new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000' })
-      : new DynamoDB.DocumentClient();
+    if (config().isOffline) {
+      const localRegion = 'localhost';
+      awsConfig.update({
+        region: localRegion,
+        credentials: new Credentials('akid', 'secret', 'session'),
+      });
+      dynamoDocumentClient = new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000', region: localRegion });
+    } else {
+      dynamoDocumentClient = new DynamoDB.DocumentClient();
+    }
   }
   return dynamoDocumentClient;
 };
