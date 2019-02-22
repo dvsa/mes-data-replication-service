@@ -199,7 +199,7 @@ export const getPersonalCommitments = (
     FROM
       TARSUAT.PERSONAL_COMMITMENT PC
     WHERE
-      :activeDate BETWEEN (PC.START_DATE_TIME, PC.END_DATE_TIME)
+      :activeDate BETWEEN PC.START_DATE_TIME AND PC.END_DATE_TIME
     `,
     {
       activeDate,
