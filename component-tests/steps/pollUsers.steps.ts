@@ -21,7 +21,7 @@ BeforeAll((done) => {
         host: 'localhost',
         database: 'tarsreplica',
         user: 'root',
-        password: 'mypassword',
+        password: 'Pa55word1',
       });
       // @ts-ignore
       done();
