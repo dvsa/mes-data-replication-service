@@ -231,8 +231,8 @@ export const getBookings = (
       AND B.STATE_CODE != 2
       AND A.APP_ID = B.APP_ID
       AND I.INDIVIDUAL_ID = A.INDIVIDUAL_ID
-    `,
-    [activeDate],
+    `//,
+    //[activeDate],
   );
 };
 
