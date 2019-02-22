@@ -32,7 +32,6 @@ export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: 
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
       // direct fetch of all rows as objects
-      console.log(`Statement returned ${result.rows.length} rows`);
       resolve(result.rows);
     },      (err) => {
       console.error(err);
