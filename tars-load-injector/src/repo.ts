@@ -132,6 +132,9 @@ export const getBookings = (
   activeDate: Date,
   individualIds: number[],
 ): Promise<Object[]> => {
+  let params: any[] = ([activeDate] as any[]).concat(individualIds);
+  console.log(`input params are ${params}`);
+
   return query(
     connPool,
     `
