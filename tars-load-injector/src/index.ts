@@ -39,10 +39,12 @@ const run = async () => {
   const ticks = interval(changeInterval);
 
   ticks.subscribe((_) => {
+    console.log('**');
     changeApplicationDataset(connectionPool, bookings);
     changeOtherDataset(connectionPool, personalCommitments);
     changeSlotDataset(connectionPool, bookings);
     changeSlotDetailDataset(connectionPool, bookings);
+    console.log('**');
   });
 };
 
