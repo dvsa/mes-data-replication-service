@@ -6,7 +6,5 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-ADD destination-db/schema.sql schema.sql
-
 CMD dockerize -wait tcp://mes-data-replication-service-e2e-mysql:3306 -timeout 60m \
-    mysql -u root -pPa55word1 -h mes-data-replication-service-e2e-mysql < schema.sql
+    mysql -u root -pPa55word1 -h mes-data-replication-service-e2e-mysql < /schema.sql

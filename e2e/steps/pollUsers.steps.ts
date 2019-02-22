@@ -12,8 +12,10 @@ setDefaultTimeout(60 * 1000);
 
 let mysqlConn: mysql.Connection;
 let ddb: DynamoDB.DocumentClient;
+const composeDirRelativeToProjectRoot = 'e2e';
+
 BeforeAll((done) => {
-  compose.upAll({ cwd: '.' }).then(() => {
+  compose.upAll({ cwd: composeDirRelativeToProjectRoot, log: true }).then(() => {
     process.env.NODE_ENV = 'e2e';
     startSlsOffline(() => {
       ddb = new DynamoDB.DocumentClient({ endpoint: 'localhost:8000', region: 'localhost', sslEnabled: false });
@@ -32,7 +34,7 @@ BeforeAll((done) => {
 AfterAll(() => {
   mysqlConn.end();
   stopSlsOffline();
-  return compose.down({ cwd: '.' });
+  return compose.down({ cwd: composeDirRelativeToProjectRoot });
 });
 
 After(() => {

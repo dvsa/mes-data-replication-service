@@ -10,5 +10,7 @@ services:
   mes-data-replication-service-e2e-migration:
     build: .
     container_name: mes-data-replication-service-e2e-migration
+    volumes:
+      - ../destination-db/schema.sql:/schema.sql
     depends_on:
       - mes-data-replication-service-e2e-mysql
