@@ -65,7 +65,7 @@ const run = async () => {
 
 const logTransactions = (acc: number, index: number): number => {
   console.log(`acc ${acc} index ${index}, new txs in last 30 secs ${index - acc}`);  
-  return acc + index;
+  return index;
 } 
 
 const updateDatasets = (data: updateData, index: number): updateData => {
