@@ -64,7 +64,7 @@ const run = async () => {
 };
 
 const logTransactions = (acc: number, index: number): number => {
-  console.log(`acc ${acc} index ${index}`);  
+  console.log(`acc ${acc} index ${index}, new txs in last 30 secs ${index - acc}`);  
   return acc + index;
 } 
 
@@ -74,7 +74,7 @@ const updateDatasets = (data: updateData, index: number): updateData => {
   changeSlotDataset(data.connectionPool, data.bookings);
   changeSlotDetailDataset(data.connectionPool, data.bookings);
   data.count += 1;
-
+  console.log(`total txs ${data.count}`);
   return data;
 }
 
