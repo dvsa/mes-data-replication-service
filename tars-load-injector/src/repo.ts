@@ -149,8 +149,8 @@ export const getBookings = (
       TARSUAT.APPLICATION A,
       TARSUAT.INDIVIDUAL I
     WHERE
-      TRUNC(P.PROGRAMME_DATE) = :activeDate
-      AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
+      TRUNC(P.PROGRAMME_DATE) = :0
+      AND P.INDIVIDUAL_ID IN (${generateInClause(1, individualIds)})
       AND
         (
           P.STATE_CODE NOT IN (2, 3)
@@ -183,12 +183,27 @@ export const getBookings = (
   );
 };
 
-const generateInClause = (objects: Object[]): string => {
+/**
+ * Generates a SQL "IN" clause with numbered parameter bindings for the specified array.
+ * 
+ * @example
+ * // returns ':0,:1,:2'
+ * generateInClause(0, [51, 52, 53]);
+ * 
+ * @example
+ * // returns ':1,:2,:3'
+ * generateInClause(1, [51, 52, 53]);
+ * 
+ * @param initialBinding The index of the initial binding. 
+ * @param objects The array of parameters.
+ * @returns The SQL "IN" clause.
+ */
+const generateInClause = (initialBinding: number, objects: Object[]): string => {
   const length = (objects == null) ? 0 : objects.length;
   let clause = '';
   for (let i = 0; i < length; i += 1) {
     // tslint:disable-next-line:prefer-template
-    clause += ((i > 0) ? ', ' : '') + ':' + i;
+    clause += ((i > 0) ? ', ' : '') + ':' + (i + initialBinding);
   }
   console.log(`in clause is ${clause}`);
   return clause;
