@@ -202,7 +202,7 @@ export const getBookings = (
       TARSUAT.APPLICATION A,
       TARSUAT.INDIVIDUAL I
     WHERE
-      TRUNC(P.PROGRAMME_DATE) = TRUNC(:0)
+      TRUNC(P.PROGRAMME_DATE) = TO_DATE('02-08-2017','dd-mm-yyyy')
       AND P.INDIVIDUAL_ID IN (${individualIds})
       AND
         (
