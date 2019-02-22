@@ -135,7 +135,7 @@ export const getBookings = (
   let params: any[] = ([activeDate] as any[]).concat(individualIds);
   console.log(`input params are ${params}`);
 
-  return query(
+  /*return query(
     connPool,
     `
     SELECT
@@ -183,6 +183,56 @@ export const getBookings = (
       AND I.INDIVIDUAL_ID = A.INDIVIDUAL_ID
     `,
     ([activeDate] as any[]).concat(individualIds),
+  );*/
+
+  return query(
+    connPool,
+    `
+    SELECT
+      PS.SLOT_ID,
+      A.APP_ID,
+      I.INDIVIDUAL_ID,
+      I.DRIVER_NUMBER,
+      I.FIRST_FORENAME,
+      I.FAMILY_NAME
+    FROM
+      TARSUAT.PROGRAMME P,
+      TARSUAT.PROGRAMME_SLOT PS,
+      TARSUAT.BOOKING B,
+      TARSUAT.APPLICATION A,
+      TARSUAT.INDIVIDUAL I
+    WHERE
+      TRUNC(P.PROGRAMME_DATE) = TRUNC(:0)
+      AND P.INDIVIDUAL_ID IN (${individualIds})
+      AND
+        (
+          P.STATE_CODE NOT IN (2, 3)
+          OR EXISTS
+            (
+              SELECT
+                BOOK.BOOKING_ID
+              FROM
+                TARSUAT.BOOKING BOOK,
+                TARSUAT.PROGRAMME_SLOT SLOT
+              WHERE
+                SLOT.SLOT_ID = BOOK.SLOT_ID
+                AND TRUNC(SLOT.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
+                AND SLOT.INDIVIDUAL_ID = P.INDIVIDUAL_ID
+                AND SLOT.TC_ID = P.TC_ID
+                AND BOOK.STATE_CODE = 1
+            )
+        )
+      AND TRUNC(PS.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
+      AND PS.INDIVIDUAL_ID = P.INDIVIDUAL_ID
+      AND PS.TC_ID = P.TC_ID
+      AND PS.TC_CLOSED_IND != 1
+      AND NVL(PS.DEPLOYED_TO_FROM_CODE, 0) != 1
+      AND B.SLOT_ID = PS.SLOT_ID
+      AND B.STATE_CODE != 2
+      AND A.APP_ID = B.APP_ID
+      AND I.INDIVIDUAL_ID = A.INDIVIDUAL_ID
+    `,
+    [activeDate],
   );
 };
 
