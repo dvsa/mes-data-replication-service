@@ -55,6 +55,7 @@ const run = async () => {
 
   // rate (in milliseconds) to log progress to the console
   const logInterval = 30000;
+  console.log(`Logging progress every ${logInterval/1000} seconds`);
 
   const ticks$ = interval(changeInterval).pipe(
     scan(updateDatasets, {connectionPool, bookings, personalCommitments, count: 0}),
@@ -64,12 +65,11 @@ const run = async () => {
   );
 
   ticks$.subscribe((x: transactionCounter) => {
-    console.log(`${x.newTransactions} db updates made in the last 30 seconds`);
+    console.log(`${x.newTransactions} sets of db updates made in the last ${logInterval/1000} seconds`);
   });
 };
 
 const logTransactions = (acc: transactionCounter, newTotal: number): transactionCounter => {
-  console.log(`acc.newTransactions: ${acc.newTransactions} acc.previousTotal: ${acc.previousTotal} newTotal: ${newTotal}`);  
   return {previousTotal: newTotal, newTransactions: newTotal - acc.previousTotal};
 } 
 
@@ -79,7 +79,6 @@ const updateDatasets = (data: updateData, index: number): updateData => {
   changeSlotDataset(data.connectionPool, data.bookings);
   changeSlotDetailDataset(data.connectionPool, data.bookings);
   data.count += 1;
-  console.log(`total txs ${data.count}`);
   return data;
 }
 
