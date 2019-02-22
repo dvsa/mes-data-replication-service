@@ -1,5 +1,5 @@
 import { interval } from 'rxjs';
-import { sampleTime, scan } from 'rxjs/operators';
+import { map, sampleTime, scan } from 'rxjs/operators';
 import { Config, getConfig } from './config';
 import { createConnectionPool } from './database';
 import {
@@ -15,6 +15,7 @@ import {
   getPersonalCommitments
 } from './repo';
 import oracledb = require('oracledb');
+import { X_OK } from 'constants';
 
 export interface updateData {
   connectionPool: oracledb.IConnectionPool;
@@ -50,32 +51,29 @@ const run = async () => {
   // rate (in milliseconds) to log progress to the console
   const logInterval = 30000;
 
-  const ticks = interval(changeInterval).pipe(
+  const ticks$ = interval(changeInterval).pipe(
     scan(updateDatasets, {connectionPool, bookings, personalCommitments, count: 0}),
-    sampleTime(logInterval)  
+    sampleTime(logInterval),
+    map(x => x.count),
+    scan(logTransactions, 0),  
   );
 
-  ticks.subscribe((data: updateData) => {
-    console.log(`${data.count} db updates made...`);
+  ticks$.subscribe(_ => {
+    //console.log(`${data.count} db updates made...`);
   });
-  /*ticks.subscribe((_) => {
-    console.log('**');
-    changeApplicationDataset(connectionPool, bookings);
-    changeOtherDataset(connectionPool, personalCommitments);
-    changeSlotDataset(connectionPool, bookings);
-    changeSlotDetailDataset(connectionPool, bookings);
-    console.log('**');
-  });*/
 };
 
+const logTransactions = (acc: number, index: number): number => {
+  console.log(`acc ${acc} index ${index}`);  
+  return acc + index;
+} 
+
 const updateDatasets = (data: updateData, index: number): updateData => {
-  console.log('**');
   changeApplicationDataset(data.connectionPool, data.bookings);
   changeOtherDataset(data.connectionPool, data.personalCommitments);
   changeSlotDataset(data.connectionPool, data.bookings);
   changeSlotDetailDataset(data.connectionPool, data.bookings);
-  console.log('**');
-  data.count += 4;
+  data.count += 1;
 
   return data;
 }
