@@ -42,6 +42,9 @@ After(() => {
   ]);
 });
 
+Given('there is no examiner in the TARS replica with staffNumber {string}', (staffNumber: string) => {
+});
+
 Given('there is no examiner in the cache with staffNumber {string}', (staffNumber: string) => {
 });
 
