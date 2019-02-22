@@ -2,7 +2,7 @@ import { IConnectionPool, createPool, OBJECT, IConnection } from 'oracledb';
 import { Config } from './config';
 
 // Set to true to trace all database calls and results.
-const showTrace = true;
+const showTrace = false;
 
 export const createConnectionPool = async (config: Config): Promise<IConnectionPool> => {
   try {

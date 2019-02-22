@@ -27,10 +27,10 @@ const run = async () => {
 
   console.log(`Loading bookings for first ${examinerSubsetCount} active examiners`);
   const examinerSubset = getExaminerSubset(examiners, examinerSubsetCount);
-
   const bookings = await getBookings(connectionPool, activeDate, examinerSubset);
   console.log(`Found ${bookings.length} bookings`);
 
+  console.log(`Loading personal commitments on ${activeDate.toDateString()}`);
   const personalCommitments = await getPersonalCommitments(connectionPool, activeDate);
   console.log(`Found ${personalCommitments.length} personal commitments`);
 
