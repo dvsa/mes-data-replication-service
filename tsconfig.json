@@ -17,7 +17,7 @@
   "include": [
     "./src/**/*",
     "./spec/**/*",
-    "./component-tests/**/*"
+    "./e2e/**/*"
   ],
   "exclude": [
     "node_modules"

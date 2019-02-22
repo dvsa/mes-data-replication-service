@@ -54,7 +54,7 @@
   "scripts": {
     "clean": "rimraf build artefacts",
     "compile": "tsc",
-    "comp-test": "cucumber-js component-tests/ --require build/component-tests/**/*.js",
+    "e2e": "cucumber-js e2e/ --require build/e2e/**/*.js",
     "bootstrap": "json2ts schema/exampleSchema.json > src/common/domain/Schema.d.ts",
     "lint": "tslint --project tslint.json",
     "package": "./package.sh",
