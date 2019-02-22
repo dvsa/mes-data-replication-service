@@ -1,18 +1,19 @@
 import { IConnectionPool } from 'oracledb';
-import { query } from './database';
+import { query, update } from './database';
 
 export const changeSpecialNeedsText = async (
   connPool: IConnectionPool,
   applicationId: number,
   specialNeedsText: string,
 ) => {
-  return query(
+  return update(
     connPool,
     `
     UPDATE TARSUAT.APPLICATION
     SET SPECIAL_NEEDS_TEXT = :specialNeedsText
     WHERE APP_ID = :applicationId
     `,
+    1,
     {
       specialNeedsText,
       applicationId,
@@ -26,7 +27,7 @@ export const changePersonalCommitmentActivityCode = async (
   startDate: Date,
   activityCode: string,
 ) => {
-  return query(
+  return update(
     connPool,
     `
     UPDATE
@@ -46,6 +47,7 @@ export const changePersonalCommitmentActivityCode = async (
           OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
         )
     `,
+    1,
     {
       activityCode,
       examinerId,
@@ -59,13 +61,14 @@ export const changeSlotNonTestActivityCode = async (
   slotId: number,
   nonTestActivityCode: number,
 ) => {
-  return query(
+  return update(
     connPool,
     `
     UPDATE TARSUAT.PROGRAMME_SLOT
     SET NON_TEST_ACTIVITY_CODE = :nonTestActivityCode
     WHERE SLOT_ID = :slotId
     `,
+    1,
     {
       nonTestActivityCode,
       slotId,
@@ -78,13 +81,14 @@ export const changeTelephoneNumber = async (
   individualId: number,
   telephoneNumber: string,
 ) => {
-  return query(
+  return update(
     connPool,
     `
     UPDATE TARSUAT.CONTACT_DETAILS
     SET MOBILE_TEL_NUMBER = :telephoneNumber
     WHERE INDIVIDUAL_ID = :individualId
     `,
+    1,
     {
       telephoneNumber,
       individualId,
