@@ -11,6 +11,9 @@
 -- check constraints are ignored by MySQL (have to use triggers)
 -- foreign keys dropped to allow DMS
 
+CREATE DATABASE tarsreplica;
+USE tarsreplica;
+
 --
 -- START: examiner tables
 --
@@ -477,7 +480,7 @@ CREATE TABLE APPLICATION_RSIS_INFO
 (	APP_ID BIGINT NOT NULL,
 	BOOKING_SEQ TINYINT NOT NULL,
 	CHECK_DIGIT TINYINT NOT NULL,
-	BOOKING_ID BIGINT NOT NULL
+	BOOKING_ID BIGINT NOT NULL,
 -- 	SENT_FOR_SCANNING BIT NULL,
 	CONSTRAINT ARI_BK_ID_PK PRIMARY KEY (APP_ID, BOOKING_SEQ)
 );
