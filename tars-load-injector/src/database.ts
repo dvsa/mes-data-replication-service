@@ -1,6 +1,9 @@
 import { IConnectionPool, createPool, OBJECT, IConnection } from 'oracledb';
 import { Config } from './config';
 
+// Set to true to trace all database calls and results.
+const showTrace = true;
+
 export const createConnectionPool = async (config: Config): Promise<IConnectionPool> => {
   try {
     return await createPool({
@@ -26,17 +29,13 @@ export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: 
     connPool.getConnection().then((connection) => {
       conn = connection;
 
-      console.log(`Executing query: \n***\n${sqlQuery}\n***`);
+      trace(`Executing query: \n***\n${sqlQuery}\n***`);
 
       // return each row as an object rather than an array
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
 
-      console.log(`${result.rows.length} rows returned`);
-
-      if (result.rowsAffected) {
-          console.log(`${result.rowsAffected} rows updated`)
-      }
+      trace(`${result.rows.length} rows returned`);
 
       // direct fetch of all rows as objects
       resolve(result.rows);
@@ -69,14 +68,14 @@ export function update(connPool: IConnectionPool, sqlQuery: string, expectedRows
     connPool.getConnection().then((connection) => {
       conn = connection;
 
-      console.log(`Executing update: \n***\n${sqlQuery}\n***`);
+      trace(`Executing update: \n***\n${sqlQuery}\n***`);
 
       // return each row as an object rather than an array
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
         
-      console.log(`${result.rowsAffected} rows updated`);
-      
+      trace(`${result.rowsAffected} rows updated`);
+
       if (result.rowsAffected != expectedRows) {
           let err = `Expected ${expectedRows} rows to be updated, but got ${result.rowsAffected}`;
           console.error(err);
@@ -98,4 +97,10 @@ export function update(connPool: IConnectionPool, sqlQuery: string, expectedRows
       console.error('error closing connection: %s', err.message);
     });
   });
+}
+
+const trace = (message: string) => {
+    if (showTrace) {
+        console.log(message);
+    }
 }

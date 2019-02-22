@@ -187,6 +187,26 @@ export const getBookings = (
   );
 };
 
+export const getPersonalCommitments = (
+  connPool: IConnectionPool,
+  activeDate: Date,
+): Promise<Object[]> => {
+  return query(
+    connPool,
+    `
+    SELECT
+      PC.COMMITMENT_ID
+    FROM
+      TARSUAT.PERSONAL_COMMITMENT PC
+    WHERE
+      :activeDate BETWEEN (PC.START_DATE_TIME, PC.END_DATE_TIME)
+    `,
+    {
+      activeDate,
+    },
+  );
+};
+
 /**
  * Generates a SQL "IN" clause with numbered parameter bindings for the specified array,
  * starting from the initial binding index.

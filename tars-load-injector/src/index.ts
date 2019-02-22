@@ -11,6 +11,7 @@ import {
   getActiveExaminers,
   getExaminerSubset,
   getBookings,
+  getPersonalCommitments
 } from './repo';
 
 const run = async () => {
@@ -30,13 +31,16 @@ const run = async () => {
   const bookings = await getBookings(connectionPool, activeDate, examinerSubset);
   console.log(`Found ${bookings.length} bookings`);
 
+  const personalCommitments = await getPersonalCommitments(connectionPool, activeDate);
+  console.log(`Found ${personalCommitments.length} personal commitments`);
+
   const changeInterval = 60000 / config.changesPerMinute;
   console.log(`Making a change every ${changeInterval}ms`);
   const ticks = interval(changeInterval);
 
   ticks.subscribe((_) => {
     changeApplicationDataset(connectionPool, bookings);
-    changeOtherDataset(connectionPool, examiners, activeDate);
+    //changeOtherDataset(connectionPool, examiners, activeDate);
     changeSlotDataset(connectionPool, bookings);
     changeSlotDetailDataset(connectionPool, bookings);
   });
