@@ -26,12 +26,6 @@ const run = async () => {
 
   console.log(`Loading bookings for first ${examinerSubsetCount} active examiners`);
   const examinerSubset = getExaminerSubset(examiners, examinerSubsetCount);
-  console.log(`examinerSubset has ${examinerSubset.length} ids`);
-  console.log(`examinerSubset[0] is ${examinerSubset[0]}`);
-
-  examinerSubset.slice(0, 10).forEach((item) => {
-      console.log(`individual id ${item}`);
-  });
 
   const bookings = await getBookings(connectionPool, activeDate, examinerSubset);
   console.log(`Found ${bookings.length} bookings`);

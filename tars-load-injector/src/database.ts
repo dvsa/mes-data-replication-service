@@ -31,6 +31,15 @@ export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: 
       // return each row as an object rather than an array
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
+
+      if (result.rows) {
+          console.log(`${result.rows.length} rows returned`)
+      }
+
+      if (result.rowsAffected) {
+          console.log(`${result.rowsAffected} rows updated`)
+      }
+
       // direct fetch of all rows as objects
       resolve(result.rows);
     },      (err) => {

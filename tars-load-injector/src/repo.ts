@@ -184,7 +184,8 @@ export const getBookings = (
 };
 
 /**
- * Generates a SQL "IN" clause with numbered parameter bindings for the specified array.
+ * Generates a SQL "IN" clause with numbered parameter bindings for the specified array,
+ * starting from the initial binding index.
  * 
  * @example
  * // returns ':0,:1,:2'
@@ -196,7 +197,7 @@ export const getBookings = (
  * 
  * @param initialBinding The index of the initial binding. 
  * @param objects The array of parameters.
- * @returns The SQL "IN" clause.
+ * @returns The comma-delimited list of parameter bindings.
  */
 const generateInClause = (initialBinding: number, objects: Object[]): string => {
   const length = (objects == null) ? 0 : objects.length;
