@@ -135,7 +135,7 @@ export const getBookings = (
   let params: any[] = ([activeDate] as any[]).concat(individualIds);
   console.log(`input params are ${params}`);
 
-  /*return query(
+  return query(
     connPool,
     `
     SELECT
@@ -183,9 +183,9 @@ export const getBookings = (
       AND I.INDIVIDUAL_ID = A.INDIVIDUAL_ID
     `,
     ([activeDate] as any[]).concat(individualIds),
-  );*/
+  );
 
-  return query(
+  /*return query(
     connPool,
     `
     SELECT
@@ -233,7 +233,7 @@ export const getBookings = (
       AND I.INDIVIDUAL_ID = A.INDIVIDUAL_ID
     `,
     [activeDate],
-  );
+  );*/
 };
 
 /**
