@@ -8,4 +8,5 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 ADD destination-db/schema.sql schema.sql
 
-CMD dockerize -wait tcp://mysql:3306 -timeout 60m mysql -u root -pPa55word1 -h mysql < schema.sql
+CMD dockerize -wait tcp://mes-data-replication-service-e2e-mysql:3306 -timeout 60m \
+    mysql -u root -pPa55word1 -h mes-data-replication-service-e2e-mysql < schema.sql
