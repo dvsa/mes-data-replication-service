@@ -65,7 +65,7 @@ const run = async () => {
   );
 
   ticks$.subscribe((x: transactionCounter) => {
-    console.log(`${x.newTransactions} sets of db updates made in the last ${logInterval/1000} seconds`);
+    console.log(`${x.newTransactions} sets of db updates made in the last ${logInterval/1000} seconds...`);
   });
 };
 
