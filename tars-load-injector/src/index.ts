@@ -1,4 +1,5 @@
 import { interval } from 'rxjs';
+import { sampleTime, scan } from 'rxjs/operators';
 import { Config, getConfig } from './config';
 import { createConnectionPool } from './database';
 import {
@@ -13,6 +14,14 @@ import {
   getBookings,
   getPersonalCommitments
 } from './repo';
+import oracledb = require('oracledb');
+
+export interface updateData {
+  connectionPool: oracledb.IConnectionPool;
+  bookings: any[];
+  personalCommitments: any[];  
+  count: number;
+}
 
 const run = async () => {
   const config: Config = getConfig();
@@ -34,18 +43,41 @@ const run = async () => {
   const personalCommitments = await getPersonalCommitments(connectionPool, activeDate);
   console.log(`Found ${personalCommitments.length} personal commitments`);
 
+  // rate (in milliseconds) to make database updates
   const changeInterval = 60000 / config.changesPerMinute;
   console.log(`Making a change every ${changeInterval}ms`);
-  const ticks = interval(changeInterval);
 
-  ticks.subscribe((_) => {
+  // rate (in milliseconds) to log progress to the console
+  const logInterval = 30000;
+
+  const ticks = interval(changeInterval).pipe(
+    scan(updateDatasets, {connectionPool, bookings, personalCommitments, count: 0}),
+    sampleTime(logInterval)  
+  );
+
+  ticks.subscribe((data: updateData) => {
+    console.log(`${data.count} db updates made...`);
+  });
+  /*ticks.subscribe((_) => {
     console.log('**');
     changeApplicationDataset(connectionPool, bookings);
     changeOtherDataset(connectionPool, personalCommitments);
     changeSlotDataset(connectionPool, bookings);
     changeSlotDetailDataset(connectionPool, bookings);
     console.log('**');
-  });
+  });*/
 };
+
+const updateDatasets = (data: updateData, index: number): updateData => {
+  console.log('**');
+  changeApplicationDataset(data.connectionPool, data.bookings);
+  changeOtherDataset(data.connectionPool, data.personalCommitments);
+  changeSlotDataset(data.connectionPool, data.bookings);
+  changeSlotDetailDataset(data.connectionPool, data.bookings);
+  console.log('**');
+  data.count += 4;
+
+  return data;
+}
 
 run();
