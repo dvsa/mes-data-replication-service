@@ -24,6 +24,11 @@ export interface updateData {
   count: number;
 }
 
+export interface transactionCounter {
+  previousTotal: number;
+  newTransactions: number;  
+}
+
 const run = async () => {
   const config: Config = getConfig();
   const connectionPool = await createConnectionPool(config);
@@ -55,17 +60,17 @@ const run = async () => {
     scan(updateDatasets, {connectionPool, bookings, personalCommitments, count: 0}),
     sampleTime(logInterval),
     map(x => x.count),
-    scan(logTransactions, 0),  
+    scan(logTransactions, {previousTotal: 0, newTransactions: 0}),  
   );
 
-  ticks$.subscribe(_ => {
-    //console.log(`${data.count} db updates made...`);
+  ticks$.subscribe((x: transactionCounter) => {
+    console.log(`${x.newTransactions} db updates made in the last 30 seconds`);
   });
 };
 
-const logTransactions = (acc: number, index: number): number => {
-  console.log(`acc ${acc} index ${index}, new txs in last 30 secs ${index - acc}`);  
-  return index;
+const logTransactions = (acc: transactionCounter, newTotal: number): transactionCounter => {
+  console.log(`acc.newTransactions: ${acc.newTransactions} acc.previousTotal: ${acc.previousTotal} newTotal: ${newTotal}`);  
+  return {previousTotal: newTotal, newTransactions: newTotal - acc.previousTotal};
 } 
 
 const updateDatasets = (data: updateData, index: number): updateData => {
