@@ -25,6 +25,9 @@ export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: 
     let conn: IConnection;
     connPool.getConnection().then((connection) => {
       conn = connection;
+
+      console.log(`Executing statement: \n***\n${sqlQuery}\n***`);
+
       // return each row as an object rather than an array
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
