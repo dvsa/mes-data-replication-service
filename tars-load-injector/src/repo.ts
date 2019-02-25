@@ -39,7 +39,7 @@ export const changePersonalCommitmentActivityCode = async (
     1,
     {
       activityCode,
-      commitmentId
+      commitmentId,
     },
   );
 };
@@ -198,16 +198,16 @@ export const getPersonalCommitments = (
 /**
  * Generates a SQL "IN" clause with numbered parameter bindings for the specified array,
  * starting from the initial binding index.
- * 
+ *
  * @example
  * // returns ':0,:1,:2'
  * generateInClause(0, [51, 52, 53]);
- * 
+ *
  * @example
  * // returns ':1,:2,:3'
  * generateInClause(1, [51, 52, 53]);
- * 
- * @param initialBinding The index of the initial binding. 
+ *
+ * @param initialBinding The index of the initial binding.
  * @param objects The array of parameters.
  * @returns The comma-delimited list of parameter bindings.
  */

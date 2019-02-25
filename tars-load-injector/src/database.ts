@@ -62,7 +62,8 @@ export function query(connPool: IConnectionPool, sqlQuery: string, bindValues?: 
  * @param bindValues   The bind variables values
  * @returns The results as an array of objects (each property is the column name in upper case)
  */
-export function update(connPool: IConnectionPool, sqlQuery: string, expectedRows: number, bindValues?: any): Promise<Object[]> {
+export function update(connPool: IConnectionPool, sqlQuery: string, expectedRows: number, bindValues?: any):
+    Promise<Object[]> {
   return new Promise((resolve, reject) => {
     let conn: IConnection;
     connPool.getConnection().then((connection) => {
@@ -73,13 +74,13 @@ export function update(connPool: IConnectionPool, sqlQuery: string, expectedRows
       // return each row as an object rather than an array
       return conn.execute(sqlQuery, bindValues || {}, { outFormat: OBJECT, autoCommit: true });
     }).then((result) => {
-        
+
       trace(`${result.rowsAffected} rows updated`);
 
-      if (result.rowsAffected != expectedRows) {
-          let err = `Expected ${expectedRows} rows to be updated, but got ${result.rowsAffected}`;
-          console.error(err);
-          reject(err);
+      if (result.rowsAffected !== expectedRows) {
+        const err = `Expected ${expectedRows} rows to be updated, but got ${result.rowsAffected}`;
+        console.error(err);
+        reject(err);
       }
 
       // direct fetch of all rows as objects
@@ -100,7 +101,7 @@ export function update(connPool: IConnectionPool, sqlQuery: string, expectedRows
 }
 
 const trace = (message: string) => {
-    if (showTrace) {
-        console.log(message);
-    }
-}
+  if (showTrace) {
+    console.log(message);
+  }
+};

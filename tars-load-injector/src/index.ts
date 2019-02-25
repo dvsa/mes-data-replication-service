@@ -12,21 +12,21 @@ import {
   getActiveExaminers,
   getExaminerSubset,
   getBookings,
-  getPersonalCommitments
+  getPersonalCommitments,
 } from './repo';
 import oracledb = require('oracledb');
 import { X_OK } from 'constants';
 
-export interface updateData {
+export interface UpdateData {
   connectionPool: oracledb.IConnectionPool;
   bookings: any[];
-  personalCommitments: any[];  
+  personalCommitments: any[];
   count: number;
 }
 
-export interface transactionCounter {
+export interface TransactionCounter {
   previousTotal: number;
-  newTransactions: number;  
+  newTransactions: number;
 }
 
 const run = async () => {
@@ -55,31 +55,31 @@ const run = async () => {
 
   // rate (in milliseconds) to log progress to the console
   const logInterval = 30000;
-  console.log(`Logging progress every ${logInterval/1000} seconds`);
+  console.log(`Logging progress every ${logInterval / 1000} seconds`);
 
   const ticks$ = interval(changeInterval).pipe(
-    scan(updateDatasets, {connectionPool, bookings, personalCommitments, count: 0}),
+    scan(updateDatasets, { connectionPool, bookings, personalCommitments, count: 0 }),
     sampleTime(logInterval),
     map(x => x.count),
-    scan(logTransactions, {previousTotal: 0, newTransactions: 0}),  
+    scan(logTransactions, { previousTotal: 0, newTransactions: 0 }),
   );
 
-  ticks$.subscribe((x: transactionCounter) => {
-    console.log(`${x.newTransactions} sets of db updates made in the last ${logInterval/1000} seconds...`);
+  ticks$.subscribe((x: TransactionCounter) => {
+    console.log(`${x.newTransactions} sets of db updates made in the last ${logInterval / 1000} seconds...`);
   });
 };
 
-const logTransactions = (acc: transactionCounter, newTotal: number): transactionCounter => {
-  return {previousTotal: newTotal, newTransactions: newTotal - acc.previousTotal};
-} 
+const logTransactions = (acc: TransactionCounter, newTotal: number): TransactionCounter => {
+  return { previousTotal: newTotal, newTransactions: newTotal - acc.previousTotal };
+};
 
-const updateDatasets = (data: updateData, index: number): updateData => {
+const updateDatasets = (data: UpdateData, index: number): UpdateData => {
   changeApplicationDataset(data.connectionPool, data.bookings);
   changeOtherDataset(data.connectionPool, data.personalCommitments);
   changeSlotDataset(data.connectionPool, data.bookings);
   changeSlotDetailDataset(data.connectionPool, data.bookings);
   data.count += 1;
   return data;
-}
+};
 
 run();

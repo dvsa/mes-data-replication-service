@@ -6,6 +6,7 @@
     "build": "tsc --project tsconfig.json",
     "clean": "rm -rf build",
     "gitSecrets": "git secrets --scan",
+    "lint": "tslint --project tslint.json",
     "scanRepo": "git log -p -n 15 | scanrepo",
     "securityScan": "npm run gitSecrets && npm run scanRepo",
     "start": "LD_LIBRARY_PATH=~/mes_load_injector/instantclient_12_2 ts-node src/index.ts"
@@ -16,6 +17,8 @@
     "@types/dotenv": "^6.1.0",
     "@types/oracledb": "^1.11.34",
     "ts-node": "^8.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
     "typescript": "^3.2.4"
   },
   "dependencies": {
