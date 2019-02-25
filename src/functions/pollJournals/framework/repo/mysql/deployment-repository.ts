@@ -16,11 +16,8 @@ export const getDeployments = async (connectionPool: mysql.Pool): Promise<Examin
       join
         (
           select
-              curdate() as window_start,
-              date_add(date_add(curdate(), interval +6 month), interval -1 day) as window_end
-              from (
-                select tarsreplica.getJournalEndDate(1) as next_working_day
-              ) nwd
+            curdate() as window_start,
+            date_add(date_add(curdate(), interval +6 month), interval -1 day) as window_end
         ) windows
         on (
           DATE(d.start_date) between windows.window_start and windows.window_end
