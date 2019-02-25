@@ -28,5 +28,5 @@ export const getActiveExaminers = async (): Promise<string[]> => {
   // @ts-ignore
   const activeExaminerStaffNumbers = queryResult.map(row => row.staff_number);
 
-  return Promise.resolve(activeExaminerStaffNumbers);
+  return activeExaminerStaffNumbers;
 };
