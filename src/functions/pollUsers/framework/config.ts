@@ -2,26 +2,14 @@ import {
   defaultIfNotPresent,
   throwIfNotPresent,
   tryFetchFromSecretsManager,
-} from '../../../../common/framework/config/config-helpers';
-
-export type Config = {
-  examinerBatchSize: number;
-  isOffline: boolean;
-  journalDynamodbTableName: string;
-  tarsReplicaDatabaseHostname: string;
-  tarsReplicaDatabaseName: string;
-  tarsReplicaDatabaseUsername: string;
-  tarsReplicaDatabasePassword: string;
-};
-
+} from '../../../common/framework/config/config-helpers';
 let configuration: Config;
-export const bootstrapConfig = async (): Promise<void> => {
+
+export const bootstrapConfig = async () => {
   if (!configuration) {
     configuration = {
       isOffline: !!process.env.IS_OFFLINE,
-      examinerBatchSize: Number.parseInt(process.env.EXAMINER_BATCH_SIZE || '250', 10),
-      // tslint:disable-next-line:max-line-length
-      journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
+      usersDynamodbTableName: defaultIfNotPresent(process.env.USERS_DDB_TABLE_NAME, 'users'),
       tarsReplicaDatabaseHostname: throwIfNotPresent(
         process.env.TARS_REPLICA_HOST_NAME,
         'tarsReplicateDatabaseHostname',
@@ -39,8 +27,18 @@ export const bootstrapConfig = async (): Promise<void> => {
         process.env.ASM_SECRET_DB_PASSWORD_KEY,
         'SECRET_DB_PASSWORD_KEY',
       ),
+
     };
   }
+};
+
+export type Config = {
+  isOffline: boolean;
+  usersDynamodbTableName: string;
+  tarsReplicaDatabaseHostname: string;
+  tarsReplicaDatabaseName: string;
+  tarsReplicaDatabaseUsername: string;
+  tarsReplicaDatabasePassword: string;
 };
 
 export const config = (): Config => configuration;

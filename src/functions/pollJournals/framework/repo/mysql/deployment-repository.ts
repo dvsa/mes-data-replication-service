@@ -1,14 +1,15 @@
 import * as mysql from 'mysql';
-import { blockingQuery } from '../database';
 import { ExaminerDeployment } from '../../../domain/examiner-deployment';
 import * as moment from 'moment';
+import { mapRow } from './row-mappers/deployment-row-mapper';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getDeployments = async (connectionPool: mysql.Pool): Promise<ExaminerDeployment[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(6, 'months').format(sqlYearFormat);
 
-  const res = await blockingQuery(
+  const res = await query(
     connectionPool,
     /* tslint:disable */
     `
@@ -19,8 +20,8 @@ export const getDeployments = async (connectionPool: mysql.Pool): Promise<Examin
         join TEST_CENTRE_NAME tcn on d.tc_id = tcn.tc_id
         join PROGRAMME p on p.individual_id = e.individual_id
     where (
-        DATE(d.start_date) between STR_TO_DATE(?, '%d/%m/%Y') and STR_TO_DATE(?, '%d/%m/%Y')
-        or DATE(d.end_date) between STR_TO_DATE(?, '%d/%m/%Y') and STR_TO_DATE(?, '%d/%m/%Y')
+        DATE(d.start_date) between ? and ?
+        or DATE(d.end_date) between ? and ?
     )
     and DATE(p.programme_date) between DATE(d.start_date) and DATE(d.end_date)
     and p.tc_id = d.tc_id
@@ -29,35 +30,11 @@ export const getDeployments = async (connectionPool: mysql.Pool): Promise<Examin
         select end_date
         from EXAMINER_STATUS es
         where es.individual_id = e.individual_id
-        and IFNULL(es.end_date, STR_TO_DATE('01/01/4000', '%d/%m/%Y')) > STR_TO_DATE(?, '%d/%m/%Y')
+        and IFNULL(es.end_date, '4000-01-01') > ?
     )
     `,
     /* tslint:enable */
     [windowStart, windowEnd, windowStart, windowEnd, windowStart],
   );
   return res.map(mapRow);
-};
-
-interface DeploymentRow {
-  deployment_id: number;
-  individual_id: number;
-  tc_id: number;
-  tc_name: string;
-  tc_cost_centre_code: string;
-  programme_date: string;
-}
-
-const mapRow = (row: DeploymentRow): ExaminerDeployment => {
-  return {
-    examinerId: row.individual_id,
-    deployment: {
-      deploymentId: row.deployment_id,
-      testCentre: {
-        centreId: row.tc_id,
-        centreName: row.tc_name,
-        costCode: row.tc_cost_centre_code,
-      },
-      date: row.programme_date,
-    },
-  };
 };

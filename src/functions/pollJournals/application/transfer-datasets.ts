@@ -42,6 +42,7 @@ export const transferDatasets = async (): Promise<void> => {
     advanceTestSlots,
     deployments,
   };
+  connectionPool.end();
 
   console.log(`FINISHED QUERY PHASE: ${new Date()}`);
   console.log(`STARTING TRANSFORM PHASE: ${new Date()}`);

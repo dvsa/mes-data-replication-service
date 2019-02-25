@@ -298,6 +298,19 @@
                 "INTEREST_ID", "MIN_CANDIDATE_NOTICE_TIME", "IS_NOMINATED_TB_CATEGORY", "NOMINATED_TB_CATEGORY_DESC",
                 "PROG_ACCESS_LICENCE_CATEGORY", "MIN_PROGRESSIVE_AGE_YEARS"
             ]
+        },
+        {
+            "sourceName": "AREA",
+            "removeColumns": [
+                "AREA_NAME", "CAND_SHORT_NOTICE_DAYS", "NEXT_DP_NUMBER", "LAST_JOURNAL_DATE", "COMMISSION_DATE",
+                "DECOMMISSION_DATE", "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON", "AREA_COST_CODE"
+            ]
+        },
+        {
+            "sourceName": "NON_WORKING_DAY",
+            "removeColumns": [
+                "CREATED_BY", "CREATED_ON", "UPDATED_BY", "UPDATED_ON"
+            ]
         }
     ]
 }
