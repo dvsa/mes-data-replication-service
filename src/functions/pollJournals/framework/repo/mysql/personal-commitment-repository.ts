@@ -17,7 +17,7 @@ export const getPersonalCommitments = async (connectionPool: mysql.Pool)
         (
           select
             curdate() as window_start,
-            date_add(curdate(), interval +13 day) as window_end
+            date_add(date_add(curdate(), interval +14 day), interval -1 second) as window_end
         ) windows
         on (
           DATE(pc.start_date_time) between windows.window_start and windows.window_end
