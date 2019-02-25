@@ -17,7 +17,7 @@ describe('dateFormatter', () => {
     it('should allow null to pass through at runtime', () => {
       const runtimeNullDate: Date = <Date><unknown>null;
       const result = extractTimeFromDateTime(runtimeNullDate);
-      expect(result).toBeNull();
+      expect(result).toBe('');
     });
     it('should extract the time part of a real date object', () => {
       const result = extractTimeFromDateTime(new Date('2019-02-19 09:30:01'));
@@ -29,7 +29,7 @@ describe('dateFormatter', () => {
     it('should allow null to pass through at runtime', () => {
       const runtimeNullDate: Date = <Date><unknown>null;
       const result = extractDateFromDateTime(runtimeNullDate);
-      expect(result).toBeNull();
+      expect(result).toBe('');
     });
     it('should extract the date part of a real date object', () => {
       const result = extractDateFromDateTime(new Date('2019-02-19 09:30:01'));
