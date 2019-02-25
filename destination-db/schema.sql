@@ -1132,6 +1132,38 @@ END WHILE;
 RETURN LTRIM(CONCAT(@str, ' ', CONCAT(UPPER(SUBSTRING(x,1,1)),LOWER(SUBSTRING(x,2)))));
 END
 //
- 
+DROP FUNCTION IF EXISTS getJournalEndDate;
+//
+
+CREATE FUNCTION getJournalEndDate(pCountryId INT)
+
+RETURNS DATE
+
+BEGIN
+
+    SET @Days			= (SELECT MAX(DAYS_IN_ADVANCE_COUNT) FROM AREA WHERE COUNTRY_ID = pCountryId);
+ 	SET @StartDate		= CURRENT_DATE();
+	SET	@ValidEndDay 	= 0;
+        
+-- Get the first valid working day after the @StartDate
+	SET	@JournalEndDate		= DATE_ADD(DATE(@StartDate), INTERVAL @Days-1 DAY);
+    
+	BEGIN
+		WHILE @ValidEndDay < 1 DO
+			IF
+				(SELECT DAYOFWEEK(@JournalEndDate)) BETWEEN 2 AND 6 
+					AND NOT EXISTS (SELECT NON_WORKING_DATE FROM NON_WORKING_DAY WHERE COUNTRY_ID = pCountryId AND NON_WORKING_DATE = @JournalEndDate)
+				THEN SET @ValidEndDay = 1;
+			ELSE
+				SET @JournalEndDate = DATE_ADD(DATE(@JournalEndDate), INTERVAL 1 DAY);					
+			END IF;
+		END WHILE;
+        
+        RETURN @JournalEndDate;
+	END;
+
+END;
+//
+
  
 DELIMITER ;
