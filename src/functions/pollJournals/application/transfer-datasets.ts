@@ -18,7 +18,7 @@ export const transferDatasets = async (): Promise<void> => {
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
   const examiners = await getExaminers(connectionPool);
-  const examinerIds = examiners.map((examiner) => examiner.individual_id);
+  const examinerIds = examiners.map(examiner => examiner.individual_id);
   const examinerIdGroups = chunk(examinerIds, examinerBatchSize);
 
   const [

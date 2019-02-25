@@ -19,7 +19,7 @@ export async function saveJournals(journals: JournalWrapper[]): Promise<void> {
   const writePromises = journalWriteBatches.map((batch) => {
     const params = {
       RequestItems: {
-        [tableName]: batch.map((journalWrapper) => ({
+        [tableName]: batch.map(journalWrapper => ({
           PutRequest: {
             Item: journalWrapper,
           },

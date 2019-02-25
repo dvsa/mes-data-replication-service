@@ -14,13 +14,13 @@ export const getTestSlots = async (
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment().format(sqlYearFormat);
   const windowEnd = moment().add(3, 'days').format(sqlYearFormat);
-  const sqlQueries = examinerIdGroups.map((idGroup) => getQueryForExaminerIdGroup(idGroup));
+  const sqlQueries = examinerIdGroups.map(idGroup => getQueryForExaminerIdGroup(idGroup));
   const numberOfExaminersQueried = examinerIdGroups.reduce((acc, group) => acc + group.length, 0);
   console.log(`Querying ${numberOfExaminersQueried} examiners`);
 
   // No support for named parameters
   const windowParams = [windowStart, windowEnd, windowStart];
-  const promises = sqlQueries.map((sql) => query(connectionPool, sql, windowParams));
+  const promises = sqlQueries.map(sql => query(connectionPool, sql, windowParams));
 
   const results = await Promise.all(promises);
 
@@ -32,7 +32,7 @@ export const getTestSlots = async (
   const slotsPerSecond = numSlots / ((finishedAt.getTime() - startAt.getTime()) / 1000);
   console.log(`THATS ${slotsPerSecond} per second`);
 
-  const mappedResults = flatten(results.map((resultGroup) => resultGroup.map(mapRow)));
+  const mappedResults = flatten(results.map(resultGroup => resultGroup.map(mapRow)));
   return mappedResults;
 };
 

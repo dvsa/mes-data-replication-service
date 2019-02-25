@@ -10,16 +10,16 @@ import { ExaminerPersonalCommitment } from '../domain/examiner-personal-commitme
 import { AllDatasets } from '../domain/all-datasets';
 
 export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalWrapper[] => {
-  const testSlotsByExaminer = groupBy(datasets.testSlots, (test) => test.examinerId);
-  const advanceTestsByExaminer = groupBy(datasets.advanceTestSlots, (ats) => ats.examinerId);
-  const deploymentsByExaminer = groupBy(datasets.deployments, (deployment) => deployment.examinerId);
+  const testSlotsByExaminer = groupBy(datasets.testSlots, test => test.examinerId);
+  const advanceTestsByExaminer = groupBy(datasets.advanceTestSlots, ats => ats.examinerId);
+  const deploymentsByExaminer = groupBy(datasets.deployments, deployment => deployment.examinerId);
   const nonTestActByExaminer = groupBy(
     datasets.nonTestActivities,
-    (nonTestActivity) => nonTestActivity.examinerId,
+    nonTestActivity => nonTestActivity.examinerId,
   );
   const commitmentsByExaminer = groupBy(
     datasets.personalCommitments,
-    (personalCommitment) => personalCommitment.examinerId,
+    personalCommitment => personalCommitment.examinerId,
   );
 
   const journals: JournalWrapper[] = examiners.map((examiner) => {
@@ -64,7 +64,7 @@ const enrichJournalWithDataset = (
   if (dataset[individualId]) {
     enrichedJournal = {
       ...journal,
-      [journalKey]: dataset[individualId].map((ds) => get(ds, datasetKey)),
+      [journalKey]: dataset[individualId].map(ds => get(ds, datasetKey)),
     };
   }
   return enrichedJournal;

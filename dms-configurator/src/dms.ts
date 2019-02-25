@@ -22,8 +22,8 @@ export class DmsApi {
       const params = {
         Filters: [{
           Name: 'endpoint-id',
-          Values: [identifier]
-        }]
+          Values: [identifier],
+        }],
       };
 
       this.dms.describeEndpoints(params, (err, data) => {
@@ -50,8 +50,8 @@ export class DmsApi {
       const params = {
         Filters: [{
           Name: 'replication-instance-id',
-          Values: [identifier]
-        }]
+          Values: [identifier],
+        }],
       };
 
       this.dms.describeReplicationInstances(params, (err, data) => {
@@ -81,8 +81,11 @@ export class DmsApi {
     }
     const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
 
-    const status = await this.createOrUpdateFullLoadTask(taskName, replicationInstanceArn,
-                                    sourceEndpointArn, destEndpointArn, tableMapping);
+    const status = await this.createOrUpdateFullLoadTask(taskName,
+                                                         replicationInstanceArn,
+                                                         sourceEndpointArn,
+                                                         destEndpointArn,
+                                                         tableMapping);
     this.logger.debug('%s task status is %s', taskName, status);
   }
 
@@ -96,9 +99,12 @@ export class DmsApi {
 
     } catch (e) {
       if (e === 'No such task') {
-        this.logger.debug("Task %s doesn't already exist, so creating it...", taskName);
-        return await this.createFullLoadTask(taskName, replicationInstanceArn,
-                                                       sourceEndpointArn, destEndpointArn, tableMappings);
+        this.logger.debug('Task %s doesn\'t already exist, so creating it...', taskName);
+        return await this.createFullLoadTask(taskName,
+                                             replicationInstanceArn,
+                                             sourceEndpointArn,
+                                             destEndpointArn,
+                                             tableMappings);
       }
       throw e;
     }
@@ -115,7 +121,7 @@ export class DmsApi {
         ReplicationTaskIdentifier: taskName,
         SourceEndpointArn: sourceEndpointArn,
         TableMappings: escapeJSON(tableMappings),
-        TargetEndpointArn: destEndpointArn
+        TargetEndpointArn: destEndpointArn,
       };
 
       this.dms.createReplicationTask(params, (err, data) => {
@@ -135,7 +141,7 @@ export class DmsApi {
 
       const params = {
         ReplicationTaskArn: taskArn,
-        TableMappings: escapeJSON(tableMappings)
+        TableMappings: escapeJSON(tableMappings),
       };
 
       this.dms.modifyReplicationTask(params, (err, data) => {
@@ -156,8 +162,8 @@ export class DmsApi {
       const params = {
         Filters: [{
           Name: 'replication-task-id',
-          Values: [taskName]
-        }]
+          Values: [taskName],
+        }],
       };
 
       this.dms.describeReplicationTasks(params, (err, data) => {

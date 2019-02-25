@@ -41,9 +41,9 @@ export function generateTableMapping(options: Options): any {
     'rule-action': 'rename',
     'rule-target': 'schema',
     'object-locator': {
-      'schema-name': options.sourceSchema
+      'schema-name': options.sourceSchema,
     },
-    value: options.destSchema
+    value: options.destSchema,
   });
 
   let index = 2; // rule 1 is above
@@ -55,9 +55,9 @@ export function generateTableMapping(options: Options): any {
       'rule-name': `${index}`,
       'object-locator': {
         'schema-name': options.sourceSchema,
-        'table-name': element.sourceName
+        'table-name': element.sourceName,
       },
-      'rule-action': 'include'
+      'rule-action': 'include',
     };
 
     if (element.andFilters) {
@@ -67,7 +67,7 @@ export function generateTableMapping(options: Options): any {
         const filter: any = {
           'filter-type': 'source',
           'column-name': andFilter.column,
-          'filter-conditions': []
+          'filter-conditions': [],
         };
 
         andFilter.orConditions.forEach((condition: OrCondition) => {
@@ -76,13 +76,13 @@ export function generateTableMapping(options: Options): any {
             filter['filter-conditions'].push({
               'filter-operator': condition.operator,
               'start-value': condition.start,
-              'end-value': condition.end
+              'end-value': condition.end,
             });
           } else {
             // filter with one value
             filter['filter-conditions'].push({
               'filter-operator': condition.operator,
-              value: condition.value
+              value: condition.value,
             });
           }
         });
@@ -106,8 +106,8 @@ export function generateTableMapping(options: Options): any {
           'object-locator': {
             'schema-name': options.sourceSchema,
             'table-name': element.sourceName,
-            'column-name': column
-          }
+            'column-name': column,
+          },
         };
         config.rules.push(removeRule);
         index += 1;
@@ -119,7 +119,7 @@ export function generateTableMapping(options: Options): any {
 }
 
 function findFilters(options: Options, tableName: string): AndFilter[] {
-  const table: Table = options.tables.find((table) => table.sourceName === tableName);
+  const table: Table = options.tables.find(table => table.sourceName === tableName);
   let andFilters: AndFilter[] = table.andFilters;
   if (!andFilters) {
     andFilters = [];
@@ -128,14 +128,18 @@ function findFilters(options: Options, tableName: string): AndFilter[] {
   return andFilters;
 }
 
-export function addBetweenFilter(options: Options, tableName: string, columnName: string, start: DateTime, end: DateTime) {
+export function addBetweenFilter(options: Options,
+                                 tableName: string,
+                                 columnName: string,
+                                 start: DateTime,
+                                 end: DateTime) {
   const filter = {
     column: columnName,
     orConditions: [{
       operator: 'between',
       start: start.toISODate(),
-      end: end.toISODate()
-    }]
+      end: end.toISODate(),
+    }],
   };
   findFilters(options, tableName).push(filter);
   logger.debug('Filtering %s on %s from %s to %s', tableName, columnName, start.toISODate(), end.toISODate());
@@ -146,8 +150,8 @@ export function addOnOrAfterFilter(options: Options, tableName: string, columnNa
     column: columnName,
     orConditions: [{
       operator: 'gte',
-      value: value.toISODate()
-    }]
+      value: value.toISODate(),
+    }],
   };
   findFilters(options, tableName).push(filter);
   logger.debug('Filtering %s on %s on or after %s', tableName, columnName, value.toISODate());
@@ -158,8 +162,8 @@ export function addOnOrBeforeFilter(options: Options, tableName: string, columnN
     column: columnName,
     orConditions: [{
       operator: 'ste',
-      value: value.toISO()  // Had to change this from 'value.toISODate()' as it was excluding any Personal Commitments that started during the final day of extract"
-    }]
+      value: value.toISO(),
+    }],
   };
   findFilters(options, tableName).push(filter);
   logger.debug('Filtering %s on %s on or before %s', tableName, columnName, value.toISO());

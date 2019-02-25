@@ -42,7 +42,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     const stopStatus = await dms.stopTask('dateFiltered-full-load-and-cdc');
     logger.debug('status of stopTask is %s', stopStatus);
     await dms.createTask('dateFiltered-full-load-and-cdc', '../table-mappings/dateFiltered-tables.json',
-                  replicationInstanceArn, sourceEndpointArn, destEndpointArn, addDateFilters);
+                         replicationInstanceArn, sourceEndpointArn, destEndpointArn, addDateFilters);
     const startStatus = await dms.startTask('dateFiltered-full-load-and-cdc', 'resume-processing');
     logger.debug('status of startTask is %s', startStatus);
 
@@ -64,7 +64,8 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     const personalCommitmentEndDate = this.startDate.plus(this.highLevelSlotTimeWindow);
       // As we're querying PersonalCommitment on DateTime, we need to include the whole day
     const personalCommitmentEndDateTime = personalCommitmentEndDate.plus({ hours: 23, minutes: 59, seconds: 59 });
-    addOnOrBeforeFilter(options, 'PERSONAL_COMMITMENT', 'START_DATE_TIME', personalCommitmentEndDateTime); // i.e. start before or during
+    addOnOrBeforeFilter(options, 'PERSONAL_COMMITMENT', 'START_DATE_TIME',
+                        personalCommitmentEndDateTime); // i.e. start before or during
     addOnOrAfterFilter(options, 'PERSONAL_COMMITMENT', 'END_DATE_TIME', this.startDate); // i.e. end during or after
       // all deployments that overlap with our time window of interest
     const deploymentEndDate =  this.startDate.plus(this.deploymentTimeWindow);

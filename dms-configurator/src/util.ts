@@ -19,9 +19,9 @@ export function getLogger(name: string, logLevel: string): Logger {
             format.label({ label: name }),
             format.timestamp(),
             format.splat(),
-            format.simple()
+            format.simple(),
         ),
-    transports: [new transports.Console()]
+    transports: [new transports.Console()],
   });
 
   return logger;
