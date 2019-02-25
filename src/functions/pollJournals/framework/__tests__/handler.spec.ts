@@ -28,8 +28,8 @@ describe('pollJournals handler', () => {
     dummyApigwEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent();
     dummyContext = lambdaTestUtils.mockContextCreator(() => null);
 
-    moqCreateResponse.setup(x => x(It.isAny())).returns(() => moqResponse.object);
-    moqCreateResponse.setup(x => x(It.isAny(), It.isAny())).returns(() => moqResponse.object);
+    moqCreateResponse.setup((x) => x(It.isAny())).returns(() => moqResponse.object);
+    moqCreateResponse.setup((x) => x(It.isAny(), It.isAny())).returns(() => moqResponse.object);
 
     spyOn(config, 'bootstrapConfig').and.callFake(moqConfigBootstrap.object);
     spyOn(transferDatasets, 'transferDatasets').and.callFake(moqTransferDatasets.object);
@@ -39,18 +39,18 @@ describe('pollJournals handler', () => {
   it('should bootstrap configuration, transferDatasets and return a blank response', async () => {
     const result = await handler(dummyApigwEvent, dummyContext);
 
-    moqConfigBootstrap.verify(x => x(), Times.once());
-    moqTransferDatasets.verify(x => x(), Times.once());
-    moqCreateResponse.verify(x => x(It.isValue({})), Times.once());
+    moqConfigBootstrap.verify((x) => x(), Times.once());
+    moqTransferDatasets.verify((x) => x(), Times.once());
+    moqCreateResponse.verify((x) => x(It.isValue({})), Times.once());
     expect(result).toBe(moqResponse.object);
   });
 
   it('should return an error response when a dependency throws an exception', async () => {
-    moqTransferDatasets.setup(x => x()).throws(new Error('testError'));
+    moqTransferDatasets.setup((x) => x()).throws(new Error('testError'));
 
     const result = await handler(dummyApigwEvent, dummyContext);
 
-    moqCreateResponse.verify(x => x(It.isValue({}), It.isValue(500)), Times.once());
+    moqCreateResponse.verify((x) => x(It.isValue({}), It.isValue(500)), Times.once());
     expect(result).toBe(moqResponse.object);
   });
 
