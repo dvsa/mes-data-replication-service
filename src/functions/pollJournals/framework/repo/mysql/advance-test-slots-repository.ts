@@ -19,7 +19,7 @@ export const getAdvanceTestSlots = async (connectionPool: mysql.Pool):
           date_add(nwd.next_working_day, interval +1 day) as window_start,
           date_add(curdate(), interval +13 day) as window_end
           from (
-              select tarsreplica.getJournalEndDate(1) as next_working_day
+            select tarsreplica.getJournalEndDate(1) as next_working_day
           ) nwd
     ) windows
     where w.programme_date between windows.window_start and windows.window_end

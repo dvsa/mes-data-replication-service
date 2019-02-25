@@ -18,7 +18,7 @@ export const getDeployments = async (connectionPool: mysql.Pool): Promise<Examin
           curdate() as window_start,
           date_add(date_add(curdate(), interval +6 month), interval -1 day) as window_end
           from (
-              select tarsreplica.getJournalEndDate(1) as next_working_day
+            select tarsreplica.getJournalEndDate(1) as next_working_day
           ) nwd
     ) windows
     where (
