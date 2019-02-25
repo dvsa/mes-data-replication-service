@@ -1,7 +1,6 @@
 import * as mysql from 'mysql';
 import { ExaminerTestSlot } from '../../../domain/examiner-test-slot';
 import { flatten } from 'lodash';
-import * as moment from 'moment';
 import { mapRow } from './row-mappers/test-slot-row-mapper';
 import { query } from '../../../../../common/framework/mysql/database';
 
@@ -11,22 +10,14 @@ export const getTestSlots = async (
 ): Promise<ExaminerTestSlot[]> => {
   const startAt = new Date();
 
-  const sqlYearFormat = 'YYYY-MM-DD';
-  const windowStart = moment().format(sqlYearFormat);
-  const windowEnd = moment().add(3, 'days').format(sqlYearFormat);
   const sqlQueries = examinerIdGroups.map(idGroup => getQueryForExaminerIdGroup(idGroup));
   const numberOfExaminersQueried = examinerIdGroups.reduce((acc, group) => acc + group.length, 0);
   console.log(`Querying ${numberOfExaminersQueried} examiners`);
 
-  // No support for named parameters
-  const windowParams = [windowStart, windowEnd, windowStart];
-  const promises = sqlQueries.map(sql => query(connectionPool, sql, windowParams));
-
+  const promises = sqlQueries.map(sql => query(connectionPool, sql));
   const results = await Promise.all(promises);
 
   const finishedAt = new Date();
-  console.log(`FINISHED AT: ${finishedAt}`);
-
   const numSlots = results.reduce((acc, result) => acc + result.length, 0);
   console.log(`GOT ${numSlots} slots`);
   const slotsPerSecond = numSlots / ((finishedAt.getTime() - startAt.getTime()) / 1000);
@@ -75,7 +66,8 @@ const getQueryForExaminerIdGroup = (idGroup: number[]) => {
      NULLIF(booking_details.business_addr_line5,'') as business_addr_line5, NULLIF(booking_details.business_post_code,'') as business_post_code,
      NULLIF(booking_details.business_telephone,'') as business_telephone,
      booking_details.cancel_initiator
- from WORK_SCHEDULE_SLOTS w
+ from
+  WORK_SCHEDULE_SLOTS w
      join TEST_CENTRE tc on w.tc_id = tc.tc_id
      join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
      left join VEHICLE_SLOT_TYPE vst on w.vst_code = vst.vst_code
@@ -134,9 +126,14 @@ const getQueryForExaminerIdGroup = (idGroup: number[]) => {
                              group by cancelled_bookings.app_id
                ) cancellations on cancellations.app_id = a.app_id
        where b.state_code !=2
-       ) booking_details on w.slot_id = booking_details.slot_id
- where w.programme_date between ? and ?
- and w.examiner_end_date >= ?
+       ) booking_details on w.slot_id = booking_details.slot_id,
+       (
+         select
+           curdate() as window_start,
+           date_add(curdate(), interval +3 day) as window_end
+       ) windows
+ where w.programme_date between windows.window_start and windows.window_end
+ and w.examiner_end_date >= windows.window_start
  and w.individual_id in (${idGroup.join(',')})
  and (w.non_test_activity_code is null or booking_details.slot_id is not null)
  and (booking_details.candidate_id is null or booking_details.candidate_cd_id  = (
