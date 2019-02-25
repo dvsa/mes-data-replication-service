@@ -9,9 +9,9 @@
     "allowJs": false
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.spec.ts"
+    "./src/**/*",
+    "./spec/**/*",
+    "./e2e/**/*"
   ],
   "exclude": [
     "node_modules",

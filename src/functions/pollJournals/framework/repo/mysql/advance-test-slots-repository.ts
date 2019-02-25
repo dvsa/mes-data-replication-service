@@ -1,8 +1,8 @@
 import * as mysql from 'mysql';
-import { query } from '../database';
 import { ExaminerAdvanceTestSlot } from '../../../domain/examiner-advance-test-slot';
 import * as moment from 'moment';
 import { mapRow } from './row-mappers/advance-test-slot-row-mapper';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getAdvanceTestSlots = async (connectionPool: mysql.Pool):
   Promise<ExaminerAdvanceTestSlot[]> => {

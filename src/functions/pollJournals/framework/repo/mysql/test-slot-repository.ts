@@ -1,9 +1,9 @@
 import * as mysql from 'mysql';
-import { query } from '../database';
 import { ExaminerTestSlot } from '../../../domain/examiner-test-slot';
 import { flatten } from 'lodash';
 import * as moment from 'moment';
 import { mapRow } from './row-mappers/test-slot-row-mapper';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getTestSlots = async (
   connectionPool: mysql.Pool,

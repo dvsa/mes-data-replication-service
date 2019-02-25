@@ -1,6 +1,6 @@
 import * as mysql from 'mysql';
-import { query } from '../database';
 import * as moment from 'moment';
+import { query } from '../../../../../common/framework/mysql/database';
 
 export const getExaminers = async (connectionPool: mysql.Pool): Promise<any[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
