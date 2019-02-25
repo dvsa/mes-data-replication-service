@@ -1,18 +1,19 @@
 import { IConnectionPool } from 'oracledb';
-import { query } from './database';
+import { query, update } from './database';
 
 export const changeSpecialNeedsText = async (
   connPool: IConnectionPool,
   applicationId: number,
   specialNeedsText: string,
 ) => {
-  return query(
+  return update(
     connPool,
     `
-    UPDATE APPLICATION
+    UPDATE TARSUAT.APPLICATION
     SET SPECIAL_NEEDS_TEXT = :specialNeedsText
     WHERE APP_ID = :applicationId
     `,
+    1,
     {
       specialNeedsText,
       applicationId,
@@ -22,34 +23,23 @@ export const changeSpecialNeedsText = async (
 
 export const changePersonalCommitmentActivityCode = async (
   connPool: IConnectionPool,
-  examinerId: number,
-  startDate: Date,
+  commitmentId: number,
   activityCode: string,
 ) => {
-  return query(
+  return update(
     connPool,
     `
     UPDATE
-      PERSONAL_COMMITMENT
+      TARSUAT.PERSONAL_COMMITMENT
     SET
       NON_TEST_ACTIVITY_CODE = :activityCode
     WHERE
-      COMMITMENT_ID =
-        (
-          SELECT
-            COMMITMENT_ID
-          FROM PERSONAL_COMMITMENT
-          WHERE
-            INDIVIDUAL_ID = :examinerId
-            AND START_DATE_TIME > :startDate
-          ORDER BY START_DATE_TIME
-          OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
-        )
+      COMMITMENT_ID = :commitmentId
     `,
+    1,
     {
       activityCode,
-      examinerId,
-      startDate,
+      commitmentId,
     },
   );
 };
@@ -59,13 +49,14 @@ export const changeSlotNonTestActivityCode = async (
   slotId: number,
   nonTestActivityCode: number,
 ) => {
-  return query(
+  return update(
     connPool,
     `
-    UPDATE PROGRAMME_SLOT
+    UPDATE TARSUAT.PROGRAMME_SLOT
     SET NON_TEST_ACTIVITY_CODE = :nonTestActivityCode
     WHERE SLOT_ID = :slotId
     `,
+    1,
     {
       nonTestActivityCode,
       slotId,
@@ -78,13 +69,14 @@ export const changeTelephoneNumber = async (
   individualId: number,
   telephoneNumber: string,
 ) => {
-  return query(
+  return update(
     connPool,
     `
-    UPDATE CONTACT_DETAILS
+    UPDATE TARSUAT.CONTACT_DETAILS
     SET MOBILE_TEL_NUMBER = :telephoneNumber
     WHERE INDIVIDUAL_ID = :individualId
     `,
+    1,
     {
       telephoneNumber,
       individualId,
@@ -102,11 +94,11 @@ export const getActiveExaminers = async (connPool: IConnectionPool, activeDate: 
       ACTIVE_POSTING.TC_ID,
       E.GRADE_CODE
     FROM
-      EXAMINER E,
-      INDIVIDUAL I,
+      TARSUAT.EXAMINER E,
+      TARSUAT.INDIVIDUAL I,
       (
         SELECT P.INDIVIDUAL_ID AS POSTING_INDV_ID, P.TC_ID AS TC_ID
-        FROM POSTING P
+        FROM TARSUAT.POSTING P
         WHERE :activeDate BETWEEN TRUNC(P.START_DATE) AND TRUNC(P.END_DATE)
       ) ACTIVE_POSTING
     WHERE
@@ -116,7 +108,7 @@ export const getActiveExaminers = async (connPool: IConnectionPool, activeDate: 
       AND EXISTS
         (
           SELECT END_DATE
-          FROM EXAMINER_STATUS ES
+          FROM TARSUAT.EXAMINER_STATUS ES
           WHERE ES.INDIVIDUAL_ID = E.INDIVIDUAL_ID
           AND NVL(ES.END_DATE, TO_DATE('01/01/4000', 'DD/MM/YYYY')) > :activeDate
         )
@@ -143,14 +135,14 @@ export const getBookings = (
       I.FIRST_FORENAME,
       I.FAMILY_NAME
     FROM
-      PROGRAMME P,
-      PROGRAMME_SLOT PS,
-      BOOKING B,
-      APPLICATION A,
-      INDIVIDUAL I
+      TARSUAT.PROGRAMME P,
+      TARSUAT.PROGRAMME_SLOT PS,
+      TARSUAT.BOOKING B,
+      TARSUAT.APPLICATION A,
+      TARSUAT.INDIVIDUAL I
     WHERE
-      TRUNC(P.PROGRAMME_DATE) = :active_date
-      AND P.INDIVIDUAL_ID IN (${generateInClause(individualIds)})
+      TRUNC(P.PROGRAMME_DATE) = TRUNC(:0)
+      AND P.INDIVIDUAL_ID IN (${generateInClause(1, individualIds)})
       AND
         (
           P.STATE_CODE NOT IN (2, 3)
@@ -159,8 +151,8 @@ export const getBookings = (
               SELECT
                 BOOK.BOOKING_ID
               FROM
-                BOOKING BOOK,
-                PROGRAMME_SLOT SLOT
+                TARSUAT.BOOKING BOOK,
+                TARSUAT.PROGRAMME_SLOT SLOT
               WHERE
                 SLOT.SLOT_ID = BOOK.SLOT_ID
                 AND TRUNC(SLOT.PROGRAMME_DATE) = TRUNC(P.PROGRAMME_DATE)
@@ -183,12 +175,48 @@ export const getBookings = (
   );
 };
 
-const generateInClause = (objects: Object[]): string => {
+export const getPersonalCommitments = (
+  connPool: IConnectionPool,
+  activeDate: Date,
+): Promise<Object[]> => {
+  return query(
+    connPool,
+    `
+    SELECT
+      PC.COMMITMENT_ID
+    FROM
+      TARSUAT.PERSONAL_COMMITMENT PC
+    WHERE
+      :activeDate BETWEEN PC.START_DATE_TIME AND PC.END_DATE_TIME
+    `,
+    {
+      activeDate,
+    },
+  );
+};
+
+/**
+ * Generates a SQL "IN" clause with numbered parameter bindings for the specified array,
+ * starting from the initial binding index.
+ *
+ * @example
+ * // returns ':0,:1,:2'
+ * generateInClause(0, [51, 52, 53]);
+ *
+ * @example
+ * // returns ':1,:2,:3'
+ * generateInClause(1, [51, 52, 53]);
+ *
+ * @param initialBinding The index of the initial binding.
+ * @param objects The array of parameters.
+ * @returns The comma-delimited list of parameter bindings.
+ */
+const generateInClause = (initialBinding: number, objects: Object[]): string => {
   const length = (objects == null) ? 0 : objects.length;
   let clause = '';
   for (let i = 0; i < length; i += 1) {
     // tslint:disable-next-line:prefer-template
-    clause += ((i > 0) ? ', ' : '') + ':' + i;
+    clause += ((i > 0) ? ', ' : '') + ':' + (i + initialBinding);
   }
   return clause;
 };
