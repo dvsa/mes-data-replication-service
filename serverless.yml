@@ -1,4 +1,4 @@
-service: journal-poller-service
+service: mes-data-replication-service
 
 provider:
   name: aws
@@ -11,6 +11,13 @@ functions:
   pollJournals:
     timeout: 3600
     handler: src/functions/pollJournals/framework/handler.handler
+    events:
+      - http:
+          path: /
+          method: get
+  updateTasksWithDate:
+    timeout: 3600
+    handler: src/functions/updateTasksWithDate/framework/handler.handler
     events:
       - http:
           path: /

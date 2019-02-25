@@ -1,24 +1,23 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
-    "strict": true,
-    "allowJs": false,
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "allowSyntheticDefaultImports": true,
+    "lib": [ "esnext" ],
+    "types": [ "node", "jasmine" ],
+    "sourceMap": true,
     "target": "es5",
-    "types" : [
-      "node",
-      "jasmine",
-    ],
-    "experimentalDecorators": true
+    "outDir": "./build",
+    "allowJs": false
   },
   "include": [
-    "./src/**/*",
-    "./spec/**/*"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
-  ]
+    "node_modules",
+    "src/**/*.spec.ts"
+  ],
+  "compileOnSave": false,
+  "atom": {
+    "rewriteTsconfig": false
+  }
 }

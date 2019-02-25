@@ -6,5 +6,5 @@
     "ter-arrow-parens": [true, "always"],
     "align": [true, "parameters"]
   },
-  "extends": ["tslint-config-airbnb"]
+  "extends": "tslint-config-airbnb"
 }
