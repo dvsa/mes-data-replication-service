@@ -31,6 +31,7 @@ export const personalCommitmentIntegrationTests = () => {
       await loadTestFile('personal-commitment/001-today.sql');
 
       const commitments = await getPersonalCommitments(connectionPool);
+
       expect(commitments).toEqual([
         {
           examinerId: 1,
@@ -52,7 +53,7 @@ export const personalCommitmentIntegrationTests = () => {
       await loadTestFile('personal-commitment/002-last-moment-of-window.sql');
 
       const commitments = await getPersonalCommitments(connectionPool);
-      expect(commitments.length).toBe(1);
+
       expect(commitments).toEqual([
         {
           examinerId: 1,
@@ -78,6 +79,7 @@ export const personalCommitmentIntegrationTests = () => {
       await loadTestFile('personal-commitment/003-first-moment-outside-window.sql');
 
       const commitments = await getPersonalCommitments(connectionPool);
+
       expect(commitments.length).toBe(0);
     });
   });

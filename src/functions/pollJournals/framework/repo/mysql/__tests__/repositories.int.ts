@@ -8,7 +8,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 60 * 1000;
 describe('MySQL repository integration tests', () => {
   beforeAll((done) => {
     console.log('Starting MySQL...');
-    compose.upAll({ cwd: 'e2e' }).then(() => {
+    compose.upAll({ cwd: 'e2e', log: true }).then(() => {
       dockerMonitor({
         onContainerUp: () => {},
         onContainerDown: (container: any) => {
