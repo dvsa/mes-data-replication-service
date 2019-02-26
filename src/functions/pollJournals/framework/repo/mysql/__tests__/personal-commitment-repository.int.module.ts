@@ -70,6 +70,13 @@ export const personalCommitmentIntegrationTests = () => {
         },
       ]);
     });
+
+    it('should not retrieve personal commitments that are outside the time window', async () => {
+      await loadTestFile('personal-commitment/003-first-moment-outside-window.sql');
+
+      const commitments = await getPersonalCommitments(connectionPool);
+      expect(commitments.length).toBe(0);
+    });
   });
 };
 
