@@ -854,34 +854,68 @@ CREATE TABLE TEST_CATEGORY
 );
 
 
--- Additional indexes added for query performance 
+-- Additional indexes added for query performance
+-- First, create the stored procedure
+DROP PROCEDURE IF EXISTS tarsreplica.CreateIndex
+
+DELIMITER //
+
+CREATE PROCEDURE tarsreplica.CreateIndex
+(
+    schemaName	VARCHAR(64),
+    tableName   VARCHAR(64),
+    indexName   VARCHAR(64),
+    columnNames VARCHAR(64)
+)
+BEGIN
+
+    DECLARE IndexIsThere INT;
+
+    SELECT COUNT(1) INTO IndexIsThere
+    FROM INFORMATION_SCHEMA.STATISTICS
+    WHERE table_schema = schemaName
+    AND table_name = tableName
+    AND index_name = indexName;
+
+    IF IndexIsThere = 0 THEN
+        SET @sqlstmt = CONCAT('CREATE INDEX ',indexName,' ON ', schemaName,'.',tableName,' (',columnNames,')');
+        PREPARE st FROM @sqlstmt;
+        EXECUTE st;
+        DEALLOCATE PREPARE st;
+    ELSE
+        SELECT CONCAT('Index ',indexName,' already exists on Table ', schemaName,'.',tableName) CreateIndexErrorMessage;   
+    END IF;
+
+END //
+
+DELIMITER ;
+
 -- Examiner tables
--- CREATE INDEX IX_POST_TCID ON POSTING (tc_id);
+CALL CreateIndex ('tarsreplica','REF_DATA_ITEM_MASTER','IX_RDIM_ITEMID','item_id');
 CREATE INDEX IX_RDIM_ITEMID ON REF_DATA_ITEM_MASTER (item_id);
 
 -- Slot tables
-CREATE INDEX IX_B_APPID ON BOOKING (app_id);
-CREATE INDEX IX_B_CANREASON ON BOOKING (booking_cancel_reason_code);
-CREATE INDEX IX_B_SLOTID ON BOOKING(slot_id);
-CREATE INDEX IX_B_STATECODE ON BOOKING (state_code);    -- helps the select work_schedule_slots query
-CREATE INDEX IX_P_PROGDATE ON PROGRAMME(programme_date);
-CREATE INDEX IX_PS_PROGDATE ON PROGRAMME_SLOT(programme_date);
+CALL CreateIndex ('tarsreplica','BOOKING','IX_B_APPID','app_id');
+CALL CreateIndex ('tarsreplica','BOOKING','IX_B_CANREASON','booking_cancel_reason_code');
+CALL CreateIndex ('tarsreplica','BOOKING','IX_B_SLOTID','slot_id');
+CALL CreateIndex ('tarsreplica','BOOKING','IX_B_STATECODE','state_code'); -- helps the select work_schedule_slots query
+CALL CreateIndex ('tarsreplica','PROGRAMME','IX_P_PROGDATE','programme_date');
+CALL CreateIndex ('tarsreplica','PROGRAMME_SLOT','IX_PS_PROGDATE','programme_date');  
 
 -- Slot Detail tables
-CREATE INDEX IX_ADDR_INDID ON ADDRESS (individual_id);
-CREATE INDEX IX_ADDR_ORGID ON ADDRESS(organisation_id);
-CREATE INDEX IX_ADDR_TYPE ON ADDRESS(address_type_code);
-CREATE INDEX IX_CD_INDID ON CONTACT_DETAILS (individual_id);
-CREATE INDEX IX_CD_ORGREG ON CONTACT_DETAILS(organisation_register_id);
-CREATE INDEX IX_CO_BUSINESS_ID ON CUSTOMER_ORDER(business_id);
-CREATE INDEX IX_OR_ORGID ON ORGANISATION_REGISTER(organisation_id);
-CREATE INDEX IX_REG_INDID ON REGISTER(individual_id);
-CREATE INDEX IX_TH_INDID ON TEST_HISTORY(individual_id);
-
+CALL CreateIndex ('tarsreplica','ADDRESS','IX_ADDR_INDID','individual_id');
+CALL CreateIndex ('tarsreplica','ADDRESS','IX_ADDR_ORGID','organisation_id');
+CALL CreateIndex ('tarsreplica','ADDRESS','IX_ADDR_TYPE','address_type_code');
+CALL CreateIndex ('tarsreplica','CONTACT_DETAILS','IX_CD_INDID','individual_id');
+CALL CreateIndex ('tarsreplica','CONTACT_DETAILS','IX_CD_ORGREG','organisation_register_id');
+CALL CreateIndex ('tarsreplica','CUSTOMER_ORDER','IX_CO_BUSINESS_ID','business_id');
+CALL CreateIndex ('tarsreplica','ORGANISATION_REGISTER','IX_OR_ORGID','organisation_id');
+CALL CreateIndex ('tarsreplica','REGISTER','IX_REG_INDID','individual_id');
+CALL CreateIndex ('tarsreplica','TEST_HISTORY','IX_TH_INDID','individual_id');
 
 -- Application tables
-CREATE INDEX IX_AH_APP_ID ON APPLICATION_HISTORY (app_id);
-CREATE INDEX IX_RSIS_BOOKID ON APPLICATION_RSIS_INFO (booking_id);
+CALL CreateIndex ('tarsreplica','APPLICATION_HISTORY','IX_AH_APP_ID','app_id');
+CALL CreateIndex ('tarsreplica','APPLICATION_RSIS_INFO','IX_RSIS_BOOKID','booking_id');
 
 -- Other tables
 
