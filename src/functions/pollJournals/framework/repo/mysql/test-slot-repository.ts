@@ -74,7 +74,10 @@ const getQueryForExaminerIdGroup = (idGroup: number[]) => {
       (
         select
           curdate() as window_start,
-          date_add(curdate(), interval +3 day) as window_end
+          nwd.next_working_day as window_end
+              from (
+                select tarsreplica.getJournalEndDate(1) as next_working_day
+              ) nwd
       ) windows
       on w.programme_date between windows.window_start and windows.window_end
         and w.examiner_end_date >= windows.window_start
