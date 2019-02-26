@@ -27,6 +27,7 @@ export const personalCommitmentIntegrationTests = () => {
     });
 
     it('should retrieve a personal commitment that is today', async () => {
+      await loadTestFile('personal-commitment/000-support-data.sql');
       await loadTestFile('personal-commitment/001-today.sql');
 
       const commitments = await getPersonalCommitments(connectionPool);
@@ -47,6 +48,7 @@ export const personalCommitmentIntegrationTests = () => {
     });
 
     it('should retrieve a personal commitment ending at the last moment of the time window', async () => {
+      await loadTestFile('personal-commitment/000-support-data.sql');
       await loadTestFile('personal-commitment/002-last-moment-of-window.sql');
 
       const commitments = await getPersonalCommitments(connectionPool);
@@ -72,6 +74,7 @@ export const personalCommitmentIntegrationTests = () => {
     });
 
     it('should not retrieve personal commitments that are outside the time window', async () => {
+      await loadTestFile('personal-commitment/000-support-data.sql');
       await loadTestFile('personal-commitment/003-first-moment-outside-window.sql');
 
       const commitments = await getPersonalCommitments(connectionPool);
