@@ -3,12 +3,12 @@ import { advanceTestSlotsIntegrationTests } from './advance-test-slot-repository
 import * as compose from 'docker-compose';
 const dockerMonitor = require('node-docker-monitor');
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60 * 1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 3 * 60 * 1000;
 
 describe('MySQL repository integration tests', () => {
   beforeAll((done) => {
     console.log('Starting MySQL...');
-    compose.upAll({ cwd: 'e2e' }).then(() => {
+    compose.upAll({ cwd: 'e2e', log: true }).then(() => {
       dockerMonitor({
         onContainerUp: () => {},
         onContainerDown: (container: any) => {
