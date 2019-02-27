@@ -18,14 +18,14 @@ let configuration: Config;
 export const bootstrapConfig = async (): Promise<void> => {
   if (!configuration) {
     configuration = {
-      maxRetries: Number.parseInt(process.env.MAX_RETRIES || '60', 10),
-      retryDelay: Number.parseInt(process.env.RETRY_DELAY || '15000', 10),
+      maxRetries: 60,
+      retryDelay: 15000,
       highLevelWindowDays: Number.parseInt(process.env.HIGH_LEVEL_WINDOW_DAYS || '13', 10),
       deploymentWindowMonths: Number.parseInt(process.env.DEPLOYMENT_WINDOW_MONTHS || '6', 10),
       deploymentWindowDays: Number.parseInt(process.env.DEPLOYMENT_WINDOW_DAYS || '1', 10),
 
       // tslint:disable-next-line:max-line-length
-      dateFilteredTaskName: defaultIfNotPresent(process.env.DATE_FILTERED_TASK_NAME, 'dateFiltered-full-load-and-cdc'),
+      dateFilteredTaskName: 'dateFiltered-full-load-and-cdc',
       environmentPrefix: throwIfNotPresent(process.env.ENVIRONMENT_PREFIX, 'environmentPrefix'),
     };
   }

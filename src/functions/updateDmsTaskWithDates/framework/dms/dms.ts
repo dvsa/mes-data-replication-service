@@ -214,11 +214,6 @@ export class DmsApi {
     let status = '';
     let retryCount = 0;
 
-    const taskArn = await this.getTaskArn(taskName);
-    const params: DMS.Types.DescribeReplicationTasksMessage = {
-      Filters: [
-        { Name: 'replication-task-arn', Values: [taskArn] },
-      ]};
     do {
       await this.delay(retryDelay);
       status = await this.getTaskStatus(taskName);

@@ -22,9 +22,9 @@ functions:
       - http:
           path: /pollUsers
           method: get
-  updateTasksWithDate:
+  updateDmsTaskWithDates:
     timeout: 3600
-    handler: src/functions/updateTasksWithDate/framework/handler.handler
+    handler: src/functions/UpdateDmsTaskWithDates/framework/handler.handler
     events:
       - http:
           path: /
