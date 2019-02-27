@@ -8,7 +8,7 @@ import nodeFetch from 'node-fetch';
 import { query } from '../../src/common/framework/mysql/database';
 import { expect } from 'chai';
 
-setDefaultTimeout(60 * 1000);
+setDefaultTimeout(3 * 60 * 1000);
 
 let mysqlConn: mysql.Connection;
 let ddb: DynamoDB.DocumentClient;
