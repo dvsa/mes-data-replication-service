@@ -4,8 +4,9 @@
 import * as DMS from 'aws-sdk/clients/dms'; // just the DMS apis, not the whole SDK
 import * as escapeJSON from 'escape-json-node';
 import { generateTableMapping, Options } from './table-mapping';
-import { getLogger, loadJSON } from './util';
-
+import { getLogger } from '../util';
+import { config } from '../config/config';
+import { dmsOptions } from '../config/options';
 type UpdateTableMappingCallback = (options: Options) => void;
 
 export class DmsApi {
@@ -31,7 +32,6 @@ export class DmsApi {
           if (err.code === 'ResourceNotFoundFault') {
             this.logger.error('Endpoint %s not found', identifier);
             reject('No such endpoint');
-
           } else {
             this.logger.error('Error calling describeEndpoints: %j', err);
             reject(err);
@@ -72,7 +72,32 @@ export class DmsApi {
     });
   }
 
-  async stopTask(taskName: string) {
+  async getTaskStatus(taskName: string): Promise<string> {
+    const taskArn = await this.getTaskArn(taskName);
+    return new Promise<string>((resolve, reject) => {
+      const params: DMS.Types.DescribeReplicationTasksMessage = {
+        Filters: [
+          { Name: 'replication-task-arn', Values: [taskArn] },
+        ],
+      };
+
+      this.dms.describeReplicationTasks(params, (err, data) => {
+        if (err) {
+          if (err.code === 'ResourceNotFoundFault') {
+            this.logger.error('Replication Instance %s not found', taskName);
+            reject('No such instance');
+          } else {
+            this.logger.error('Error calling describeReplicationInstances: %j', err);
+            reject(err);
+          }
+        } else {
+          resolve(data.ReplicationTasks[0].Status);
+        }
+      });
+    });
+  }
+
+  async stopTask(taskName: string): Promise<string> {
     const taskArn = await this.getTaskArn(taskName);
     const  params = {
       ReplicationTaskArn: taskArn };
@@ -82,6 +107,7 @@ export class DmsApi {
           this.logger.error('Error calling stopTask %j', err);
           reject(err);
         } else {
+          console.log(`stop task ${data.ReplicationTask.Status}`);
           resolve(data.ReplicationTask.Status);
         }
       });
@@ -105,10 +131,10 @@ export class DmsApi {
     });
   }
 
-  async createTask(taskName: string, inputFilename: string, replicationInstanceArn: string,
+  async createTask(taskName: string, replicationInstanceArn: string,
                    sourceEndpointArn: string, destEndpointArn: string,
                    callback?: UpdateTableMappingCallback): Promise<void> {
-    const tableMappingInput: Options = loadJSON(inputFilename);
+    const tableMappingInput: Options = dmsOptions;
     if (callback) {
       callback(tableMappingInput);
     }
@@ -181,6 +207,27 @@ export class DmsApi {
         }
       });
     });
+  }
+
+  async waitTillTaskStopped(taskName: string): Promise<any> {
+    const { maxRetries, retryDelay } = config();
+    let status = '';
+    let retryCount = 0;
+
+    const taskArn = await this.getTaskArn(taskName);
+    const params: DMS.Types.DescribeReplicationTasksMessage = {
+      Filters: [
+        { Name: 'replication-task-arn', Values: [taskArn] },
+      ]};
+    do {
+      await this.delay(retryDelay);
+      status = await this.getTaskStatus(taskName);
+      retryCount = retryCount + 1;
+    } while (status !== 'stopped' && retryCount < maxRetries);
+  }
+
+  private delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private getTaskArn(taskName: string): Promise<string> {

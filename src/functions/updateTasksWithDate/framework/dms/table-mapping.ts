@@ -1,7 +1,7 @@
 /**
  * Handles generating DMS table mappings from a much simpler logical input.
  */
-import { getLogger } from './util';
+import { getLogger } from '../util';
 import { DateTime } from 'luxon';
 
 const logger = getLogger('table-mapping', 'debug');
