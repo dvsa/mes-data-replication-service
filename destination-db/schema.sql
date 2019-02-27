@@ -856,7 +856,7 @@ CREATE TABLE TEST_CATEGORY
 
 -- Additional indexes added for query performance
 -- First, create the stored procedure
-DROP PROCEDURE IF EXISTS tarsreplica.CreateIndex
+DROP PROCEDURE IF EXISTS tarsreplica.CreateIndex;
 
 DELIMITER //
 
@@ -892,7 +892,6 @@ DELIMITER ;
 
 -- Examiner tables
 CALL CreateIndex ('tarsreplica','REF_DATA_ITEM_MASTER','IX_RDIM_ITEMID','item_id');
-CREATE INDEX IX_RDIM_ITEMID ON REF_DATA_ITEM_MASTER (item_id);
 
 -- Slot tables
 CALL CreateIndex ('tarsreplica','BOOKING','IX_B_APPID','app_id');
