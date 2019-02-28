@@ -101,7 +101,8 @@ export class DmsApi {
   async stopTask(taskName: string): Promise<string> {
     const taskArn = await this.getTaskArn(taskName);
     const  params = {
-      ReplicationTaskArn: taskArn };
+      ReplicationTaskArn: taskArn,
+    };
     return new Promise<string>((resolve, reject) => {
       const stopReplicationTask = this.dms.stopReplicationTask(params, (err, data) => {
         if (err) {
@@ -117,9 +118,10 @@ export class DmsApi {
 
   async startTask(taskName: string, taskType: 'start-replication' | 'resume-processing' | 'reload-target') {
     const taskArn = await this.getTaskArn(taskName);
-    const  params = {
+    const params = {
       ReplicationTaskArn: taskArn,
-      StartReplicationTaskType: taskType };
+      StartReplicationTaskType: taskType,
+    };
     return new Promise<string>((resolve, reject) => {
       const startReplicationTask = this.dms.startReplicationTask(params, (err, data) => {
         if (err) {
