@@ -11,6 +11,7 @@ import { buildJournals } from './journal-builder';
 import { chunk } from 'lodash';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
 import { config } from '../framework/config/config';
+import { filterChangedJournals } from './journal-change-filter';
 
 export const transferDatasets = async (): Promise<void> => {
   const { examinerBatchSize } = config();
@@ -44,11 +45,13 @@ export const transferDatasets = async (): Promise<void> => {
   };
   connectionPool.end();
 
-  console.log(`FINISHED QUERY PHASE: ${new Date()}`);
-  console.log(`STARTING TRANSFORM PHASE: ${new Date()}`);
+  console.log(`FINISHED QUERY PHASE, STARTING TRANSFORM PHASE: ${new Date()}`);
   const journals: JournalWrapper[] = buildJournals(examiners, datasets);
-  console.log(`FINISHED TRANFORM PHASE: ${new Date()}`);
+  console.log(`FINISHED TRANFORM PHASE, STARTING FILTER PHASE: ${new Date()}`);
 
-  await saveJournals(journals);
+  const changedJournals = filterChangedJournals(journals);
+  console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE: ${new Date()}`);
+
+  await saveJournals(changedJournals);
   console.log(`FINISHED SAVE PHASE: ${new Date()}`);
 };
