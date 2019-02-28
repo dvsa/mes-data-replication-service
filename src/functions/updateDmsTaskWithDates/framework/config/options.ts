@@ -1,5 +1,6 @@
-export const dmsOptions = {
-  sourceSchema: 'TARSUAT',
+import { config } from '../config/config';
+
+const dmsOptions = {
   destSchema: 'tarsreplica',
   tables: [
     {
@@ -50,4 +51,9 @@ export const dmsOptions = {
         }],
     },
   ],
+};
+
+export const getDmsOptions = () : any => {
+  const tarsSchema = config().tarsSchema;
+  return { sourceSchema: tarsSchema, ...dmsOptions };
 };

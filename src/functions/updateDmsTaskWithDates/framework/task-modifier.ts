@@ -7,37 +7,49 @@ import { config } from './config/config';
 export const modifyTask = async (): Promise<void> => {
   const { dateFilteredTaskName,
     environmentPrefix,
+    sourceArn,
+    targetArn,
+    replicationArn,
    } = config();
   const logger = getLogger('cli-app', 'debug');
   const dms = new DmsApi('eu-west-1');
 
-  const sourceEndpointArn = await dms.getEndpointArn(`${environmentPrefix}-source`);
+  const sourceEndpointArn = sourceArn;
   logger.debug('source endpoint arn is %s', sourceEndpointArn);
 
-  const destEndpointArn = await dms.getEndpointArn(`${environmentPrefix}-target`);
+  const destEndpointArn = targetArn;
   logger.debug('dest endpoint arn is %s', destEndpointArn);
 
-  const replicationInstanceArn = await dms.getReplicationInstanceArn(`${environmentPrefix}-replicator`);
+  const replicationInstanceArn = replicationArn;
   logger.debug('repl instance arn is %s', replicationInstanceArn);
 
-  const taskStatus = await dms.getTaskStatus(dateFilteredTaskName);
-  if (taskStatus !== 'stopped') {
+  const dateTaskName = `${environmentPrefix}-${dateFilteredTaskName}`;
+  let taskStatus:string = '';
+
+  try {
+    taskStatus = await dms.getTaskStatus(dateTaskName);
+  } catch (error) {
+    console.log(error);
+    taskStatus = 'nonexistant';
+  }
+
+  if (taskStatus !== 'stopped' && taskStatus !== 'nonexistant') {
     try {
-      const stopStatus = await dms.stopTask(dateFilteredTaskName);
+      const stopStatus = await dms.stopTask(dateTaskName);
       logger.debug('status of stopTask is %s', stopStatus);
-      await dms.waitTillTaskStopped(dateFilteredTaskName);
+      await dms.waitTillTaskStopped(dateTaskName);
     } catch (error) {
       console.error(error);
     }
   }
-  await dms.createTask(dateFilteredTaskName,
+  await dms.createTask(dateTaskName,
                        replicationInstanceArn,
                        sourceEndpointArn,
                        destEndpointArn,
                        addDateFilters);
 
-  await dms.waitTillTaskStopped(dateFilteredTaskName);
-  const startStatus = await dms.startTask(dateFilteredTaskName, 'resume-processing');
+  await dms.waitForDesiredTaskStatus(dateTaskName, ['ready', 'stopped']);
+  const startStatus = await dms.startTask(dateTaskName, 'reload-target');
   logger.debug('status of startTask is %s', startStatus);
 };
 

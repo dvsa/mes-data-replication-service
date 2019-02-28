@@ -6,7 +6,8 @@ import * as escapeJSON from 'escape-json-node';
 import { generateTableMapping, Options } from './table-mapping';
 import { getLogger } from '../util';
 import { config } from '../config/config';
-import { dmsOptions } from '../config/options';
+import { getDmsOptions } from '../config/options';
+import { taskSettings } from '../config/task-settings';
 type UpdateTableMappingCallback = (options: Options) => void;
 
 export class DmsApi {
@@ -134,7 +135,7 @@ export class DmsApi {
   async createTask(taskName: string, replicationInstanceArn: string,
                    sourceEndpointArn: string, destEndpointArn: string,
                    callback?: UpdateTableMappingCallback): Promise<void> {
-    const tableMappingInput: Options = dmsOptions;
+    const tableMappingInput: Options = getDmsOptions();
     if (callback) {
       callback(tableMappingInput);
     }
@@ -172,6 +173,7 @@ export class DmsApi {
         MigrationType: 'full-load-and-cdc',
         ReplicationInstanceArn: replicationInstanceArn,
         ReplicationTaskIdentifier: taskName,
+        ReplicationTaskSettings: JSON.stringify(taskSettings),
         SourceEndpointArn: sourceEndpointArn,
         TableMappings: escapeJSON(tableMappings),
         TargetEndpointArn: destEndpointArn,
@@ -207,6 +209,18 @@ export class DmsApi {
         }
       });
     });
+  }
+
+  async waitForDesiredTaskStatus(taskName: string, desiredStatus: string[]) {
+    const { maxRetries, retryDelay } = config();
+    let status = '';
+    let retryCount = 0;
+
+    do {
+      await this.delay(retryDelay);
+      status = await this.getTaskStatus(taskName);
+      retryCount = retryCount + 1;
+    } while (desiredStatus.findIndex(desired => desired === status) < 0 && retryCount < maxRetries);
   }
 
   async waitTillTaskStopped(taskName: string): Promise<any> {
