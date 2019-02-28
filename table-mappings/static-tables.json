@@ -155,9 +155,8 @@
         {
             "sourceName": "TEST_SERVICE",
             "removeColumns": [
-                "TEST_SERVICE_DESCRIPTION", "EXTENDED_IND", "SPECIAL_NEEDS_CODE", "MEETING_PLACE_IND",
-                "START_DATE", "END_DATE", "VST_CODE", "CREATED_ON", "CREATED_BY", "UPDATED_ON",
-                "UPDATED_BY", "PRICE_OPTION"
+                "TEST_SERVICE_DESCRIPTION", "MEETING_PLACE_IND", "START_DATE", "END_DATE", "CREATED_ON",
+                "CREATED_BY", "UPDATED_ON", "UPDATED_BY", "PRICE_OPTION"
             ]
         },
         {
