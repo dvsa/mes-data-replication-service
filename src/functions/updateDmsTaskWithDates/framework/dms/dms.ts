@@ -104,7 +104,7 @@ export class DmsApi {
       ReplicationTaskArn: taskArn,
     };
     return new Promise<string>((resolve, reject) => {
-      const stopReplicationTask = this.dms.stopReplicationTask(params, (err, data) => {
+      this.dms.stopReplicationTask(params, (err, data) => {
         if (err) {
           this.logger.error('Error calling stopTask %j', err);
           reject(err);
@@ -123,7 +123,7 @@ export class DmsApi {
       StartReplicationTaskType: taskType,
     };
     return new Promise<string>((resolve, reject) => {
-      const startReplicationTask = this.dms.startReplicationTask(params, (err, data) => {
+      this.dms.startReplicationTask(params, (err, data) => {
         if (err) {
           this.logger.error('Error calling startTask %j', err);
           reject(err);
