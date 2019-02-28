@@ -1,4 +1,5 @@
 import { config } from '../config/config';
+import { Options } from '../dms/table-mapping';
 
 const dmsOptions = {
   destSchema: 'tarsreplica',
@@ -53,7 +54,7 @@ const dmsOptions = {
   ],
 };
 
-export const getDmsOptions = () : any => {
+export const getDmsOptions = () : Options => {
   const tarsSchema = config().tarsSchema;
   return { sourceSchema: tarsSchema, ...dmsOptions };
 };

@@ -157,8 +157,13 @@ export class DmsApi {
     } catch (e) {
       if (e === 'No such task') {
         this.logger.debug('Task %s doesn\'t already exist, so creating it...', taskName);
-        return await this.createFullLoadTask(taskName, replicationInstanceArn,
-                                             sourceEndpointArn, destEndpointArn, tableMappings);
+        return await this.createFullLoadTask(
+          taskName,
+          replicationInstanceArn,
+          sourceEndpointArn,
+          destEndpointArn,
+          tableMappings,
+          );
       }
       throw e;
     }

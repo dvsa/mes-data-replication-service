@@ -27,7 +27,7 @@ functions:
     handler: src/functions/UpdateDmsTaskWithDates/framework/handler.handler
     events:
       - http:
-          path: /
+          path: /UpdateDmsTaskWithDates
           method: get
 
 custom:

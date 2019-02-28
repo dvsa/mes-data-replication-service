@@ -58,15 +58,17 @@ export const modifyTask = async (): Promise<void> => {
  * @param options - the options to add to
  */
 function addDateFilters(options: Options) {
-  const { highLevelWindowDays,
+  const {
+    highLevelWindowDays,
     deploymentWindowMonths,
-    deploymentWindowDays } = config();
+    deploymentWindowDays,
+  } = config();
 
   const highLevelSlotTimeWindow = Duration.fromObject({ days: highLevelWindowDays });
   const deploymentTimeWindow = Duration.fromObject({ months: deploymentWindowMonths })
-                                       .minus({ days: deploymentWindowDays });
+    .minus({ days: deploymentWindowDays });
   const startDate = DateTime.local();
-  const endDate =  startDate.plus(highLevelSlotTimeWindow);
+  const endDate = startDate.plus(highLevelSlotTimeWindow);
 
   addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate);
   addBetweenFilter(options, 'PROGRAMME_SLOT', 'PROGRAMME_DATE', startDate, endDate);
@@ -78,7 +80,7 @@ function addDateFilters(options: Options) {
                       personalCommitmentEndDateTime);
   addOnOrAfterFilter(options, 'PERSONAL_COMMITMENT', 'END_DATE_TIME', startDate);
 
-  const deploymentEndDate =  startDate.plus(deploymentTimeWindow);
+  const deploymentEndDate = startDate.plus(deploymentTimeWindow);
   addOnOrBeforeFilter(options, 'DEPLOYMENT', 'START_DATE', deploymentEndDate);
   addOnOrAfterFilter(options, 'DEPLOYMENT', 'END_DATE', startDate);
 }

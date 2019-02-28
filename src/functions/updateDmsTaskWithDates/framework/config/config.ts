@@ -27,7 +27,6 @@ export const bootstrapConfig = async (): Promise<void> => {
       sourceArn: throwIfNotPresent(process.env.SOURCE_ARN, 'sourceArn'),
       targetArn: throwIfNotPresent(process.env.TARGET_ARN, 'targetArn'),
       replicationArn: throwIfNotPresent(process.env.REPLICATION_ARN, 'replicationArn'),
-      // tslint:disable-next-line:max-line-length
       dateFilteredTaskName: 'dateFiltered-full-load-and-cdc',
       tarsSchema: throwIfNotPresent(process.env.TARS_SCHEMA, 'tarsSchema'),
       environmentPrefix: throwIfNotPresent(process.env.ENVIRONMENT_PREFIX, 'environmentPrefix'),
