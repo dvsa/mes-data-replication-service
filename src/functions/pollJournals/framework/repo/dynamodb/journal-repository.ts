@@ -44,5 +44,16 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
 };
 
 export const getStaffNumberHashMappings = async (): Promise<Partial<JournalWrapper>[]> => {
-  return Promise.resolve([{}]);
+  const ddb = getDynamoClient();
+  const tableName = config().journalDynamodbTableName;
+
+  const result = await ddb.scan({
+    TableName: tableName,
+    ProjectionExpression: 'staffNumber,#hash',
+    ExpressionAttributeNames: {
+      '#hash': 'hash',
+    },
+  }).promise();
+
+  return result.Items as Partial<JournalWrapper>[];
 };
