@@ -17,7 +17,8 @@
     "luxon": "^1.4.5",
     "moment": "^2.23.0",
     "mysql": "^2.16.0",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "node.extend": "^1.1.7"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.13",
@@ -38,6 +39,8 @@
     "jasmine": "^3.3.1",
     "jasmine-spec-reporter": "^4.2.1",
     "json-schema-to-typescript": "^6.1.0",
+    "mysql-import": "^1.0.13",
+    "node-docker-monitor": "^1.0.11",
     "node-fetch": "^2.3.0",
     "rimraf": "^2.6.2",
     "serverless": "^1.36.3",
@@ -69,7 +72,8 @@
     "security-scan": "git secrets --scan && git log -p | scanrepo",
     "start": "sls dynamodb install && sls offline start",
     "test": "npm run compile && jasmine",
-    "test:integration": "npm run compile && jasmine build/spec/example.spec.js"
+    "test:integration": "npm run compile && jasmine build/spec/example.spec.js",
+    "test:repos": "npm run compile && jasmine build/src/functions/pollJournals/framework/repo/mysql/__tests__/repositories.int.js"
   },
   "husky": {
     "hooks": {

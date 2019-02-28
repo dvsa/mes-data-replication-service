@@ -1,17 +1,28 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB, Credentials, config as awsConfig } from 'aws-sdk';
 import { JournalWrapper } from '../../../domain/journal-wrapper';
 import { chunk } from 'lodash';
 import { config } from '../../config/config';
 
-const createDynamoClient = () => {
-  return config().isOffline
-    ? new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000' })
-    : new DynamoDB.DocumentClient();
+let dynamoDocumentClient: DynamoDB.DocumentClient;
+const getDynamoClient = () => {
+  if (!dynamoDocumentClient) {
+    if (config().isOffline) {
+      const localRegion = 'localhost';
+      awsConfig.update({
+        region: localRegion,
+        credentials: new Credentials('akid', 'secret', 'session'),
+      });
+      dynamoDocumentClient = new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000', region: localRegion });
+    } else {
+      dynamoDocumentClient = new DynamoDB.DocumentClient();
+    }
+  }
+  return dynamoDocumentClient;
 };
 
 export async function saveJournals(journals: JournalWrapper[]): Promise<void> {
   console.log(`STARTING SAVE: ${new Date()}`);
-  const ddb = createDynamoClient();
+  const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
   const maxBatchWriteRequests = 25;
   const journalWriteBatches = chunk(journals, maxBatchWriteRequests);

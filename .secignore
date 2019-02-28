@@ -2,3 +2,4 @@ destination/*.sql
 destination-db/*.sql
 source/*.sql
 source-db/*.sql
+src/functions/pollJournals/framework/repo/mysql/__tests__/data/**/*.sql

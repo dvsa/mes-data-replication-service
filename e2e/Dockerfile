@@ -1,4 +1,4 @@
-FROM mysql
+FROM mysql:5.7
 
 ENV DOCKERIZE_VERSION v0.6.0
 RUN apt-get update -y && apt-get install -y wget
