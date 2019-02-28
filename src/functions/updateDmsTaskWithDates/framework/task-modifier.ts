@@ -10,9 +10,10 @@ export const modifyTask = async (): Promise<void> => {
     sourceArn,
     targetArn,
     replicationArn,
+    awsRegion,
    } = config();
   const logger = getLogger('cli-app', 'debug');
-  const dms = new DmsApi('eu-west-1');
+  const dms = new DmsApi(awsRegion);
 
   const sourceEndpointArn = sourceArn;
   logger.debug('source endpoint arn is %s', sourceEndpointArn);

@@ -3,6 +3,7 @@ import { throwIfNotPresent } from '../../../../common/framework/config/config-he
 export type Config = {
   maxRetries: number;
   retryDelay: number;
+  awsRegion: string;
   highLevelWindowDays: number;
   deploymentWindowMonths: number;
   deploymentWindowDays: number;
@@ -21,6 +22,7 @@ export const bootstrapConfig = async (): Promise<void> => {
     configuration = {
       maxRetries: 60,
       retryDelay: 15000,
+      awsRegion: throwIfNotPresent(process.env.AWS_REGION, 'awsRegion'),
       highLevelWindowDays: Number.parseInt(process.env.HIGH_LEVEL_WINDOW_DAYS || '13', 10),
       deploymentWindowMonths: Number.parseInt(process.env.DEPLOYMENT_WINDOW_MONTHS || '6', 10),
       deploymentWindowDays: Number.parseInt(process.env.DEPLOYMENT_WINDOW_DAYS || '1', 10),
