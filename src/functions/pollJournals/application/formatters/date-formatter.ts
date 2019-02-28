@@ -8,15 +8,9 @@ export const formatDateToStartTime = (date: Date): string => {
 };
 
 export const extractTimeFromDateTime = (date: Date): string => {
-  if (date === null) {
-    return '';
-  }
   return moment(date).format('HH:mm:ss');
 };
 
 export const extractDateFromDateTime = (date: Date): string => {
-  if (date === null) {
-    return '';
-  }
   return moment(date).format('DD/MM/YYYY');
 };
