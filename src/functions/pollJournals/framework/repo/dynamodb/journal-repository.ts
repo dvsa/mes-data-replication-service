@@ -20,7 +20,7 @@ const getDynamoClient = () => {
   return dynamoDocumentClient;
 };
 
-export async function saveJournals(journals: JournalWrapper[]): Promise<void> {
+export const saveJournals = async (journals: JournalWrapper[]): Promise<void> => {
   console.log(`STARTING SAVE: ${new Date()}`);
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
@@ -41,4 +41,8 @@ export async function saveJournals(journals: JournalWrapper[]): Promise<void> {
   });
   await Promise.all(writePromises);
   console.log(`END SAVE: ${new Date()}`);
-}
+};
+
+export const getStaffNumberHashMappings = async (): Promise<Partial<JournalWrapper>[]> => {
+  return Promise.resolve([{}]);
+};

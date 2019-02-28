@@ -20,7 +20,6 @@ export const bootstrapConfig = async (): Promise<void> => {
     configuration = {
       isOffline: !!process.env.IS_OFFLINE,
       examinerBatchSize: Number.parseInt(process.env.EXAMINER_BATCH_SIZE || '250', 10),
-      // tslint:disable-next-line:max-line-length
       journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
       tarsReplicaDatabaseHostname: throwIfNotPresent(
         process.env.TARS_REPLICA_HOST_NAME,
