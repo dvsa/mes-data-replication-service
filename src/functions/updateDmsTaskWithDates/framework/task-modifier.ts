@@ -3,6 +3,7 @@ import { DmsApi } from './dms/dms';
 import { addBetweenFilter, addOnOrAfterFilter, addOnOrBeforeFilter, Options } from './dms/table-mapping';
 import { DateTime, Duration } from 'luxon';
 import { config } from './config/config';
+import winston = require('winston');
 
 export const modifyTask = async (): Promise<void> => {
   const { dateFilteredTaskName,
@@ -15,20 +16,33 @@ export const modifyTask = async (): Promise<void> => {
   const logger = getLogger('cli-app', 'debug');
   const dms = new DmsApi(awsRegion);
 
-  const sourceEndpointArn = sourceArn;
-  logger.debug('source endpoint arn is %s', sourceEndpointArn);
-
-  const destEndpointArn = targetArn;
-  logger.debug('dest endpoint arn is %s', destEndpointArn);
-
-  const replicationInstanceArn = replicationArn;
-  logger.debug('repl instance arn is %s', replicationInstanceArn);
+  logger.debug('source endpoint arn is %s', sourceArn);
+  logger.debug('dest endpoint arn is %s', targetArn);
+  logger.debug('repl instance arn is %s', replicationArn);
 
   const dateTaskName = `${environmentPrefix}-${dateFilteredTaskName}`;
-  let taskStatus:string = '';
 
+  await stopTaskIfExistsAndRunning(dateTaskName, dms, logger);
+
+  await dms.createOrModifyTask(dateTaskName,
+                               replicationArn,
+                               sourceArn,
+                               targetArn,
+                               addDateFilters);
+
+  await startTaskWhenReady(dateTaskName, dms, logger);
+};
+
+async function startTaskWhenReady(taskName: string, dms: DmsApi, logger: winston.Logger) {
+  await dms.waitForDesiredTaskStatus(taskName, ['ready', 'stopped']);
+  const startStatus = await dms.startTask(taskName, 'reload-target');
+  logger.debug('status of startTask is %s', startStatus);
+
+}
+async function stopTaskIfExistsAndRunning(taskName: string, dms: DmsApi, logger: winston.Logger) {
+  let taskStatus = '';
   try {
-    taskStatus = await dms.getTaskStatus(dateTaskName);
+    taskStatus = await dms.getTaskStatus(taskName);
   } catch (error) {
     console.log(error);
     taskStatus = 'nonexistant';
@@ -36,24 +50,14 @@ export const modifyTask = async (): Promise<void> => {
 
   if (taskStatus !== 'stopped' && taskStatus !== 'nonexistant') {
     try {
-      const stopStatus = await dms.stopTask(dateTaskName);
+      const stopStatus = await dms.stopTask(taskName);
       logger.debug('status of stopTask is %s', stopStatus);
-      await dms.waitTillTaskStopped(dateTaskName);
+      await dms.waitTillTaskStopped(taskName);
     } catch (error) {
       console.error(error);
     }
   }
-  await dms.createTask(dateTaskName,
-                       replicationInstanceArn,
-                       sourceEndpointArn,
-                       destEndpointArn,
-                       addDateFilters);
-
-  await dms.waitForDesiredTaskStatus(dateTaskName, ['ready', 'stopped']);
-  const startStatus = await dms.startTask(dateTaskName, 'reload-target');
-  logger.debug('status of startTask is %s', startStatus);
-};
-
+}
 /**
  * Adds source filters to the "datefiltered" dataset.
  * @param options - the options to add to

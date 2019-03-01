@@ -72,21 +72,21 @@ export class DmsApi {
     }
   }
 
-  async createTask(taskName: string, replicationInstanceArn: string,
-                   sourceEndpointArn: string, destEndpointArn: string,
-                   callback?: UpdateTableMappingCallback): Promise<void> {
+  async createOrModifyTask(taskName: string, replicationInstanceArn: string,
+                           sourceEndpointArn: string, destEndpointArn: string,
+                           callback?: UpdateTableMappingCallback): Promise<void> {
     const tableMappingInput: Options = getDmsOptions();
     if (callback) {
       callback(tableMappingInput);
     }
     const tableMapping = JSON.stringify(generateTableMapping(tableMappingInput));
 
-    const status = await this.createOrUpdateFullLoadTask(taskName, replicationInstanceArn,
+    const status = await this.createOrModifyFullLoadTask(taskName, replicationInstanceArn,
                                                          sourceEndpointArn, destEndpointArn, tableMapping);
     this.logger.debug('%s task status is %s', taskName, status);
   }
 
-  private async createOrUpdateFullLoadTask(taskName: string, replicationInstanceArn: string,
+  private async createOrModifyFullLoadTask(taskName: string, replicationInstanceArn: string,
                                            sourceEndpointArn: string, destEndpointArn: string,
                                            tableMappings: string): Promise<string> {
     try {

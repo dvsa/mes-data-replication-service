@@ -30,8 +30,11 @@ export interface Options {
   tables: Table[];
 }
 
-export function generateTableMapping(options: Options): any {
-  const config = { rules: [] };
+export interface TableMapping {
+  rules: any[];
+}
+export function generateTableMapping(options: Options): TableMapping {
+  const config:TableMapping = { rules: [] };
 
   // first add a transformation rule from source to dest schema name...
   config.rules.push({
