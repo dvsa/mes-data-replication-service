@@ -18,120 +18,58 @@ export class DmsApi {
     this.dms = new DMS({ apiVersion: '2016-01-01', region: `${region}` });
   }
 
-  getEndpointArn(identifier: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-
-      const params = {
-        Filters: [{
-          Name: 'endpoint-id',
-          Values: [identifier],
-        }],
-      };
-
-      this.dms.describeEndpoints(params, (err, data) => {
-        if (err) {
-          if (err.code === 'ResourceNotFoundFault') {
-            this.logger.error('Endpoint %s not found', identifier);
-            reject('No such endpoint');
-          } else {
-            this.logger.error('Error calling describeEndpoints: %j', err);
-            reject(err);
-          }
-
-        } else {
-          resolve(data.Endpoints[0].EndpointArn);
-        }
-      });
-    });
-  }
-
-  getReplicationInstanceArn(identifier: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-
-      const params = {
-        Filters: [{
-          Name: 'replication-instance-id',
-          Values: [identifier],
-        }],
-      };
-
-      this.dms.describeReplicationInstances(params, (err, data) => {
-        if (err) {
-          if (err.code === 'ResourceNotFoundFault') {
-            this.logger.error('Replication Instance %s not found', identifier);
-            reject('No such instance');
-
-          } else {
-            this.logger.error('Error calling describeReplicationInstances: %j', err);
-            reject(err);
-          }
-
-        } else {
-          resolve(data.ReplicationInstances[0].ReplicationInstanceArn);
-        }
-      });
-    });
-  }
-
   async getTaskStatus(taskName: string): Promise<string> {
     const taskArn = await this.getTaskArn(taskName);
-    return new Promise<string>((resolve, reject) => {
+
+    try {
       const params: DMS.Types.DescribeReplicationTasksMessage = {
         Filters: [
           { Name: 'replication-task-arn', Values: [taskArn] },
         ],
       };
 
-      this.dms.describeReplicationTasks(params, (err, data) => {
-        if (err) {
-          if (err.code === 'ResourceNotFoundFault') {
-            this.logger.error('Replication Instance %s not found', taskName);
-            reject('No such instance');
-          } else {
-            this.logger.error('Error calling describeReplicationInstances: %j', err);
-            reject(err);
-          }
-        } else {
-          resolve(data.ReplicationTasks[0].Status);
-        }
-      });
-    });
+      const data = await this.dms.describeReplicationTasks(params).promise();
+      return data.ReplicationTasks[0].Status;
+
+    } catch (err) {
+      if (err.code === 'ResourceNotFoundFault') {
+        this.logger.error('Replication Instance %s not found', taskName);
+      } else {
+        this.logger.error('Error calling describeReplicationInstances: %j', err);
+      }
+      throw err;
+    }
   }
 
   async stopTask(taskName: string): Promise<string> {
     const taskArn = await this.getTaskArn(taskName);
-    const  params = {
-      ReplicationTaskArn: taskArn,
-    };
-    return new Promise<string>((resolve, reject) => {
-      this.dms.stopReplicationTask(params, (err, data) => {
-        if (err) {
-          this.logger.error('Error calling stopTask %j', err);
-          reject(err);
-        } else {
-          console.log(`stop task ${data.ReplicationTask.Status}`);
-          resolve(data.ReplicationTask.Status);
-        }
-      });
-    });
+    try {
+      const  params = {
+        ReplicationTaskArn: taskArn,
+      };
+
+      const data = await this.dms.stopReplicationTask(params).promise();
+      return data.ReplicationTask.Status;
+    } catch (err) {
+      this.logger.error('Error calling stopTask %j', err);
+      throw err;
+    }
   }
 
   async startTask(taskName: string, taskType: 'start-replication' | 'resume-processing' | 'reload-target') {
     const taskArn = await this.getTaskArn(taskName);
-    const params = {
-      ReplicationTaskArn: taskArn,
-      StartReplicationTaskType: taskType,
-    };
-    return new Promise<string>((resolve, reject) => {
-      this.dms.startReplicationTask(params, (err, data) => {
-        if (err) {
-          this.logger.error('Error calling startTask %j', err);
-          reject(err);
-        } else {
-          resolve(data.ReplicationTask.Status);
-        }
-      });
-    });
+    try {
+      const params = {
+        ReplicationTaskArn: taskArn,
+        StartReplicationTaskType: taskType,
+      };
+
+      const data = await this.dms.startReplicationTask(params).promise();
+      return data.ReplicationTask.Status;
+    } catch (err) {
+      this.logger.error('Error calling startTask %j', err);
+      throw err;
+    }
   }
 
   async createTask(taskName: string, replicationInstanceArn: string,
@@ -171,11 +109,11 @@ export class DmsApi {
     }
   }
 
-  private createFullLoadTask(taskName: string, replicationInstanceArn: string,
-                             sourceEndpointArn: string, destEndpointArn: string,
-                             tableMappings: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
+  private async createFullLoadTask(taskName: string, replicationInstanceArn: string,
+                                   sourceEndpointArn: string, destEndpointArn: string,
+                                   tableMappings: string): Promise<string> {
 
+    try {
       const params = {
         MigrationType: 'full-load-and-cdc',
         ReplicationInstanceArn: replicationInstanceArn,
@@ -186,36 +124,28 @@ export class DmsApi {
         TargetEndpointArn: destEndpointArn,
       };
 
-      this.dms.createReplicationTask(params, (err, data) => {
-        if (err) {
-          this.logger.error('Error calling createReplicationTask: %j', err);
-          reject(err);
-
-        } else {
-          resolve(data.ReplicationTask.Status);
-        }
-      });
-    });
+      const data = await this.dms.createReplicationTask(params).promise();
+      return data.ReplicationTask.Status;
+    } catch (err) {
+      this.logger.error('Error calling createReplicationTask: %j', err);
+      throw err;
+    }
   }
 
-  private updateTask(taskArn: string, tableMappings: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
+  private async updateTask(taskArn: string, tableMappings: string): Promise<string> {
 
+    try {
       const params = {
         ReplicationTaskArn: taskArn,
         TableMappings: escapeJSON(tableMappings),
       };
 
-      this.dms.modifyReplicationTask(params, (err, data) => {
-        if (err) {
-          this.logger.error('Error calling modifyReplicationTask: %j', err);
-          reject(err);
-
-        } else {
-          resolve(data.ReplicationTask.Status);
-        }
-      });
-    });
+      const data = await this.dms.modifyReplicationTask(params).promise();
+      return data.ReplicationTask.Status;
+    } catch (err) {
+      this.logger.error('Error calling modifyReplicationTask: %j', err);
+      throw err;
+    }
   }
 
   async waitForDesiredTaskStatus(taskName: string, desiredStatus: string[]) {
@@ -246,9 +176,8 @@ export class DmsApi {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  private getTaskArn(taskName: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-
+  private async getTaskArn(taskName: string): Promise<string> {
+    try {
       const params = {
         Filters: [{
           Name: 'replication-task-id',
@@ -256,21 +185,15 @@ export class DmsApi {
         }],
       };
 
-      this.dms.describeReplicationTasks(params, (err, data) => {
-        if (err) {
-          if (err.code === 'ResourceNotFoundFault') {
-            this.logger.error('Replication Task %s not found', taskName);
-            reject('No such task');
-
-          } else {
-            this.logger.error('Error calling describeReplicationTasks: %j', err);
-            reject(err);
-          }
-
-        } else {
-          resolve(data.ReplicationTasks[0].ReplicationTaskArn);
-        }
-      });
-    });
+      const data = await this.dms.describeReplicationTasks(params).promise();
+      return data.ReplicationTasks[0].ReplicationTaskArn;
+    } catch (err) {
+      if (err.code === 'ResourceNotFoundFault') {
+        this.logger.error('Replication Task %s not found', taskName);
+      } else {
+        this.logger.error('Error calling describeReplicationTasks: %j', err);
+      }
+      throw err;
+    }
   }
 }
