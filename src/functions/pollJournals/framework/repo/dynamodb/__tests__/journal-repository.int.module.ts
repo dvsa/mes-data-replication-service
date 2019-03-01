@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
-import { getStaffNumberHashMappings } from '../journal-repository';
+import { getStaffNumbersWithHashes } from '../journal-repository';
 import { bootstrapConfig } from '../../../config/config';
 
 let ddb: DynamoDB.DocumentClient;
@@ -12,12 +12,12 @@ export const dynamoDBIntegrationTests = () => {
       return bootstrapConfig();
     });
 
-    describe('getStaffNumberHashMappings', () => {
+    describe('getStaffNumbersWithHashes', () => {
       it('should fetch every staff number and the hash of their journal from DynamoDB', async () => {
         await putStaffNumberAndHash('123', 'abc');
         await putStaffNumberAndHash('456', 'xyz');
 
-        const result = await getStaffNumberHashMappings();
+        const result = await getStaffNumbersWithHashes();
 
         expect(result.length).toBe(2);
         expect(result).toContain({ staffNumber: '123', hash: 'abc' });

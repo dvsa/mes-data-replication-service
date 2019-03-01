@@ -43,7 +43,7 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
   console.log(`END SAVE: ${new Date()}`);
 };
 
-export const getStaffNumberHashMappings = async (): Promise<Partial<JournalWrapper>[]> => {
+export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrapper>[]> => {
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
 

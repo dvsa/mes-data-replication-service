@@ -4,7 +4,7 @@ import { filterChangedJournals } from '../journal-change-filter';
 import { JournalWrapper } from '../../domain/journal-wrapper';
 
 describe('JournalChangeFilter', () => {
-  const moqGetStaffNumberHashMappings = Mock.ofInstance(journalRepository.getStaffNumberHashMappings);
+  const moqGetStaffNumberHashMappings = Mock.ofInstance(journalRepository.getStaffNumbersWithHashes);
 
   const dummyJournal1 = Mock.ofType<JournalWrapper>();
   dummyJournal1.setup((x: any) => x.staffNumber).returns(() => '123');
@@ -21,7 +21,7 @@ describe('JournalChangeFilter', () => {
   beforeEach(() => {
     moqGetStaffNumberHashMappings.reset();
 
-    spyOn(journalRepository, 'getStaffNumberHashMappings').and.callFake(moqGetStaffNumberHashMappings.object);
+    spyOn(journalRepository, 'getStaffNumbersWithHashes').and.callFake(moqGetStaffNumberHashMappings.object);
   });
 
   describe('filterChangedJournals', () => {
