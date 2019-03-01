@@ -59,63 +59,88 @@ export function generateTableMapping(options: Options): any {
       },
       'rule-action': 'include',
     };
-
     if (element.andFilters) {
       rule['filters'] = [];
 
-      element.andFilters.forEach((andFilter: AndFilter) => {
-        const filter: any = {
-          'filter-type': 'source',
-          'column-name': andFilter.column,
-          'filter-conditions': [],
-        };
+      const filters = addAndFilters(element);
+      rule['filters'] = [...filters];
 
-        andFilter.orConditions.forEach((condition: OrCondition) => {
-          if (condition.start) {
-            // filter with two values
-            filter['filter-conditions'].push({
-              'filter-operator': condition.operator,
-              'start-value': condition.start,
-              'end-value': condition.end,
-            });
-          } else {
-            // filter with one value
-            filter['filter-conditions'].push({
-              'filter-operator': condition.operator,
-              value: condition.value,
-            });
-          }
-        });
-
-        rule['filters'].push(filter);
-      });
     }
 
     config.rules.push(rule);
     index += 1;
 
     if (element.removeColumns) {
-      // add rules for each column to remove
-      element.removeColumns.forEach((column: string) => {
-        const removeRule = {
-          'rule-type': 'transformation',
-          'rule-id': `${index}`,
-          'rule-name': `${index}`,
-          'rule-action': 'remove-column',
-          'rule-target': 'column',
-          'object-locator': {
-            'schema-name': options.sourceSchema,
-            'table-name': element.sourceName,
-            'column-name': column,
-          },
-        };
-        config.rules.push(removeRule);
-        index += 1;
-      });
+
+      const removalResult = addRemovecolumns(index, options.sourceSchema, element.sourceName, element.removeColumns);
+      config.rules = [...config.rules, ...removalResult.rules];
+      index = removalResult.index;
     }
   });
 
   return config;
+}
+
+function addRemovecolumns(index: number, sourceSchema:string, sourceName:string, removeColumns: string[]): any {
+  const removeRules: any[] = [];
+  let localIndex:number = index;
+  removeColumns.forEach((column:string) => {
+    const removeRule = {
+      'rule-type': 'transformation',
+      'rule-id': `${localIndex}`,
+      'rule-name': `${localIndex}`,
+      'rule-action': 'remove-column',
+      'rule-target': 'column',
+      'object-locator': {
+        'schema-name': sourceSchema,
+        'table-name': sourceName,
+        'column-name': column,
+      },
+    };
+    removeRules.push(removeRule);
+    localIndex += 1;
+  });
+  return { index: localIndex, rules: removeRules };
+}
+
+function addAndFilters(element:Table):any {
+      // then add include selection rules for every table...
+  const allFilters: any[] = [];
+  element.andFilters.forEach((andFilter: AndFilter) => {
+    const filter: any = {
+      'filter-type': 'source',
+      'column-name': andFilter.column,
+      'filter-conditions': [],
+    };
+
+    const filterConditions = addOrCondition(andFilter.orConditions);
+    filter['filter-conditions'] = [...filterConditions];
+    allFilters.push(filter);
+  });
+
+  return allFilters;
+}
+
+function addOrCondition(orConditions: OrCondition[]): any {
+
+  const filterConditions : any[] = [];
+  orConditions.forEach((condition: OrCondition) => {
+    if (condition.start) {
+      // filter with two values
+      filterConditions.push({
+        'filter-operator': condition.operator,
+        'start-value': condition.start,
+        'end-value': condition.end,
+      });
+    } else {
+      // filter with one value
+      filterConditions.push({
+        'filter-operator': condition.operator,
+        value: condition.value,
+      });
+    }
+  });
+  return filterConditions;
 }
 
 function findFilters(options: Options, tableName: string): AndFilter[] {
