@@ -45,10 +45,10 @@ async function createAllTasks(): Promise<void> {
     const replicationInstanceArn = await dms.getReplicationInstanceArn('mes-perf-dms-replicator');
     logger.debug('repl instance arn is %s', replicationInstanceArn);
 
-    await dms.createTask('static-full-load-and-cdc', '../table-mappings/static-tables.json',
+    await dms.createTask('mes-perf-dms-static-full-load-and-cdc', '../table-mappings/static-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn);
 
-    await dms.createTask('dateFiltered-full-load-and-cdc', '../table-mappings/dateFiltered-tables.json',
+    await dms.createTask('mes-perf-dms-dateFiltered-full-load-and-cdc', '../table-mappings/dateFiltered-tables.json',
                   replicationInstanceArn, sourceEndpointArn, destEndpointArn, addDateFilters);
 
   } catch (e) {
@@ -57,7 +57,7 @@ async function createAllTasks(): Promise<void> {
 }
 
 // pretend today is...
-const startDate = DateTime.fromISO('2017-08-03');
+const startDate = DateTime.fromISO('2019-02-28');
 
 // time window to migrate detailed journal data (i.e. slots and bookings with candidate details etc)
 // used for the "Test Slots" and "Non Test Activities" datasets
