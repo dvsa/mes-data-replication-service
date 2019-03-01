@@ -1,6 +1,7 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB, config as awsConfig, Credentials } from 'aws-sdk';
 import { getStaffNumbersWithHashes } from '../journal-repository';
 import { bootstrapConfig } from '../../../config/config';
+import * as dotenv from 'dotenv';
 
 let ddb: DynamoDB.DocumentClient;
 
@@ -8,7 +9,13 @@ export const dynamoDBIntegrationTests = () => {
   describe('DynamoDB integration tests', () => {
 
     beforeAll(() => {
+      awsConfig.update({
+        region: 'localhost',
+        credentials: new Credentials('akid', 'secret', 'session'),
+      });
       ddb = new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000', region: 'localhost' });
+      process.env.IS_OFFLINE = 'true';
+      dotenv.config();
       return bootstrapConfig();
     });
 
