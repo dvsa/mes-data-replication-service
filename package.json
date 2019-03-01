@@ -21,6 +21,7 @@
     "@types/aws-sdk": "^2.7.0",
     "@types/chai": "^4.1.7",
     "@types/cucumber": "^4.0.5",
+    "@types/dotenv": "^6.1.0",
     "@types/jasmine": "^2.8.9",
     "@types/mysql": "^2.15.5",
     "@types/node": "^10.12.0",
@@ -68,7 +69,7 @@
     "start": "sls dynamodb install && sls offline start",
     "test": "npm run compile && jasmine",
     "test:integration": "npm run compile && jasmine build/spec/example.spec.js",
-    "test:repos": "npm run compile && jasmine build/src/functions/pollJournals/framework/repo/mysql/__tests__/repositories.int.js"
+    "test:repos": "npm run compile && jasmine build/src/functions/pollJournals/framework/repo/__tests__/repositories.int.js"
   },
   "husky": {
     "hooks": {
