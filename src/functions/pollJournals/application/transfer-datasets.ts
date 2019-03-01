@@ -50,7 +50,7 @@ export const transferDatasets = async (): Promise<void> => {
   console.log(`FINISHED TRANFORM PHASE, STARTING FILTER PHASE: ${new Date()}`);
 
   const changedJournals = await filterChangedJournals(journals);
-  console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE: ${new Date()}`);
+  console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE FOR ${changedJournals.length} JOURNALS: ${new Date()}`);
 
   await saveJournals(changedJournals);
   console.log(`FINISHED SAVE PHASE: ${new Date()}`);
