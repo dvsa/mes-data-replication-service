@@ -27,8 +27,8 @@ AfterAll(() => {
 
 After(() => {
   return Promise.all([
-    query(mysqlConn, `TRUNCATE TABLE EXAMINER`),
-    query(mysqlConn, `TRUNCATE TABLE EXAMINER_STATUS`),
+    query(mysqlConn, 'TRUNCATE TABLE EXAMINER'),
+    query(mysqlConn, 'TRUNCATE TABLE EXAMINER_STATUS'),
   ]);
 });
 

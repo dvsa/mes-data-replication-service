@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
-    "strict": true,
-    "allowJs": false,
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "allowSyntheticDefaultImports": true,
+    "lib": [ "esnext" ],
+    "sourceMap": true,
     "target": "es5",
+    "outDir": "./build",
+    "allowJs": false,
     "types" : [
       "node",
       "jasmine"
@@ -20,6 +18,10 @@
     "./e2e/**/*"
   ],
   "exclude": [
-    "node_modules"
-  ]
+    "node_modules",
+  ],
+  "compileOnSave": false,
+  "atom": {
+    "rewriteTsconfig": false
+  }
 }
