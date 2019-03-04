@@ -22,8 +22,8 @@ export const getNonTestActivities = async (connectionPool: mysql.Pool)
               ) nwd
         ) windows
         on w.programme_date between windows.window_start and windows.window_end
-      left join TEST_CENTRE tc on w.tc_id = tc.tc_id
-      left join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
+      join TEST_CENTRE tc on w.tc_id = tc.tc_id
+      join TEST_CENTRE_NAME tcn on w.tc_id = tcn.tc_id
     where w.examiner_end_date >= windows.window_start
     `,
   );

@@ -1,67 +1,89 @@
 import { ExaminerTestSlot } from '../../../../domain/examiner-test-slot';
-import { VehicleGearbox, PreviousCancellation } from '../../../../../../common/domain/Schema';
+import {
+    Application,
+    Booking,
+    Business,
+    Candidate,
+    PreviousCancellation,
+    Address,
+} from '../../../../../../common/domain/Schema';
 import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
+/**
+ * Defines the possible rows that the test slot query can return.
+ *
+ * Whether a field is nullable or not depends both on the table definition and whether being accessed
+ * via a left join.
+ *
+ * This needs updating if the SQL query is ever changed.
+ */
 interface TestSlotRow {
-  slot_id: number;
-  start_time: Date;
-  minutes: number;
-  vehicle_slot_type: string;
-  tc_id: number;
-  tc_cost_centre_code: string;
-  tc_name: string;
-  individual_id: number;
-  programme_date: string;
-  booking_id: number;
-  app_id: number;
-  booking_seq: number;
-  check_digit: number;
-  welsh_test_ind: number;
-  ext_req_ind: number;
-  progressive_access: number;
-  meeting_place: string;
-  special_needs: string;
-  ent_check_ind: number;
-  cab_seat_count: number;
-  passenger_seat_count: number;
-  height_metres: number;
-  length_metres: number;
-  width_metres: number;
-  vehicle_category: string;
-  gearbox_type: string;
-  candidate_id: number;
-  candidate_title: string;
-  candidate_first_name: string;
-  candidate_second_name: string;
-  candidate_third_name: string;
-  candidate_surname: string;
-  candidate_driver_number: string;
-  cand_primary_tel: string;
-  cand_secondary_tel: string;
-  cand_mobile_tel: string;
-  cand_email: string;
-  candidate_addr_line1: string;
-  candidate_addr_line2: string;
-  candidate_addr_line3: string;
-  candidate_addr_line4: string;
-  candidate_addr_line5: string;
-  candidate_post_code: string;
-  candidate_prn: number;
-  prev_attempts: number;
-  business_id: number;
-  business_name: string;
-  business_addr_line1: string;
-  business_addr_line2: string;
-  business_addr_line3: string;
-  business_addr_line4: string;
-  business_addr_line5: string;
-  business_post_code: string;
-  business_telephone: string;
-  cancel_initiator: string;
+  slot_id: number; // not nullable
+  start_time: Date; // not nullable
+  minutes: number; // not nullable
+  vehicle_slot_type: string | null; // nullable
+  tc_id: number; // not nullable
+  tc_cost_centre_code: string; // not nullable
+  tc_name: string; // not nullable
+  individual_id: number; // not nullable
+  programme_date: string; // not nullable
+  // every field beyond this point is nullable because of the left join on booking_details...
+  booking_id: number | null;
+  app_id: number | null;
+  booking_seq: number | null;
+  check_digit: number | null;
+  welsh_test_ind: number | null;
+  ext_req_ind: number | null;
+  progressive_access: number | null;
+  meeting_place: string | null;
+  special_needs: string | null;
+  ent_check_ind: number | null;
+  cab_seat_count: number | null;
+  passenger_seat_count: number | null;
+  height_metres: number | null;
+  length_metres: number | null;
+  width_metres: number | null;
+  vehicle_category: string | null;
+  gearbox_type: string | null;
+  candidate_id: number | null;
+  candidate_title: string | null;
+  candidate_first_name: string | null;
+  candidate_second_name: string | null;
+  candidate_third_name: string | null;
+  candidate_surname: string | null;
+  candidate_driver_number: string | null;
+  cand_primary_tel: string | null;
+  cand_secondary_tel: string | null;
+  cand_mobile_tel: string | null;
+  cand_email: string | null;
+  candidate_addr_line1: string | null;
+  candidate_addr_line2: string | null;
+  candidate_addr_line3: string | null;
+  candidate_addr_line4: string | null;
+  candidate_addr_line5: string | null;
+  candidate_post_code: string | null;
+  candidate_prn: number | null;
+  prev_attempts: number | null;
+  business_id: number | null;
+  business_name: string | null;
+  business_addr_line1: string | null;
+  business_addr_line2: string | null;
+  business_addr_line3: string | null;
+  business_addr_line4: string | null;
+  business_addr_line5: string | null;
+  business_post_code: string | null;
+  business_telephone: string | null;
+  cancel_initiator: string | null;
 }
 
+/**
+ * Marshalls test slot query results into the JSON representation.
+ * @param row The query results
+ * @returns The JSON representation
+ */
 export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
-  return {
+  // populate not nullable fields...
+  const slot: ExaminerTestSlot = {
     examinerId: row.individual_id,
     testSlot: {
       slotDetail: {
@@ -69,74 +91,158 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
         start: formatDateToStartTime(row.start_time),
         duration: row.minutes,
       },
-      vehicleSlotType: row.vehicle_slot_type,
       testCentre: {
         centreId: row.tc_id,
         centreName: row.tc_name,
         costCode: row.tc_cost_centre_code,
       },
-      booking: {
-        candidate: {
-          candidateId: row.candidate_id,
-          candidateName: {
-            title: row.candidate_title,
-            firstName: row.candidate_first_name,
-            secondName: row.candidate_second_name,
-            thirdName: row.candidate_third_name,
-            lastName: row.candidate_surname,
-          },
-          driverNumber: row.candidate_driver_number,
-          candidateAddress: {
-            addressLine1: row.candidate_addr_line1,
-            addressLine2: row.candidate_addr_line2,
-            addressLine3: row.candidate_addr_line3,
-            addressLine4: row.candidate_addr_line4,
-            addressLine5: row.candidate_addr_line5,
-            postcode: row.candidate_post_code,
-          },
-          primaryTelephone: row.cand_primary_tel,
-          secondaryTelephone: row.cand_secondary_tel,
-          mobileTelephone: row.cand_mobile_tel,
-          emailAddress: row.cand_email,
-          prn: row.candidate_prn,
-          previousADITests: row.prev_attempts,
-        },
-        application: {
-          applicationId: row.app_id,
-          bookingSequence: row.booking_seq,
-          checkDigits: row.check_digit,
-          welshTest: convertIndicator(row.welsh_test_ind),
-          extendedTest: convertIndicator(row.ext_req_ind),
-          meetingPlace: row.meeting_place,
-          progressiveAccess: convertIndicator(row.progressive_access),
-          specialNeeds: row.special_needs,
-          entitlementCheck: convertIndicator(row.ent_check_ind),
-          vehicleSeats: row.cab_seat_count + row.passenger_seat_count,
-          vehicleHeight: row.height_metres,
-          vehicleWidth: row.width_metres,
-          vehicleLength: row.length_metres,
-          testCategory: row.vehicle_category,
-          vehicleGearbox: row.gearbox_type as VehicleGearbox,
-        },
-        previousCancellation: (row.cancel_initiator ? row.cancel_initiator.split(',') : []) as PreviousCancellation,
-        business: {
-          businessId: row.business_id,
-          businessName: row.business_name,
-          businessAddress: {
-            addressLine1: row.business_addr_line1,
-            addressLine2: row.business_addr_line2,
-            addressLine3: row.business_addr_line3,
-            addressLine4: row.business_addr_line4,
-            addressLine5: row.business_addr_line5,
-            postcode: row.business_post_code,
-          },
-          telephone: row.business_telephone,
-        },
-      },
     },
   };
+
+  // ...then add the nullable fields, if returned in results
+  if (row.vehicle_slot_type) {
+    slot.testSlot.vehicleSlotType = row.vehicle_slot_type;
+  }
+
+  if (row.booking_id) {
+    const booking: Booking = {};
+    slot.testSlot.booking = booking;
+
+    const app: Application = {};
+    booking.application = app;
+    setNumberIfPopulated(app, 'applicationId', row.app_id);
+    setNumberIfPopulated(app, 'bookingSequence', row.booking_seq);
+    setNumberIfPopulated(app, 'checkDigits', row.check_digit);
+    setBooleanIfPopulated(app, 'welshTest', row.welsh_test_ind);
+    setBooleanIfPopulated(app, 'extendedTest', row.ext_req_ind);
+    setStringIfPopulated(app, 'meetingPlace', row.meeting_place);
+    setBooleanIfPopulated(app, 'progressiveAccess', row.progressive_access);
+    setStringIfPopulated(app, 'specialNeeds', row.special_needs);
+    setBooleanIfPopulated(app, 'entitlementCheck', row.ent_check_ind);
+    setNumberIfPopulated(app, 'vehicleSeats', zeroIfNull(row.cab_seat_count) + zeroIfNull(row.passenger_seat_count));
+    setNumberIfPopulated(app, 'vehicleHeight', row.height_metres);
+    setNumberIfPopulated(app, 'vehicleWidth', row.width_metres);
+    setNumberIfPopulated(app, 'vehicleLength', row.length_metres);
+    setStringIfPopulated(app, 'testCategory', row.vehicle_category);
+    setStringIfPopulated(app, 'vehicleGearbox', row.gearbox_type);
+
+    if (row.candidate_id) {
+      const candidate: Candidate = {
+        candidateId: row.candidate_id,
+      };
+      slot.testSlot.booking.candidate = candidate;
+      setStringIfPopulated(candidate, 'driverNumber', row.candidate_driver_number);
+      setStringIfPopulated(candidate, 'primaryTelephone', row.cand_primary_tel);
+      setStringIfPopulated(candidate, 'secondaryTelephone', row.cand_secondary_tel);
+      setStringIfPopulated(candidate, 'mobileTelephone', row.cand_mobile_tel);
+      setStringIfPopulated(candidate, 'emailAddress', row.cand_email);
+      setNumberIfPopulated(candidate, 'prn', row.candidate_prn);
+      setNumberIfPopulated(candidate, 'previousADITests', row.prev_attempts);
+
+      candidate.candidateName = {};
+      setStringIfPopulated(candidate.candidateName, 'title', row.candidate_title);
+      setStringIfPopulated(candidate.candidateName, 'firstName', row.candidate_first_name);
+      setStringIfPopulated(candidate.candidateName, 'secondName', row.candidate_second_name);
+      setStringIfPopulated(candidate.candidateName, 'thirdName', row.candidate_third_name);
+      setStringIfPopulated(candidate.candidateName, 'lastName', row.candidate_surname);
+
+      setAddressIfPopulated(
+        candidate, 'candidateAddress', row.candidate_addr_line1, row.candidate_addr_line2, row.candidate_addr_line3,
+        row.candidate_addr_line4, row.candidate_addr_line5, row.candidate_post_code);
+    }
+
+    if (row.cancel_initiator && row.cancel_initiator.length > 0) {
+      booking.previousCancellation = row.cancel_initiator.split(',') as PreviousCancellation;
+    }
+
+    if (row.business_id) {
+      const business: Business = {
+        businessId: row.business_id,
+      };
+      booking.business = business;
+      setStringIfPopulated(business, 'businessName', row.business_name);
+      setStringIfPopulated(business, 'telephone', row.business_telephone);
+      setAddressIfPopulated(
+        business, 'businessAddress', row.business_addr_line1, row.business_addr_line2, row.business_addr_line3,
+        row.business_addr_line4, row.business_addr_line5, row.business_post_code);
+    }
+  }
+
+  return slot;
 };
 
-const convertIndicator = (indicator: number): boolean => {
-  return indicator === 1;
+/**
+ * Sets address fields if the values are populated (not null and not empty). Always creates the wrapper Address object.
+ * @param object The object to update
+ * @param field  The object field to set
+ * @param line1  The address line 1 value to use
+ * @param line2  The address line 2 value to use
+ * @param line3  The address line 3 value to use
+ * @param line4  The address line 4 value to use
+ * @param line5  The address line 5 value to use
+ * @param postcode  The address postcode value to use
+ */
+const setAddressIfPopulated = (
+    object: any,
+    field: string,
+    line1: string | null,
+    line2: string | null,
+    line3: string | null,
+    line4: string | null,
+    line5: string | null,
+    postcode: string | null) => {
+  const address: Address = {};
+  object[field] = address;
+  setStringIfPopulated(address, 'addressLine1', line1);
+  setStringIfPopulated(address, 'addressLine2', line2);
+  setStringIfPopulated(address, 'addressLine3', line3);
+  setStringIfPopulated(address, 'addressLine4', line4);
+  setStringIfPopulated(address, 'addressLine5', line5);
+  setStringIfPopulated(address, 'postcode', postcode);
+};
+
+/**
+ * Sets an object field if the value is populated (not null).
+ * @param object The object to update
+ * @param field  The object field to set
+ * @param value  The value to use
+ */
+const setNumberIfPopulated = (object: any, field: string, value: number | null) => {
+  if (value) {
+    object[field] = value;
+  }
+};
+
+/**
+ * Sets an object field to true (if the value is 1), otherwise set to false.
+ * @param object The object to update
+ * @param field  The object field to set
+ * @param value  The value to use (0 or 1 meaning true or false)
+ */
+const setBooleanIfPopulated = (object: any, field: string, value: number | null) => {
+  if (value) {
+    object[field] = (value === 1);
+  } else {
+    object[field] = false;
+  }
+};
+
+/**
+ * Sets an object field if the value is populated (not null and not empty or just whitespace).
+ * @param object The object to update
+ * @param field  The object field to set
+ * @param value  The value to use
+ */
+const setStringIfPopulated = (object: any, field: string, value: string | null) => {
+  if (value && value.trim().length > 0) {
+    object[field] = value;
+  }
+};
+
+/**
+ * Returns the value (if not null) otherwise zero.
+ * @param value The value to use
+ */
+const zeroIfNull = (value: number | null): number => {
+  return value ? value : 0;
 };
