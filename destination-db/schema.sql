@@ -290,37 +290,6 @@ CREATE TABLE BOOKING
 	CONSTRAINT BKG_SLOT_ID_UNIQUE UNIQUE (SLOT_ID)
 );
 
--- create the work_schedule_slots as a view so that other legacy queries can be kept
--- as simple as possible
-CREATE VIEW WORK_SCHEDULE_SLOTS AS
-select ps.slot_id, DATE(p.programme_date) as programme_date, ps.start_time, ps.minutes,
-	ps.individual_id, ps.tc_id, ps.vst_code, ps.non_test_activity_code,
-	IFNULL(es.end_date, '4000-01-01') as examiner_end_date
-from PROGRAMME p 
-join PROGRAMME_SLOT ps
-	on ps.programme_date = p.programme_date
-	and ps.individual_id = p.individual_id
-	and ps.tc_id = p.tc_id
-join EXAMINER e on e.individual_id = p.individual_id
-join EXAMINER_STATUS es on es.individual_id = e.individual_id
-where ps.tc_closed_ind != 1
-and IFNULL(ps.deployed_to_from_code, 0) != 1
-and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
-and (
-	p.state_code not in (2, 3)
-	or exists
-		(
-		select book.booking_id
-		from BOOKING book
-		join PROGRAMME_SLOT slot on slot.slot_id = book.slot_id
-		where slot.programme_date = p.programme_date
-		and slot.individual_id = p.individual_id
-		and slot.tc_id = p.tc_id
-		and book.state_code = 1
-		)
-	);
-
-
 --
 -- personalCommitmentDataSet tables
 --
@@ -520,13 +489,13 @@ CREATE TABLE VEHICLE
 CREATE TABLE TEST_SERVICE 
 (	TEST_SERVICE_ID BIGINT NOT NULL,
 -- 	TEST_SERVICE_DESCRIPTION VARCHAR(50) NOT NULL,
--- 	EXTENDED_IND BIT NOT NULL,
--- 	SPECIAL_NEEDS_CODE VARCHAR(20) NOT NULL,
+ 	EXTENDED_IND BIT NOT NULL,
+ 	SPECIAL_NEEDS_CODE VARCHAR(20) NOT NULL,
 -- 	MEETING_PLACE_IND BIT NOT NULL,
 -- 	START_DATE DATETIME NOT NULL,
 -- 	END_DATE DATETIME NULL,
 	TEST_CATEGORY_REF VARCHAR(10) NOT NULL,
--- 	VST_CODE BIGINT NOT NULL,
+ 	VST_CODE BIGINT NOT NULL,
 -- 	CREATED_ON DATETIME NOT NULL,
 -- 	CREATED_BY BIGINT NOT NULL,
 -- 	UPDATED_ON DATETIME NOT NULL,
@@ -866,6 +835,35 @@ CREATE TABLE TEST_CATEGORY
 	CONSTRAINT TC_TEST_CAT_REF_PK PRIMARY KEY (TEST_CATEGORY_REF)
 );
 
+-- create the work_schedule_slots as a view so that other legacy queries can be kept
+-- as simple as possible
+CREATE VIEW WORK_SCHEDULE_SLOTS AS
+select ps.slot_id, DATE(p.programme_date) as programme_date, ps.start_time, ps.minutes,
+	ps.individual_id, ps.tc_id, ps.vst_code, ps.non_test_activity_code,
+	IFNULL(es.end_date, '4000-01-01') as examiner_end_date
+from PROGRAMME p 
+join PROGRAMME_SLOT ps
+	on ps.programme_date = p.programme_date
+	and ps.individual_id = p.individual_id
+	and ps.tc_id = p.tc_id
+join EXAMINER e on e.individual_id = p.individual_id
+join EXAMINER_STATUS es on es.individual_id = e.individual_id
+where ps.tc_closed_ind != 1
+and IFNULL(ps.deployed_to_from_code, 0) != 1
+and IFNULL(e.grade_code, 'ZZZ') != 'DELE'
+and (
+	p.state_code not in (2, 3)
+	or exists
+		(
+		select book.booking_id
+		from BOOKING book
+		join PROGRAMME_SLOT slot on slot.slot_id = book.slot_id
+		where slot.programme_date = p.programme_date
+		and slot.individual_id = p.individual_id
+		and slot.tc_id = p.tc_id
+		and book.state_code = 1
+		)
+	);
 
 -- Additional indexes added for query performance
 -- First, create the stored procedure
@@ -903,6 +901,7 @@ END //
 
 DELIMITER ;
 
+-- Then create the indexes
 -- Examiner tables
 CALL CreateIndex ('tarsreplica','REF_DATA_ITEM_MASTER','IX_RDIM_ITEMID','item_id');
 
@@ -934,282 +933,170 @@ CALL CreateIndex ('tarsreplica','APPLICATION_RSIS_INFO','IX_RSIS_BOOKID','bookin
 
 -- Functions
 DELIMITER //
-use tarsreplica
+USE tarsreplica
 //
- 
-DROP FUNCTION IF EXISTS isValidIndividualContact
+  
+/*
+* Determines the number of previous ADI test attempts.
+*/
+DROP FUNCTION IF EXISTS getPreviousADIAttempts
 //
- 
-CREATE FUNCTION isValidIndividualContact(p_contact_details_id INT,
-                                                                                                                                                                                                                                                                                                  p_indvidual_id INT) 
-                                                                          returns INT
-BEGIN
-     DECLARE l_contact_details_id BIGINT default 0;
-                DECLARE TRUE_RESULT INT default 1;
-     DECLARE FALSE_RESULT INT default 0;
-                  if p_indvidual_id is null then
-                                                return TRUE_RESULT;
-                  end if;
- /*
-                   * Note: unable to use the test date and the valid from/valid to dates, as in reality TARS can update the
-                   * valid from date to be beyond the test date!
-                   */
-                  select max(contact_details_id) into l_contact_details_id
-                      from CONTACT_DETAILS
-                      where individual_id = p_indvidual_id;
-                if l_contact_details_id = p_contact_details_id then
-          return TRUE_RESULT;
-                else
-          return FALSE_RESULT;
-                end if;
-END;
-//
- 
-DROP FUNCTION IF EXISTS isValidIndividualAddress
-//
-  CREATE FUNCTION  isValidIndividualAddress(p_address_id INT, p_indvidual_id INT) returns INT
-  BEGIN
-     DECLARE l_address_id BIGINT default 0;
-                DECLARE TRUE_RESULT INT default 1;
-     DECLARE FALSE_RESULT INT default 0;
- 
-  if p_indvidual_id is null then
-          return TRUE_RESULT;
-      end if;
-      /*
-       * Note: unable to use the test date and the valid from/valid to dates, as in reality TARS can update the
-       * valid from date to be beyond the test date!
-       */
-      select max(address_id) into l_address_id
-          from ADDRESS
-          where individual_id = p_indvidual_id
-          and address_type_code = 1263;
-      if l_address_id = p_address_id then
-          return TRUE_RESULT;
-      else
-          return FALSE_RESULT;
-      end if;
-  end
-  //
-  /*
-   * Determines if the contact details for the specified business on the specified date is the latest, or null.
-   */
-DROP FUNCTION IF EXISTS isValidBusinessContact
-//
-  CREATE FUNCTION isValidBusinessContact(p_contact_details_id int, p_organisation_register_id int) returns INT
-  begin
-     DECLARE l_contact_details_id BIGINT default 0;
-                DECLARE TRUE_RESULT INT default 1;
-     DECLARE FALSE_RESULT INT default 0;
- 
-                  if p_organisation_register_id is null then
-          return TRUE_RESULT;
-      end if;
-      select max(contact_details_id) into l_contact_details_id
-          from CONTACT_DETAILS
-          where organisation_register_id = p_organisation_register_id;
-      if l_contact_details_id = p_contact_details_id then
-          return TRUE_RESULT;
-     else
-          return FALSE_RESULT;
-      end if;
-  end
-  //
-  /*
-   * Determines if the address for the specified business on the specified date is the latest, or null.
-   */
-    DROP FUNCTION IF EXISTS isValidBusinessAddress
-//
- 
-CREATE FUNCTION isValidBusinessAddress(p_address_id INT, p_organisation_id INT) returns INT
-  begin
-       DECLARE  l_address_id BIGINT default 0;
-       DECLARE  TRUE_RESULT INT default 1;
-       DECLARE  FALSE_RESULT INT default 0;
- 
-                  if p_organisation_id is null then
-          return TRUE_RESULT;
-      end if;
-      select max(address_id) into l_address_id
-          from ADDRESS
-          where organisation_id = p_organisation_id
-          and address_type_code = 1280;
-      if l_address_id = p_address_id then
-          return TRUE_RESULT;
-      else
-          return FALSE_RESULT;
-      end if;
-  end
-  //
- 
-  /*
-   * Determines the number of previous ADI test attempts.
-   */
-    DROP FUNCTION IF EXISTS getPreviousADIAttempts
-//
- 
+  
 CREATE FUNCTION getPreviousADIAttempts(p_candidate_id INT, p_vehicle_category varchar(30) ) returns INT
-  begin
-      DECLARE l_part1_date  date;
-      DECLARE l_count       INT;
- /*
-                   * This logic is taken from the Journal reports - to calculate the number of ADI part 2 or 3 attempts since
-       * the examiner's latest ADI part 1 (theory) attempt
-       *
-       * In practice the eligability logic is more restrictive than this but TARS should have applied that when the
-       * test is booked, and we don't want top replicate all that logic here...
-                   */
-                  select max(date_of_test) into l_part1_date
-           from TEST_HISTORY
-           where individual_id = p_candidate_id
-           and exam_type_code = 2097;
-      select count(*) into l_count
-           from  TEST_HISTORY t,  REF_DATA_ITEM_MASTER category_ref, REF_DATA_ITEM_MASTER  result_ref
-           where t.individual_id = p_candidate_id
-           and t.exam_type_code = category_ref.item_id
-		   and category_ref.category_id = 29
-           and category_ref.item_desc2 = p_vehicle_category
-           and t.result_code = result_ref.item_id
-           and result_ref.item_desc2 in ('F','U')    -- Failed or Unknown Test Result
-           and t.date_of_test > l_part1_date;
-      return l_count;
-  end
-  //
+    BEGIN
+        DECLARE l_part1_date  DATE;
+        DECLARE l_count       INT;
+/*
+* This logic is taken from the Journal reports - to calculate the number of ADI part 2 or 3 attempts since
+* the examiner's latest ADI part 1 (theory) attempt
+*
+* In practice the eligability logic is more restrictive than this but TARS should have applied that when the
+* test is booked, and we don't want top replicate all that logic here...
+*/
+        SELECT MAX(date_of_test) INTO l_part1_date
+        FROM TEST_HISTORY
+        WHERE individual_id = p_candidate_id
+            AND exam_type_code = 2097;
  
-  /*
-   * Determines the entitlement check indicator for this booking.
-   */
-    DROP FUNCTION IF EXISTS getEntitlementCheckIndicator
+        SELECT COUNT(*) INTO l_count
+        FROM TEST_HISTORY t, REF_DATA_ITEM_MASTER category_ref, REF_DATA_ITEM_MASTER result_ref
+        WHERE t.individual_id = p_candidate_id
+            AND t.exam_type_code = category_ref.item_id
+            AND category_ref.category_id = 29
+            AND category_ref.item_desc2 = p_vehicle_category
+            AND t.result_code = result_ref.item_id
+            AND result_ref.item_desc2 IN ('F','U')    -- Failed or Unknown Test Result
+            AND t.date_of_test > l_part1_date;
+        RETURN l_count;
+    END
 //
-  CREATE function getEntitlementCheckIndicator(p_application_id INT) returns INT
-  begin
-     DECLARE  l_count       INT;
-     DECLARE  TRUE_RESULT INT default 1;
-	 DECLARE  FALSE_RESULT INT default 0;
-     
-	DECLARE c1 CURSOR FOR 
-      select count(*)
-         from APPLICATION
-          where app_id = p_application_id
-          and state_code = 3;
-          
-	DECLARE c2 CURSOR FOR 
-      select count(*)
-          from APPLICATION_HISTORY
-          where app_id = p_application_id
-          and event_code = 1030
-          and event_date_time >=
-          (
-              select max( DATE(event_date_time) )
-                  from APPLICATION_HISTORY
-                  where app_id = p_application_id
-                  and event_code = 1020
-          );
-          
-	DECLARE  c3 cursor for 
-       select count(app.app_id)
-           from  TEST_HISTORY  theory,  TEST_SERVICE ts, APPLICATION app, TEST_CATEGORY tc
-           where app.app_id = p_application_id
-           and ts.test_service_id = app.test_service_id
-           and ts.test_category_ref = tc.test_category_ref
-           and tc.theory_type_code = theory.theory_type_code
-           and theory.individual_id = app.individual_id
-           and theory.theory_pass_state_code is not null
-           and theory.theory_pass_state_code > 1;
-
- 
-      /*
-       * This logic is taken from the Journal reports and also outlined at a high level in the Journal requirements
-       * spec...
-       *
-       * The examiner should check the candidate's entitlement thoroughly if any of the following are true...
-       */
-                  /*
-                   * 1. Is the application's state code is 3 (booked but unchecked)?
-                   */
-
-     SET l_count = 0;
-     
-	  OPEN c1;
-      FETCH c1 into l_count;
-      CLOSE c1;
-
-      if l_count > 0 then
-          return TRUE_RESULT;
-      end if;
-      /*
-       * 2. Did a booking supervisor override the entitlement check (event 1030) on or after booking made (event 1020)?
-       */
-      SET l_count = 0;
-	  OPEN c2;
-      FETCH c2 into l_count;
-      CLOSE c2;
-       if l_count > 0 then
-           return TRUE_RESULT;
-       end if;
-       /*
-        * 3. Is an associated (by test category) theory pass unchecked
-        * (theory_pass_state_code: 1 = Checked, 2 = Not yet checked, 3 = Not found after check)
-        */
-	  SET l_count = 0;
-	  OPEN c3;
-      FETCH c3 into l_count;
-      CLOSE c3;
-
-       if l_count > 0 then
-           return TRUE_RESULT;
-       else
-           return FALSE_RESULT;
-       end if;
-  end
-//
-DROP FUNCTION IF EXISTS initcap
+  
+/*
+* Determines the entitlement check indicator for this booking.
+*/
+DROP FUNCTION IF EXISTS getEntitlementCheckIndicator
 //
  
-CREATE FUNCTION initcap(x char(30)) RETURNS char(30) CHARSET utf8
-BEGIN
-SET @str='';
-SET @l_str='';
-WHILE x REGEXP ' ' DO
-SELECT SUBSTRING_INDEX(x, ' ', 1) INTO @l_str;
-SELECT SUBSTRING(x, LOCATE(' ', x)+1) INTO x;
-SELECT CONCAT(@str, ' ', CONCAT(UPPER(SUBSTRING(@l_str,1,1)),LOWER(SUBSTRING(@l_str,2)))) INTO @str;
-END WHILE;
-RETURN LTRIM(CONCAT(@str, ' ', CONCAT(UPPER(SUBSTRING(x,1,1)),LOWER(SUBSTRING(x,2)))));
-END
+CREATE FUNCTION getEntitlementCheckIndicator(p_application_id INT) RETURNS INT
+    BEGIN
+        DECLARE l_count         INT;
+        DECLARE TRUE_RESULT     INT DEFAULT 1;
+        DECLARE FALSE_RESULT    INT DEFAULT 0;
+ 
+        DECLARE c1 CURSOR FOR
+            SELECT COUNT(*)
+            FROM APPLICATION
+            WHERE app_id = p_application_id
+                AND state_code = 3;
+ 
+        DECLARE c2 CURSOR FOR
+            SELECT COUNT(*)
+            FROM APPLICATION_HISTORY
+            WHERE app_id = p_application_id
+                AND event_code = 1030
+                AND event_date_time >=
+                    (
+                    SELECT MAX(DATE(event_date_time))
+                    FROM APPLICATION_HISTORY
+                    WHERE app_id = p_application_id
+                    AND event_code = 1020
+                    );
+           
+        DECLARE c3 CURSOR FOR
+            SELECT COUNT(app.app_id)
+            FROM TEST_HISTORY theory, TEST_SERVICE ts, APPLICATION app, TEST_CATEGORY tc
+            WHERE app.app_id = p_application_id
+                AND ts.test_service_id = app.test_service_id
+                AND ts.test_category_ref = tc.test_category_ref
+                AND tc.theory_type_code = theory.theory_type_code
+                AND theory.individual_id = app.individual_id
+                AND theory.theory_pass_state_code IS NOT NULL
+                AND theory.theory_pass_state_code > 1;
+ 
+  
+/*
+* This logic is taken from the Journal reports and also outlined at a high level in the Journal requirements
+* spec...
+*
+* The examiner should check the candidate's entitlement thoroughly if any of the following are true...
+*/
+ 
+/*
+* 1. Is the application's state code is 3 (booked but unchecked)?
+*/
+        SET l_count = 0;
+ 
+        OPEN c1;
+        FETCH c1 INTO l_count;
+        CLOSE c1;
+ 
+        IF l_count > 0 THEN
+        RETURN TRUE_RESULT;
+        END IF;
+         
+/*
+* 2. Did a booking supervisor override the entitlement check (event 1030) on or after booking made (event 1020)?
+*/
+        SET l_count = 0;
+         
+        OPEN c2;
+        FETCH c2 INTO l_count;
+        CLOSE c2;
+         
+        IF l_count > 0 THEN
+        RETURN TRUE_RESULT;
+        END IF;
+        
+/*
+* 3. Is an associated (by test category) theory pass unchecked?
+* (theory_pass_state_code: 1 = Checked, 2 = Not yet checked, 3 = Not found after check)
+*/
+        SET l_count = 0;
+         
+        OPEN c3;
+        FETCH c3 INTO l_count;
+        CLOSE c3;
+ 
+        IF l_count > 0 THEN
+        RETURN TRUE_RESULT;
+        ELSE
+        RETURN FALSE_RESULT;
+        END IF;
+    END
 //
+ 
+/*
+* Determines the next available working day (after today) for the journal.
+*/
 DROP FUNCTION IF EXISTS getJournalEndDate;
 //
-
-CREATE FUNCTION getJournalEndDate(pCountryId INT)
-
-RETURNS DATE
-
-BEGIN
-
-    SET @Days			= (SELECT MAX(DAYS_IN_ADVANCE_COUNT) FROM AREA WHERE COUNTRY_ID = pCountryId);
- 	SET @StartDate		= CURRENT_DATE();
-	SET	@ValidEndDay 	= 0;
-        
--- Get the first valid working day after the @StartDate
-	SET	@JournalEndDate		= DATE_ADD(DATE(@StartDate), INTERVAL @Days-1 DAY);
-    
-	BEGIN
-		WHILE @ValidEndDay < 1 DO
-			IF
-				(SELECT DAYOFWEEK(@JournalEndDate)) BETWEEN 2 AND 6 
-					AND NOT EXISTS (SELECT NON_WORKING_DATE FROM NON_WORKING_DAY WHERE STATUTORY_IND = 1 AND COUNTRY_ID = pCountryId AND NON_WORKING_DATE = @JournalEndDate)
-				THEN SET @ValidEndDay = 1;
-			ELSE
-				SET @JournalEndDate = DATE_ADD(DATE(@JournalEndDate), INTERVAL 1 DAY);					
-			END IF;
-		END WHILE;
-        
-        RETURN @JournalEndDate;
-	END;
-
-END;
-//
-
  
+CREATE FUNCTION getJournalEndDate(pCountryId INT) RETURNS DATE
+    BEGIN
+        SET @Days           = (SELECT MAX(DAYS_IN_ADVANCE_COUNT) FROM AREA WHERE COUNTRY_ID = pCountryId);
+        SET @StartDate      = CURRENT_DATE();
+        SET @ValidEndDay    = 0;
+        SET @JournalEndDate = DATE_ADD(DATE(@StartDate), INTERVAL @Days-1 DAY);
+         
+            BEGIN
+                WHILE @ValidEndDay < 1 DO
+                    IF
+                        (
+                        SELECT DAYOFWEEK(@JournalEndDate)) BETWEEN 2 AND 6
+                            AND NOT EXISTS (SELECT NON_WORKING_DATE FROM NON_WORKING_DAY WHERE STATUTORY_IND = 1 AND COUNTRY_ID = pCountryId AND NON_WORKING_DATE = @JournalEndDate
+                        )
+                    THEN
+                        SET @ValidEndDay = 1;
+                    ELSE
+                        SET @JournalEndDate = DATE_ADD(DATE(@JournalEndDate), INTERVAL 1 DAY);                 
+                    END IF;
+                END WHILE;
+                 
+                RETURN @JournalEndDate;
+            END;
+ 
+    END;
+//
+ 
+  
 DELIMITER ;
