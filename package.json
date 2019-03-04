@@ -60,7 +60,7 @@
     "clean": "rimraf build artefacts",
     "compile": "tsc",
     "e2e": "run-s clean compile stack:up features stack:down",
-    "features": "cucumber-js e2e/ --require 'build/e2e/**/*.js'",
+    "features": "cucumber-js e2e/ --require 'build/e2e/**/*.js' --tags 'not @skip'",
     "bootstrap": "json2ts schema/exampleSchema.json > src/common/domain/Schema.d.ts",
     "lint": "tslint --project tslint.json",
     "package": "./package.sh",
