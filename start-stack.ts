@@ -2,7 +2,7 @@ import { startSlsOffline } from './spec/helpers/integration-test-lifecycle';
 import * as compose from 'docker-compose';
 const dockerMonitor = require('node-docker-monitor');
 
-process.env.NODE_ENV = 'e2e';
+process.env.NODE_ENV = 'local';
 startSlsOffline().then(() => {
   console.log('Starting MySQL...');
   compose.upAll({ cwd: 'e2e', log: true }).then(() => {
