@@ -22,6 +22,7 @@ interface TestSlotRow {
   start_time: Date; // not nullable
   minutes: number; // not nullable
   vehicle_slot_type: string | null; // nullable
+  vst_code: number | null;
   tc_id: number; // not nullable
   tc_cost_centre_code: string; // not nullable
   tc_name: string; // not nullable
@@ -37,6 +38,8 @@ interface TestSlotRow {
   progressive_access: number | null;
   meeting_place: string | null;
   special_needs: string | null;
+  extended_ind: number | null;
+  special_needs_code: string | null;
   ent_check_ind: number | null;
   cab_seat_count: number | null;
   passenger_seat_count: number | null;
@@ -104,6 +107,10 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
     slot.testSlot.vehicleSlotType = row.vehicle_slot_type;
   }
 
+  if (row.vst_code) {
+    slot.testSlot.vehicleSlotTypeCode = row.vst_code;
+  }
+
   if (row.booking_id) {
     const booking: Booking = {};
     slot.testSlot.booking = booking;
@@ -118,6 +125,8 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
     setStringIfPopulated(app, 'meetingPlace', row.meeting_place);
     setBooleanIfPopulated(app, 'progressiveAccess', row.progressive_access);
     setStringIfPopulated(app, 'specialNeeds', row.special_needs);
+    setBooleanIfPopulated(app, 'specialNeedsExtendedTest', row.extended_ind);
+    setStringIfPopulated(app, 'specialNeedsCode', row.special_needs_code);
     setBooleanIfPopulated(app, 'entitlementCheck', row.ent_check_ind);
     setNumberIfPopulated(app, 'vehicleSeats', zeroIfNull(row.cab_seat_count) + zeroIfNull(row.passenger_seat_count));
     setNumberIfPopulated(app, 'vehicleHeight', row.height_metres);
