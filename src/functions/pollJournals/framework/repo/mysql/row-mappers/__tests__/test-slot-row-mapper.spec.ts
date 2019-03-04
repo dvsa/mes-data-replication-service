@@ -2,7 +2,7 @@ import { mapRow } from '../test-slot-row-mapper';
 
 describe('TestSlot Row Mapper', () => {
 
-  it('should map a TestSlotRow to an ExaminerTestSlot', () => {
+  it('should map a fully populated TestSlotRow to an ExaminerTestSlot', () => {
     const result = mapRow({
       slot_id: 1,
       start_time: new Date('2019-02-12 08:20:00'),
@@ -136,6 +136,183 @@ describe('TestSlot Row Mapper', () => {
             costCode: 'costcentre',
           },
           vehicleSlotType: 'B57Minutes',
+        },
+      },
+    );
+  });
+
+  it('should map an empty slot to an ExaminerTestSlot', () => {
+    const result = mapRow({
+      slot_id: 1,
+      start_time: new Date('2019-02-12 08:20:00'),
+      minutes: 57,
+      vehicle_slot_type: null,
+      tc_id: 3,
+      tc_cost_centre_code: 'costcentre',
+      tc_name: 'testcentre',
+      individual_id: 4,
+      programme_date: '2019-02-12 00:00:00',
+      booking_id: null,
+      app_id: null,
+      booking_seq: null,
+      check_digit: null,
+      welsh_test_ind: null,
+      ext_req_ind: null,
+      progressive_access: null,
+      meeting_place: null,
+      special_needs: null,
+      ent_check_ind: null,
+      cab_seat_count: null,
+      passenger_seat_count: null,
+      height_metres: null,
+      length_metres: null,
+      width_metres: null,
+      vehicle_category: null,
+      gearbox_type: null,
+      candidate_id: null,
+      candidate_title: null,
+      candidate_first_name: null,
+      candidate_second_name: null,
+      candidate_third_name: null,
+      candidate_surname: null,
+      candidate_driver_number: null,
+      cand_primary_tel: null,
+      cand_secondary_tel: null,
+      cand_mobile_tel: null,
+      cand_email: null,
+      candidate_addr_line1: null,
+      candidate_addr_line2: null,
+      candidate_addr_line3: null,
+      candidate_addr_line4: null,
+      candidate_addr_line5: null,
+      candidate_post_code: null,
+      candidate_prn: null,
+      prev_attempts: null,
+      business_id: null,
+      business_name: null,
+      business_addr_line1: null,
+      business_addr_line2: null,
+      business_addr_line3: null,
+      business_addr_line4: null,
+      business_addr_line5: null,
+      business_post_code: null,
+      business_telephone: null,
+      cancel_initiator: null,
+    });
+    expect(result).toEqual(
+      {
+        examinerId: 4,
+        testSlot: {
+          slotDetail: {
+            duration: 57,
+            slotId: 1,
+            start: '2019-02-12T08:20:00+00:00',
+          },
+          testCentre: {
+            centreId: 3,
+            centreName: 'testcentre',
+            costCode: 'costcentre',
+          },
+        },
+      },
+    );
+  });
+
+  it('should map a booking with empty or whitespace strings to an ExaminerTestSlot', () => {
+    const result = mapRow({
+      slot_id: 1,
+      start_time: new Date('2019-02-12 08:20:00'),
+      minutes: 57,
+      vehicle_slot_type: null,
+      tc_id: 3,
+      tc_cost_centre_code: 'costcentre',
+      tc_name: 'testcentre',
+      individual_id: 4,
+      programme_date: '2019-02-12 00:00:00',
+      booking_id: 1111,
+      app_id: 2222,
+      booking_seq: 333,
+      check_digit: 44,
+      welsh_test_ind: null,
+      ext_req_ind: null,
+      progressive_access: null,
+      meeting_place: '',
+      special_needs: ' ',
+      ent_check_ind: null,
+      cab_seat_count: null,
+      passenger_seat_count: null,
+      height_metres: null,
+      length_metres: null,
+      width_metres: null,
+      vehicle_category: '',
+      gearbox_type: '  ',
+      candidate_id: 5555,
+      candidate_title: '',
+      candidate_first_name: ' ',
+      candidate_second_name: '',
+      candidate_third_name: ' ',
+      candidate_surname: '',
+      candidate_driver_number: ' ',
+      cand_primary_tel: '',
+      cand_secondary_tel: ' ',
+      cand_mobile_tel: '',
+      cand_email: ' ',
+      candidate_addr_line1: '',
+      candidate_addr_line2: '  ',
+      candidate_addr_line3: '',
+      candidate_addr_line4: ' ',
+      candidate_addr_line5: '',
+      candidate_post_code: ' ',
+      candidate_prn: null,
+      prev_attempts: null,
+      business_id: 6666,
+      business_name: '',
+      business_addr_line1: '  ',
+      business_addr_line2: '',
+      business_addr_line3: ' ',
+      business_addr_line4: '',
+      business_addr_line5: ' ',
+      business_post_code: '',
+      business_telephone: '  ',
+      cancel_initiator: '',
+    });
+    expect(result).toEqual(
+      {
+        examinerId: 4,
+        testSlot: {
+          slotDetail: {
+            duration: 57,
+            slotId: 1,
+            start: '2019-02-12T08:20:00+00:00',
+          },
+          testCentre: {
+            centreId: 3,
+            centreName: 'testcentre',
+            costCode: 'costcentre',
+          },
+          booking: {
+            application: {
+              applicationId: 2222,
+              bookingSequence: 333,
+              checkDigits: 44,
+              welshTest: false,
+              extendedTest: false,
+              progressiveAccess: false,
+              entitlementCheck: false,
+            },
+            candidate: {
+              candidateId: 5555,
+              candidateName: {
+              },
+              candidateAddress: {
+              },
+            },
+            business: {
+              businessId: 6666,
+              businessAddress: {
+              },
+            },
+          },
         },
       },
     );
