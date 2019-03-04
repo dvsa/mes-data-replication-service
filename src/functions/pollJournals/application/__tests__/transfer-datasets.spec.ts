@@ -8,60 +8,88 @@ import * as journalRepo from '../../framework/repo/dynamodb/journal-repository';
 import * as journalBuilder from '../journal-builder';
 import { transferDatasets } from '../transfer-datasets';
 import * as config from '../../framework/config/config';
+import * as pool from '../../framework/repo/mysql/pool';
+import { Mock, Times, It } from 'typemoq';
+import * as mysql from 'mysql';
 import { dummyConfig } from '../../framework/config/__mocks__/config';
+import * as journalChangeFilter from '../journal-change-filter';
 
 const dummyNonTestActivityDataset = [{ examinerId: 3, nonTestActivity: {} }];
 const dummyAdvanceTestSlotDataset = [{ examinerId: 4, advanceTestSlot: {} }];
 const dummyDeploymentDataset = [{ examinerId: 5, deployment: {} }];
 
 describe('transferDatasets', () => {
-  let getTestSlotSpy: jasmine.Spy;
-  let getPersonalCommitmentsSpy: jasmine.Spy;
-  let getNonTestActivitesSpy: jasmine.Spy;
-  let getAdvanceTestSlotsSpy: jasmine.Spy;
-  let getDeploymentsSpy: jasmine.Spy;
-  let journalBuilderSpy: jasmine.Spy;
-  let saveJournalsSpy: jasmine.Spy;
+  const moqConfig = Mock.ofInstance(config.config);
+  const moqCreateConnectionPool = Mock.ofInstance(pool.createConnectionPool);
+  const moqGetExaminers = Mock.ofInstance(examinerRepo.getExaminers);
+  const moqGetTestSlots = Mock.ofInstance(testSlotRepo.getTestSlots);
+  const moqGetPersonalCommitments = Mock.ofInstance(personalCommitmentRepo.getPersonalCommitments);
+  const moqGetNonTestActivities = Mock.ofInstance(nonTestActivityRepo.getNonTestActivities);
+  const moqGetAdvanceTestSlots = Mock.ofInstance(advanceTestSlotsRepo.getAdvanceTestSlots);
+  const moqGetDeployments = Mock.ofInstance(deploymentRepo.getDeployments);
+  const moqBuildJournals = Mock.ofInstance(journalBuilder.buildJournals);
+  const moqFilterChangedJournals = Mock.ofInstance(journalChangeFilter.filterChangedJournals);
+  const moqSaveJournals = Mock.ofInstance(journalRepo.saveJournals);
+
+  const moqConnectionPool = Mock.ofType<mysql.Pool>();
 
   const dummyExaminers = [
-    { examiner_id: 1 },
-    { examiner_id: 2 },
-    { examiner_id: 3 },
-    { examiner_id: 4 },
-    { examiner_id: 5 },
+    { individual_id: 1 },
+    { individual_id: 2 },
+    { individual_id: 3 },
+    { individual_id: 4 },
+    { individual_id: 5 },
   ];
   const dummyTestSlotDataset = [{ examinerId: 1, testSlot: {} }];
   const dummyPersonalCommitmentDataset = [{ examinerId: 2, personalCommitment: {} }];
-  const dummyTransformedJournals = { transformed: 'object' };
+  const dummyTransformedJournals = [{ examinerId: 1 }, { examinerId: 2 }];
+  const dummyFilteredJournals = [{ examinerId: 1 }];
 
   beforeEach(async () => {
-    spyOn(config, 'bootstrapConfig');
-    spyOn(config, 'config').and.returnValue(dummyConfig);
-    spyOn(examinerRepo, 'getExaminers')
-      .and.returnValue(dummyExaminers);
-    getTestSlotSpy = spyOn(testSlotRepo, 'getTestSlots')
-      .and.returnValue(Promise.resolve(dummyTestSlotDataset));
-    getPersonalCommitmentsSpy = spyOn(personalCommitmentRepo, 'getPersonalCommitments')
-      .and.returnValue(Promise.resolve(dummyPersonalCommitmentDataset));
-    getNonTestActivitesSpy = spyOn(nonTestActivityRepo, 'getNonTestActivities')
-      .and.returnValue(Promise.resolve(dummyNonTestActivityDataset));
-    getAdvanceTestSlotsSpy = spyOn(advanceTestSlotsRepo, 'getAdvanceTestSlots')
-      .and.returnValue(Promise.resolve(dummyAdvanceTestSlotDataset));
-    getDeploymentsSpy = spyOn(deploymentRepo, 'getDeployments')
-      .and.returnValue(Promise.resolve(dummyDeploymentDataset));
-    journalBuilderSpy = spyOn(journalBuilder, 'buildJournals')
-      .and.returnValue(dummyTransformedJournals);
-    saveJournalsSpy = spyOn(journalRepo, 'saveJournals');
+    moqConfig.reset();
+    moqCreateConnectionPool.reset();
+    moqGetExaminers.reset();
+    moqGetTestSlots.reset();
+    moqGetPersonalCommitments.reset();
+    moqGetNonTestActivities.reset();
+    moqGetAdvanceTestSlots.reset();
+    moqGetDeployments.reset();
+    moqBuildJournals.reset();
+    moqFilterChangedJournals.reset();
+    moqSaveJournals.reset();
+
+    spyOn(config, 'config').and.callFake(moqConfig.object);
+    spyOn(pool, 'createConnectionPool').and.callFake(moqCreateConnectionPool.object);
+    spyOn(examinerRepo, 'getExaminers').and.callFake(moqGetExaminers.object);
+    spyOn(testSlotRepo, 'getTestSlots').and.callFake(moqGetTestSlots.object);
+    spyOn(personalCommitmentRepo, 'getPersonalCommitments').and.callFake(moqGetPersonalCommitments.object);
+    spyOn(nonTestActivityRepo, 'getNonTestActivities').and.callFake(moqGetNonTestActivities.object);
+    spyOn(advanceTestSlotsRepo, 'getAdvanceTestSlots').and.callFake(moqGetAdvanceTestSlots.object);
+    spyOn(deploymentRepo, 'getDeployments').and.callFake(moqGetDeployments.object);
+    spyOn(journalBuilder, 'buildJournals').and.callFake(moqBuildJournals.object);
+    spyOn(journalChangeFilter, 'filterChangedJournals').and.callFake(moqFilterChangedJournals.object);
+    spyOn(journalRepo, 'saveJournals').and.callFake(moqSaveJournals.object);
+
+    moqCreateConnectionPool.setup(x => x()).returns(() => moqConnectionPool.object);
+    moqConfig.setup(x => x()).returns(() => dummyConfig);
+    moqGetExaminers.setup(x => x(It.isAny())).returns(() => Promise.resolve(dummyExaminers));
+    moqGetTestSlots.setup(x => x(It.isAny(), It.isAny())).returns(() => Promise.resolve(dummyTestSlotDataset));
+    moqGetPersonalCommitments.setup(x => x(It.isAny())).returns(() => Promise.resolve(dummyPersonalCommitmentDataset));
+    moqGetNonTestActivities.setup(x => x(It.isAny())).returns(() => Promise.resolve(dummyNonTestActivityDataset));
+    moqGetAdvanceTestSlots.setup(x => x(It.isAny())).returns(() => Promise.resolve(dummyAdvanceTestSlotDataset));
+    moqGetDeployments.setup(x => x(It.isAny())).returns(() => Promise.resolve(dummyDeploymentDataset));
+    moqFilterChangedJournals.setup(x => x(It.isAny())).returns(() => <any>dummyFilteredJournals);
+    moqBuildJournals.setup(x => x(It.isAny(), It.isAny())).returns(() => <any>dummyTransformedJournals);
   });
 
   it('should retrieve all the datasets and transform into a journal and save', async () => {
     await transferDatasets();
 
-    expect(getTestSlotSpy).toHaveBeenCalled();
-    expect(getPersonalCommitmentsSpy).toHaveBeenCalled();
-    expect(getNonTestActivitesSpy).toHaveBeenCalled();
-    expect(getAdvanceTestSlotsSpy).toHaveBeenCalled();
-    expect(getDeploymentsSpy).toHaveBeenCalled();
+    moqGetTestSlots.verify(x => x(It.isAny(), It.isAny()), Times.once());
+    moqGetPersonalCommitments.verify(x => x(It.isAny()), Times.once());
+    moqGetNonTestActivities.verify(x => x(It.isAny()), Times.once());
+    moqGetAdvanceTestSlots.verify(x => x(It.isAny()), Times.once());
+    moqGetDeployments.verify(x => x(It.isAny()), Times.once());
 
     const expectedDatasets = {
       testSlots: dummyTestSlotDataset,
@@ -70,7 +98,8 @@ describe('transferDatasets', () => {
       advanceTestSlots: dummyAdvanceTestSlotDataset,
       deployments: dummyDeploymentDataset,
     };
-    expect(journalBuilderSpy).toHaveBeenCalledWith(dummyExaminers, expectedDatasets);
-    expect(saveJournalsSpy).toHaveBeenCalledWith(dummyTransformedJournals);
+    moqBuildJournals.verify(x => x(It.isValue(dummyExaminers), It.isValue(expectedDatasets)), Times.once());
+    moqFilterChangedJournals.verify(x => x(It.isValue(<any>dummyTransformedJournals)), Times.once());
+    moqSaveJournals.verify(x => x(It.isValue(<any>dummyFilteredJournals)), Times.once());
   });
 });

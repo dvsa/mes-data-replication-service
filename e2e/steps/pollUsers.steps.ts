@@ -1,40 +1,28 @@
 /* tslint:disable:max-line-length */
-import { Given, BeforeAll, AfterAll, setDefaultTimeout, When, Then, After } from 'cucumber';
-import * as compose from 'docker-compose';
+import { Given, BeforeAll, setDefaultTimeout, When, Then, After, AfterAll } from 'cucumber';
 import * as mysql from 'mysql';
 import { DynamoDB } from 'aws-sdk';
-import { startSlsOffline, stopSlsOffline } from '../../spec/helpers/integration-test-lifecycle';
 import nodeFetch from 'node-fetch';
 import { query } from '../../src/common/framework/mysql/database';
 import { expect } from 'chai';
 
-setDefaultTimeout(60 * 1000);
+setDefaultTimeout(3 * 60 * 1000);
 
 let mysqlConn: mysql.Connection;
 let ddb: DynamoDB.DocumentClient;
-const composeDirRelativeToProjectRoot = 'e2e';
 
-BeforeAll((done) => {
-  compose.upAll({ cwd: composeDirRelativeToProjectRoot, log: true }).then(() => {
-    process.env.NODE_ENV = 'e2e';
-    startSlsOffline(() => {
-      ddb = new DynamoDB.DocumentClient({ endpoint: 'localhost:8000', region: 'localhost', sslEnabled: false });
-      mysqlConn = mysql.createConnection({
-        host: 'localhost',
-        database: 'tarsreplica',
-        user: 'root',
-        password: 'Pa55word1',
-      });
-      // @ts-ignore
-      done();
-    });
+BeforeAll(() => {
+  ddb = new DynamoDB.DocumentClient({ endpoint: 'localhost:8000', region: 'localhost', sslEnabled: false });
+  mysqlConn = mysql.createConnection({
+    host: 'localhost',
+    database: 'tarsreplica',
+    user: 'root',
+    password: 'Pa55word1',
   });
 });
 
 AfterAll(() => {
   mysqlConn.end();
-  stopSlsOffline();
-  return compose.down({ cwd: composeDirRelativeToProjectRoot });
 });
 
 After(() => {

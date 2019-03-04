@@ -2,11 +2,15 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "lib": [ "esnext" ],
-    "types": [ "node", "jasmine" ],
     "sourceMap": true,
     "target": "es5",
     "outDir": "./build",
-    "allowJs": false
+    "allowJs": false,
+    "types" : [
+      "node",
+      "jasmine"
+    ],
+    "experimentalDecorators": true
   },
   "include": [
     "./src/**/*",
