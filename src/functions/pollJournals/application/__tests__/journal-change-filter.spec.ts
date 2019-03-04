@@ -64,5 +64,20 @@ describe('JournalChangeFilter', () => {
 
       expect(result.length).toBe(0);
     });
+
+    it('should omit the minimal set of journals whose hashes have not changed', async () => {
+      const journalsToFilter = [dummyJournal1.object, dummyJournal2.object, dummyJournal3.object];
+      moqGetStaffNumberHashMappings.setup(x => x()).returns(() => Promise.resolve(
+        [
+          { staffNumber: '123', hash: 'abc123' },
+          { staffNumber: '456', hash: 'abc222' },
+          { staffNumber: '789', hash: 'abc789' },
+        ],
+      ));
+
+      const result = await filterChangedJournals(journalsToFilter);
+
+      expect(result).toEqual([dummyJournal2.object]);
+    });
   });
 });
