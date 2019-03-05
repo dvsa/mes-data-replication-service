@@ -42,15 +42,15 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
     return ddb.batchWrite(params);
   });
 
-  for (let requestInd = 0; requestInd < writeRequests.length; requestInd += 1) {
-    console.log(`SUBMITTING BATCH ${requestInd} AT ${new Date()}`);
-    const result = await writeRequests[requestInd].promise();
+  let totalUnprocessedWrites = 0;
+  for (const writeRequest of writeRequests) {
+    const result = await writeRequest.promise();
     if (result.UnprocessedItems && result.UnprocessedItems[tableName]) {
-      console.log(`BATCH ${requestInd} had ${result.UnprocessedItems[tableName].length} UNPROCESSED ITEMS`);
+      const unprocessedWriteCount = result.UnprocessedItems[tableName].length;
+      totalUnprocessedWrites += unprocessedWriteCount;
     }
-    console.log(`FINISHED BATCH ${requestInd} AT ${new Date()}`);
   }
-  console.log(`END SAVE: ${new Date()}`);
+  console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
 };
 
 export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrapper>[]> => {
