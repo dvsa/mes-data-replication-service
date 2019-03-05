@@ -27,7 +27,7 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
   const maxBatchWriteRequests = 25;
   const journalWriteBatches = chunk(journals, maxBatchWriteRequests);
 
-  const writePromises = journalWriteBatches.map((batch) => {
+  const writeRequests = journalWriteBatches.map((batch) => {
     const params = {
       RequestItems: {
         [tableName]: batch.map(journalWrapper => ({
@@ -36,10 +36,19 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
           },
         })),
       },
+      ReturnConsumedCapacity: 'TOTAL',
     };
-    return ddb.batchWrite(params).promise();
+    return ddb.batchWrite(params);
   });
-  await Promise.all(writePromises);
+
+  for (let requestInd = 0; requestInd < writeRequests.length; requestInd += 1) {
+    console.log(`SUBMITTING BATCH ${requestInd} AT ${new Date()}`);
+    const result = await writeRequests[requestInd].promise();
+    if (result.UnprocessedItems && result.UnprocessedItems[tableName]) {
+      console.log(`BATCH ${requestInd} had ${result.UnprocessedItems[tableName].length} UNPROCESSED ITEMS`);
+    }
+    console.log(`FINISHED BATCH ${requestInd} AT ${new Date()}`);
+  }
   console.log(`END SAVE: ${new Date()}`);
 };
 
@@ -47,13 +56,34 @@ export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrappe
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
 
-  const result = await ddb.scan({
+  const params: DynamoDB.DocumentClient.ScanInput = {
     TableName: tableName,
     ProjectionExpression: 'staffNumber,#hash',
     ExpressionAttributeNames: {
       '#hash': 'hash',
     },
-  }).promise();
+  };
 
-  return result.Items as Partial<JournalWrapper>[];
+  let scannedItems: Partial<JournalWrapper>[] = [];
+  const allScansPromise = new Promise((resolve, reject) => {
+    const onScan = (err: any, scanOutput: DynamoDB.DocumentClient.ScanOutput) => {
+      if (err) {
+        console.error(`Scanning hashes failed: ${JSON.stringify(err, null, 2)}`);
+        reject(err);
+      } else {
+        console.log(`LAST EVAL: ${JSON.stringify(scanOutput.LastEvaluatedKey)}, SCANNED ${scanOutput.ScannedCount}`);
+        scannedItems = [...scannedItems, ...scanOutput.Items as Partial<JournalWrapper>[]];
+        if (typeof scanOutput.LastEvaluatedKey !== 'undefined') {
+          const extendedParams = { ...params, ExclusiveStartKey: scanOutput.LastEvaluatedKey };
+          ddb.scan(extendedParams, onScan);
+        } else {
+          resolve(scannedItems);
+        }
+      }
+    };
+    ddb.scan(params, onScan);
+  });
+  await allScansPromise;
+
+  return scannedItems;
 };
