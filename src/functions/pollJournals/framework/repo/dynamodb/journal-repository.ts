@@ -2,6 +2,7 @@ import { DynamoDB, Credentials, config as awsConfig } from 'aws-sdk';
 import { JournalWrapper } from '../../../domain/journal-wrapper';
 import { chunk } from 'lodash';
 import { config } from '../../config/config';
+import { Key } from 'aws-sdk/clients/dynamodb';
 
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 const getDynamoClient = () => {
@@ -65,25 +66,15 @@ export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrappe
   };
 
   let scannedItems: Partial<JournalWrapper>[] = [];
-  const allScansPromise = new Promise((resolve, reject) => {
-    const onScan = (err: any, scanOutput: DynamoDB.DocumentClient.ScanOutput) => {
-      if (err) {
-        console.error(`Scanning hashes failed: ${JSON.stringify(err, null, 2)}`);
-        reject(err);
-      } else {
-        console.log(`LAST EVAL: ${JSON.stringify(scanOutput.LastEvaluatedKey)}, SCANNED ${scanOutput.ScannedCount}`);
-        scannedItems = [...scannedItems, ...scanOutput.Items as Partial<JournalWrapper>[]];
-        if (typeof scanOutput.LastEvaluatedKey !== 'undefined') {
-          const extendedParams = { ...params, ExclusiveStartKey: scanOutput.LastEvaluatedKey };
-          ddb.scan(extendedParams, onScan);
-        } else {
-          resolve(scannedItems);
-        }
-      }
-    };
-    ddb.scan(params, onScan);
-  });
-  await allScansPromise;
+  let lastEvaluatedKey: Key | undefined;
+  do {
+    const paramsForRequest = lastEvaluatedKey !== undefined ?
+      { ...params, ExclusiveStartKey: lastEvaluatedKey }
+      : { ...params };
+    const result = await ddb.scan(paramsForRequest).promise();
+    scannedItems = [...scannedItems, ...result.Items as Partial<JournalWrapper>[]];
+    lastEvaluatedKey = result.LastEvaluatedKey;
+  } while (lastEvaluatedKey !== undefined);
 
   return scannedItems;
 };
