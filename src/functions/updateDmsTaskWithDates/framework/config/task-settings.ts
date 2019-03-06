@@ -1,5 +1,6 @@
+import { config } from '../config/config';
 
-export const taskSettings = {
+const taskSettings = {
   TargetMetadata: {
     TargetSchema: '',
     SupportLobs: true,
@@ -25,4 +26,11 @@ export const taskSettings = {
   Logging: {
     EnableLogging: false,
   },
+};
+
+export const getTaskSettings = () : any => {
+  const logging = config().dmsTaskLoggingEnabled;
+  const returnTaskSettings = taskSettings;
+  returnTaskSettings.Logging.EnableLogging = (logging === 'true');
+  return returnTaskSettings;
 };
