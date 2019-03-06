@@ -2,6 +2,7 @@ import { DynamoDB, Credentials, config as awsConfig } from 'aws-sdk';
 import { JournalWrapper } from '../../../domain/journal-wrapper';
 import { chunk } from 'lodash';
 import { config } from '../../config/config';
+import { Key } from 'aws-sdk/clients/dynamodb';
 
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 const getDynamoClient = () => {
@@ -27,7 +28,7 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
   const maxBatchWriteRequests = 25;
   const journalWriteBatches = chunk(journals, maxBatchWriteRequests);
 
-  const writePromises = journalWriteBatches.map((batch) => {
+  const writeRequests = journalWriteBatches.map((batch) => {
     const params = {
       RequestItems: {
         [tableName]: batch.map(journalWrapper => ({
@@ -36,24 +37,44 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
           },
         })),
       },
+      ReturnConsumedCapacity: 'TOTAL',
     };
-    return ddb.batchWrite(params).promise();
+    return ddb.batchWrite(params);
   });
-  await Promise.all(writePromises);
-  console.log(`END SAVE: ${new Date()}`);
+
+  let totalUnprocessedWrites = 0;
+  for (const writeRequest of writeRequests) {
+    const result = await writeRequest.promise();
+    if (result.UnprocessedItems && result.UnprocessedItems[tableName]) {
+      const unprocessedWriteCount = result.UnprocessedItems[tableName].length;
+      totalUnprocessedWrites += unprocessedWriteCount;
+    }
+  }
+  console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
 };
 
 export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrapper>[]> => {
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
 
-  const result = await ddb.scan({
+  const params: DynamoDB.DocumentClient.ScanInput = {
     TableName: tableName,
     ProjectionExpression: 'staffNumber,#hash',
     ExpressionAttributeNames: {
       '#hash': 'hash',
     },
-  }).promise();
+  };
 
-  return result.Items as Partial<JournalWrapper>[];
+  let scannedItems: Partial<JournalWrapper>[] = [];
+  let lastEvaluatedKey: Key | undefined;
+  do {
+    const paramsForRequest = lastEvaluatedKey !== undefined ?
+      { ...params, ExclusiveStartKey: lastEvaluatedKey }
+      : { ...params };
+    const result = await ddb.scan(paramsForRequest).promise();
+    scannedItems = [...scannedItems, ...result.Items as Partial<JournalWrapper>[]];
+    lastEvaluatedKey = result.LastEvaluatedKey;
+  } while (lastEvaluatedKey !== undefined);
+
+  return scannedItems;
 };
