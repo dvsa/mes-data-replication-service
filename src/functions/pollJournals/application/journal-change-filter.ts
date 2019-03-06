@@ -1,8 +1,8 @@
-import { JournalWrapper } from '../domain/journal-wrapper';
+import { JournalRecord } from '../domain/journal-record';
 import { getStaffNumbersWithHashes } from '../framework/repo/dynamodb/journal-repository';
 import { get } from 'lodash';
 
-export const filterChangedJournals = async (allJournals: JournalWrapper[]): Promise<JournalWrapper[]> => {
+export const filterChangedJournals = async (allJournals: JournalRecord[]): Promise<JournalRecord[]> => {
   const staffNumbersAndHashes = await getStaffNumbersWithHashes();
   const staffNumberHashMappings = createStaffNumberHashLookup(staffNumbersAndHashes);
 
@@ -15,7 +15,7 @@ export const filterChangedJournals = async (allJournals: JournalWrapper[]): Prom
   return filteredJournals;
 };
 
-const createStaffNumberHashLookup = (staffNumbersAndHashes: Partial<JournalWrapper>[]) => {
+const createStaffNumberHashLookup = (staffNumbersAndHashes: Partial<JournalRecord>[]) => {
   return staffNumbersAndHashes.reduce(
     (mappings, journalMeta) => {
       if (journalMeta.staffNumber && journalMeta.hash) {
