@@ -8,6 +8,7 @@ import { ExaminerDeployment } from '../domain/examiner-deployment';
 import { ExaminerTestSlot } from '../domain/examiner-test-slot';
 import { ExaminerPersonalCommitment } from '../domain/examiner-personal-commitment';
 import { AllDatasets } from '../domain/all-datasets';
+import { compressJournal } from '../application/journal-compressor';
 
 export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalRecord[] => {
   const testSlotsByExaminer = groupBy(datasets.testSlots, test => test.examinerId);
@@ -40,7 +41,8 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalR
 
     const hash = crypto.createHash('sha256').update(JSON.stringify(journal)).digest('hex');
     const lastUpdatedAt = Date.now();
-    return { staffNumber, hash, lastUpdatedAt, journal };
+    const compressedJournal = compressJournal(journal);
+    return { staffNumber, hash, lastUpdatedAt, journal: compressedJournal };
   });
 
   return journals;
