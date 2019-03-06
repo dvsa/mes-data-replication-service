@@ -1,6 +1,6 @@
 import { DynamoDB, Credentials, config as awsConfig } from 'aws-sdk';
 import { JournalWrapper } from '../../../domain/journal-wrapper';
-import { chunk } from 'lodash';
+import { chunk, mean } from 'lodash';
 import { config } from '../../config/config';
 import { Key } from 'aws-sdk/clients/dynamodb';
 
@@ -57,13 +57,19 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
   });
 
   let totalUnprocessedWrites = 0;
+  let requestRuntimes: number[] = [];
   for (const writeRequest of writeRequests) {
+    const requestStartHrtime = process.hrtime();
     const result = await writeRequest.promise();
+    const requestEndHrtime = process.hrtime(requestStartHrtime);
+    const requestDurationMs = Math.floor(((requestEndHrtime[0] * 1e9) + requestEndHrtime[1]) / 1e6);
+    requestRuntimes = [...requestRuntimes, requestDurationMs];
     if (result.UnprocessedItems && result.UnprocessedItems[tableName]) {
       const unprocessedWriteCount = result.UnprocessedItems[tableName].length;
       totalUnprocessedWrites += unprocessedWriteCount;
     }
   }
+  console.log(`AVERAGE REQUEST TOOK ${mean(requestRuntimes)}ms`);
   console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
 };
 
