@@ -1,11 +1,20 @@
 import * as mysql from 'mysql';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
+import { logDuration } from '../../../../../common/framework/log/logger';
 
-export const getExaminers = async (connectionPool: mysql.Pool): Promise<any[]> => {
+/**
+ * Get all active examiners, for the specified time window.
+ * @param connectionPool The MySQL connection pool to use
+ * @param startDate The start date of the time window
+ * @returns The examiners
+ */
+export const getExaminers = async (connectionPool: mysql.Pool, startDate: Date): Promise<any[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
-  const windowStart = moment().format(sqlYearFormat);
+  const windowStart = moment(startDate).format(sqlYearFormat);
 
+  console.log(`Issued examiner query starting on ${windowStart}...`);
+  const start = new Date();
   const res = await query(
     connectionPool,
     `
@@ -17,5 +26,7 @@ export const getExaminers = async (connectionPool: mysql.Pool): Promise<any[]> =
     `,
     [windowStart],
   );
+  const end = new Date();
+  logDuration(start, end, 'examiner query returned');
   return res;
 };

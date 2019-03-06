@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { getTestSlots } from '../framework/repo/mysql/test-slot-repository';
 import { getPersonalCommitments } from '../framework/repo/mysql/personal-commitment-repository';
 import { getNonTestActivities } from '../framework/repo/mysql/non-test-activity-repository';
@@ -12,15 +13,26 @@ import { chunk } from 'lodash';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
 import { config } from '../framework/config/config';
 import { filterChangedJournals } from './journal-change-filter';
+import { getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
 
 export const transferDatasets = async (): Promise<void> => {
   const { examinerBatchSize } = config();
   const connectionPool = createConnectionPool();
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
-  const examiners = await getExaminers(connectionPool);
+  const startDate = new Date(); // TODO: replace with now or time travel configuration...
+  const [
+    examiners,
+    nextWorkingDay,
+  ] = await Promise.all([
+    getExaminers(connectionPool, startDate),
+    getNextWorkingDay(connectionPool, startDate),
+  ]);
   const examinerIds = examiners.map(examiner => examiner.individual_id);
   const examinerIdGroups = chunk(examinerIds, examinerBatchSize);
+
+  console.log(`Loading journals for ${examiners.length} examiners from ${formatDate(startDate)}` +
+    ` to ${formatDate(nextWorkingDay)}...`);
 
   const [
     testSlots,
@@ -29,11 +41,11 @@ export const transferDatasets = async (): Promise<void> => {
     advanceTestSlots,
     deployments,
   ] = await Promise.all([
-    getTestSlots(connectionPool, examinerIdGroups),
-    getPersonalCommitments(connectionPool),
-    getNonTestActivities(connectionPool),
-    getAdvanceTestSlots(connectionPool),
-    getDeployments(connectionPool),
+    getTestSlots(connectionPool, examinerIdGroups, startDate, nextWorkingDay),
+    getPersonalCommitments(connectionPool, startDate, 14), // 14 days range
+    getNonTestActivities(connectionPool, startDate, nextWorkingDay),
+    getAdvanceTestSlots(connectionPool, startDate, nextWorkingDay, 14), // 14 days range
+    getDeployments(connectionPool, startDate, 6), // 6 months range
   ]);
 
   const datasets: AllDatasets = {
@@ -52,6 +64,10 @@ export const transferDatasets = async (): Promise<void> => {
   const changedJournals = await filterChangedJournals(journals);
   console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE FOR ${changedJournals.length} JOURNALS: ${new Date()}`);
 
-  await saveJournals(changedJournals);
+  await saveJournals(journals);
   console.log(`FINISHED SAVE PHASE: ${new Date()}`);
+};
+
+const formatDate = (date: Date): string => {
+  return moment(date).format('DD-MM-YYYY');
 };

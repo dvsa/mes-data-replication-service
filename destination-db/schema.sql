@@ -1071,12 +1071,11 @@ CREATE FUNCTION getEntitlementCheckIndicator(p_application_id INT) RETURNS INT
 DROP FUNCTION IF EXISTS getJournalEndDate;
 //
  
-CREATE FUNCTION getJournalEndDate(pCountryId INT) RETURNS DATE
+CREATE FUNCTION getJournalEndDate(pCountryId INT, pStartDate DATE) RETURNS DATE
     BEGIN
         SET @Days           = (SELECT MAX(DAYS_IN_ADVANCE_COUNT) FROM AREA WHERE COUNTRY_ID = pCountryId);
-        SET @StartDate      = CURRENT_DATE();
         SET @ValidEndDay    = 0;
-        SET @JournalEndDate = DATE_ADD(DATE(@StartDate), INTERVAL @Days-1 DAY);
+        SET @JournalEndDate = DATE_ADD(DATE(pStartDate), INTERVAL @Days-1 DAY);
          
             BEGIN
                 WHILE @ValidEndDay < 1 DO
