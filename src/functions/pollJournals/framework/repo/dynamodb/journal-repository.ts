@@ -28,6 +28,20 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
   const maxBatchWriteRequests = 25;
   const journalWriteBatches = chunk(journals, maxBatchWriteRequests);
 
+  const averageJournalSize = journals
+    .reduce(
+      (progress, journal) => {
+        const newItemCount = progress.count + 1;
+        const differential = (JSON.stringify(journal).length - progress.average) / newItemCount;
+        return {
+          count: newItemCount,
+          average: progress.average + differential,
+        };
+      },
+      { count: 0, average: 0 },
+    ).average;
+  console.log(`AVERAGE JOURNAL SIZE BEING SAVED: ${averageJournalSize} BYTES`);
+
   const writeRequests = journalWriteBatches.map((batch) => {
     const params = {
       RequestItems: {
