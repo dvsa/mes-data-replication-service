@@ -10,9 +10,10 @@ export type Config = {
   sourceArn: string;
   targetArn: string;
   tarsSchema: string;
-  replicationArn: string;
+  replicationInstanceArn: string;
   dateFilteredTaskName: string;
   environmentPrefix: string;
+  dmsTaskLoggingEnabled: string;
 
 };
 
@@ -28,10 +29,11 @@ export const bootstrapConfig = async (): Promise<void> => {
       deploymentWindowDays: Number.parseInt(process.env.DEPLOYMENT_WINDOW_DAYS || '1', 10),
       sourceArn: throwIfNotPresent(process.env.SOURCE_ARN, 'sourceArn'),
       targetArn: throwIfNotPresent(process.env.TARGET_ARN, 'targetArn'),
-      replicationArn: throwIfNotPresent(process.env.REPLICATION_ARN, 'replicationArn'),
+      replicationInstanceArn: throwIfNotPresent(process.env.REPLICATION_INSTANCE_ARN, 'replicationInstanceArn'),
       dateFilteredTaskName: 'dateFiltered-full-load-and-cdc',
       tarsSchema: throwIfNotPresent(process.env.TARS_SCHEMA, 'tarsSchema'),
       environmentPrefix: throwIfNotPresent(process.env.ENVIRONMENT_PREFIX, 'environmentPrefix'),
+      dmsTaskLoggingEnabled: 'false',
     };
   }
 };

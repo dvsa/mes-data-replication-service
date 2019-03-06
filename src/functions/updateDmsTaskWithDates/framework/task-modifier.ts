@@ -10,7 +10,7 @@ export const modifyTask = async (): Promise<void> => {
     environmentPrefix,
     sourceArn,
     targetArn,
-    replicationArn,
+    replicationInstanceArn,
     awsRegion,
    } = config();
   const logger = getLogger('cli-app', 'debug');
@@ -18,14 +18,14 @@ export const modifyTask = async (): Promise<void> => {
 
   logger.debug('source endpoint arn is %s', sourceArn);
   logger.debug('dest endpoint arn is %s', targetArn);
-  logger.debug('repl instance arn is %s', replicationArn);
+  logger.debug('repl instance arn is %s', replicationInstanceArn);
 
   const dateTaskName = `${environmentPrefix}-${dateFilteredTaskName}`;
 
   await stopTaskIfExistsAndRunning(dateTaskName, dms, logger);
 
   await dms.createOrModifyTask(dateTaskName,
-                               replicationArn,
+                               replicationInstanceArn,
                                sourceArn,
                                targetArn,
                                addDateFilters);

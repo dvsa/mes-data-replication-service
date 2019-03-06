@@ -7,7 +7,7 @@ import { generateTableMapping, Options } from './table-mapping';
 import { getLogger } from '../util';
 import { config } from '../config/config';
 import { getDmsOptions } from '../config/options';
-import { taskSettings } from '../config/task-settings';
+import { getTaskSettings } from '../config/task-settings';
 type UpdateTableMappingCallback = (options: Options) => void;
 
 export class DmsApi {
@@ -118,7 +118,7 @@ export class DmsApi {
         MigrationType: 'full-load-and-cdc',
         ReplicationInstanceArn: replicationInstanceArn,
         ReplicationTaskIdentifier: taskName,
-        ReplicationTaskSettings: JSON.stringify(taskSettings),
+        ReplicationTaskSettings: JSON.stringify(getTaskSettings()),
         SourceEndpointArn: sourceEndpointArn,
         TableMappings: escapeJSON(tableMappings),
         TargetEndpointArn: destEndpointArn,
