@@ -22,7 +22,7 @@ interface TestSlotRow {
   start_time: Date; // not nullable
   minutes: number; // not nullable
   vehicle_slot_type: string | null; // nullable
-  vehicle_slot_type_code: number | null;
+  vehicle_slot_type_code: number | null; // nullable
   tc_id: number; // not nullable
   tc_cost_centre_code: string; // not nullable
   tc_name: string; // not nullable
