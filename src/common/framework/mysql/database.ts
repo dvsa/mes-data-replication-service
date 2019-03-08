@@ -5,15 +5,9 @@ export const query = async (
   sql: string, args?: any,
 ): Promise<any[]>  => {
   return new Promise((resolve, reject) => {
-    console.log(`Running query: ${sql}`);
     connection.query(sql, args, (err, rows) => {
       if (err) {
-        console.error(`Got error ${err}`);
         reject(err);
-      }
-      console.log('query completed successfully');
-      if (rows) {
-        console.log(`rows in results: ${rows.length}`);
       }
       resolve(rows);
     });
