@@ -5,7 +5,6 @@ import {
 } from '../../../../common/framework/config/config-helpers';
 
 export type Config = {
-  examinerBatchSize: number;
   isOffline: boolean;
   journalDynamodbTableName: string;
   tarsReplicaDatabaseHostname: string;
@@ -19,7 +18,6 @@ export const bootstrapConfig = async (): Promise<void> => {
   if (!configuration) {
     configuration = {
       isOffline: !!process.env.IS_OFFLINE,
-      examinerBatchSize: Number.parseInt(process.env.EXAMINER_BATCH_SIZE || '250', 10),
       journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
       tarsReplicaDatabaseHostname: throwIfNotPresent(
         process.env.TARS_REPLICA_HOST_NAME,
