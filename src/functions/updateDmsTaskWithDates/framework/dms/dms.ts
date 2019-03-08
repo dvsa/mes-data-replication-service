@@ -125,6 +125,14 @@ export class DmsApi {
           tableMappings,
           );
       }
+      this.logger.error(
+        {
+          err: {
+            name: e.code,
+            message: `Error calling createOrModifyFullLoadTask: ${JSON.stringify(e)}`,
+          },
+        });
+
       throw e;
     }
   }
@@ -220,15 +228,7 @@ export class DmsApi {
       const data = await this.dms.describeReplicationTasks(params).promise();
       return data.ReplicationTasks[0].ReplicationTaskArn;
     } catch (err) {
-      if (err.code === 'ResourceNotFoundFault') {
-        this.logger.error(
-          {
-            err: {
-              name: err.code,
-              message: `Replication Task ${taskName} not found`,
-            },
-          });
-      } else {
+      if (err.code !== 'ResourceNotFoundFault') {
         this.logger.error(
           {
             err: {
