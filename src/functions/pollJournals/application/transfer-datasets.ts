@@ -17,7 +17,7 @@ export const transferDatasets = async (): Promise<void> => {
   const connectionPool = createConnectionPool();
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
-  const startDate = new Date(2019, 1, 22, 0, 0, 0); // TODO: replace with now or time travel configuration...
+  const startDate = new Date(); // TODO: replace with now or time travel configuration...
   const [
     examiners,
     nextWorkingDay,
