@@ -1,5 +1,5 @@
 import { DynamoDB, Credentials, config as awsConfig, Request, AWSError } from 'aws-sdk';
-import { JournalWrapper } from '../../../domain/journal-wrapper';
+import { JournalRecord } from '../../../domain/journal-record';
 import { chunk, mean } from 'lodash';
 import { config } from '../../config/config';
 import { Key } from 'aws-sdk/clients/dynamodb';
@@ -21,7 +21,7 @@ const getDynamoClient = () => {
   return dynamoDocumentClient;
 };
 
-export const saveJournals = async (journals: JournalWrapper[]): Promise<void> => {
+export const saveJournals = async (journals: JournalRecord[]): Promise<void> => {
   console.log(`AVERAGE JOURNAL SIZE BEING SAVED: ${calculateAverageJournalSizeInKb(journals)}KB`);
   console.log(`STARTING SAVE: ${new Date()}`);
   const ddb = getDynamoClient();
@@ -47,7 +47,7 @@ export const saveJournals = async (journals: JournalWrapper[]): Promise<void> =>
   console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
 };
 
-const calculateAverageJournalSizeInKb = (journals: JournalWrapper[]) => {
+const calculateAverageJournalSizeInKb = (journals: JournalRecord[]) => {
   const averageBytes = journals
     .reduce(
       (progress, journal) => {
@@ -84,7 +84,7 @@ const submitSaveRequests = async (
   return { totalUnprocessedWrites, averageRequestRuntime };
 };
 
-export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrapper>[]> => {
+export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalRecord>[]> => {
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
 
@@ -96,14 +96,14 @@ export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalWrappe
     },
   };
 
-  let scannedItems: Partial<JournalWrapper>[] = [];
+  let scannedItems: Partial<JournalRecord>[] = [];
   let lastEvaluatedKey: Key | undefined;
   do {
     const paramsForRequest = lastEvaluatedKey !== undefined ?
       { ...params, ExclusiveStartKey: lastEvaluatedKey }
       : { ...params };
     const result = await ddb.scan(paramsForRequest).promise();
-    scannedItems = [...scannedItems, ...result.Items as Partial<JournalWrapper>[]];
+    scannedItems = [...scannedItems, ...result.Items as Partial<JournalRecord>[]];
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey !== undefined);
 
