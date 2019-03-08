@@ -7,7 +7,7 @@ import { getDeployments } from '../framework/repo/mysql/deployment-repository';
 import { createConnectionPool } from '../framework/repo/mysql/pool';
 import { getExaminers } from '../framework/repo/mysql/examiner-repository';
 import { AllDatasets } from '../domain/all-datasets';
-import { JournalWrapper } from '../domain/journal-wrapper';
+import { JournalRecord } from '../domain/journal-record';
 import { buildJournals } from './journal-builder';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
 import { filterChangedJournals } from './journal-change-filter';
@@ -54,7 +54,7 @@ export const transferDatasets = async (): Promise<void> => {
   connectionPool.end();
 
   console.log(`FINISHED QUERY PHASE, STARTING TRANSFORM PHASE: ${new Date()}`);
-  const journals: JournalWrapper[] = buildJournals(examiners, datasets);
+  const journals: JournalRecord[] = buildJournals(examiners, datasets);
   console.log(`FINISHED TRANFORM PHASE, STARTING FILTER PHASE: ${new Date()}`);
 
   const changedJournals = await filterChangedJournals(journals);
