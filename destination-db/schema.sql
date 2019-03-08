@@ -924,6 +924,9 @@ CALL CreateIndex ('tarsreplica','ORGANISATION_REGISTER','IX_OR_ORGID','organisat
 CALL CreateIndex ('tarsreplica','REGISTER','IX_REG_INDID','individual_id');
 CALL CreateIndex ('tarsreplica','TEST_HISTORY','IX_TH_INDID','individual_id');
 
+-- Covering Index that helps the test-slot query
+CALL CreateIndex ('tarsreplica','ORGANISATION_REGISTER','IX_ORGREG_COV','business_id,organisation_register_id');
+
 -- Application tables
 CALL CreateIndex ('tarsreplica','APPLICATION_HISTORY','IX_AH_APP_ID','app_id');
 CALL CreateIndex ('tarsreplica','APPLICATION_RSIS_INFO','IX_RSIS_BOOKID','booking_id');

@@ -9,18 +9,15 @@ import { getExaminers } from '../framework/repo/mysql/examiner-repository';
 import { AllDatasets } from '../domain/all-datasets';
 import { JournalWrapper } from '../domain/journal-wrapper';
 import { buildJournals } from './journal-builder';
-import { chunk } from 'lodash';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
-import { config } from '../framework/config/config';
 import { filterChangedJournals } from './journal-change-filter';
 import { getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
 
 export const transferDatasets = async (): Promise<void> => {
-  const { examinerBatchSize } = config();
   const connectionPool = createConnectionPool();
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
-  const startDate = new Date(); // TODO: replace with now or time travel configuration...
+  const startDate = new Date(2019, 1, 22, 0, 0, 0); // TODO: replace with now or time travel configuration...
   const [
     examiners,
     nextWorkingDay,
@@ -29,7 +26,6 @@ export const transferDatasets = async (): Promise<void> => {
     getNextWorkingDay(connectionPool, startDate),
   ]);
   const examinerIds = examiners.map(examiner => examiner.individual_id);
-  const examinerIdGroups = chunk(examinerIds, examinerBatchSize);
 
   console.log(`Loading journals for ${examiners.length} examiners from ${formatDate(startDate)}` +
     ` to ${formatDate(nextWorkingDay)}...`);
@@ -41,7 +37,7 @@ export const transferDatasets = async (): Promise<void> => {
     advanceTestSlots,
     deployments,
   ] = await Promise.all([
-    getTestSlots(connectionPool, examinerIdGroups, startDate, nextWorkingDay),
+    getTestSlots(connectionPool, examinerIds, startDate, nextWorkingDay),
     getPersonalCommitments(connectionPool, startDate, 14), // 14 days range
     getNonTestActivities(connectionPool, startDate, nextWorkingDay),
     getAdvanceTestSlots(connectionPool, startDate, nextWorkingDay, 14), // 14 days range
