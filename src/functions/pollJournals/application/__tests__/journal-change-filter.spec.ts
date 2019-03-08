@@ -1,20 +1,20 @@
 import { Mock, Times } from 'typemoq';
 import * as journalRepository from '../../framework/repo/dynamodb/journal-repository';
 import { filterChangedJournals } from '../journal-change-filter';
-import { JournalWrapper } from '../../domain/journal-wrapper';
+import { JournalRecord } from '../../domain/journal-record';
 
 describe('JournalChangeFilter', () => {
   const moqGetStaffNumberHashMappings = Mock.ofInstance(journalRepository.getStaffNumbersWithHashes);
 
-  const dummyJournal1 = Mock.ofType<JournalWrapper>();
+  const dummyJournal1 = Mock.ofType<JournalRecord>();
   dummyJournal1.setup((x: any) => x.staffNumber).returns(() => '123');
   dummyJournal1.setup((x: any) => x.hash).returns(() => 'abc123');
 
-  const dummyJournal2 = Mock.ofType<JournalWrapper>();
+  const dummyJournal2 = Mock.ofType<JournalRecord>();
   dummyJournal2.setup((x: any) => x.staffNumber).returns(() => '456');
   dummyJournal2.setup((x: any) => x.hash).returns(() => 'abc456');
 
-  const dummyJournal3 = Mock.ofType<JournalWrapper>();
+  const dummyJournal3 = Mock.ofType<JournalRecord>();
   dummyJournal3.setup((x: any) => x.staffNumber).returns(() => '789');
   dummyJournal3.setup((x: any) => x.hash).returns(() => 'abc789');
 

@@ -1,6 +1,7 @@
 import { buildJournals } from '../journal-builder';
 import { AllDatasets } from '../../domain/all-datasets';
-
+import * as journalCompressor from '../../application/journal-compressor';
+import { Mock, It, Times } from 'typemoq';
 const examiners = [
   {
     individual_id: '111',
@@ -12,7 +13,17 @@ const examiners = [
   },
 ];
 
+const moqCompressJournal = Mock.ofInstance(journalCompressor.compressJournal);
+
 describe('buildJournals', () => {
+  beforeEach(() => {
+    moqCompressJournal.reset();
+
+    spyOn(journalCompressor, 'compressJournal').and.callFake(moqCompressJournal.object);
+
+    moqCompressJournal.setup(x => x(It.isAny())).returns(() => 'firsthash');
+  });
+
   it('should include a journal for every examiner', () => {
     const datasets = {
       testSlots: [],
@@ -39,20 +50,21 @@ describe('buildJournals', () => {
 
     const result = buildJournals(examiners, datasets);
 
+    const journalToCompress = {
+      examiner: { staffNumber: '222' },
+      testSlots: [{ slotDetail: { slotId: 999 } }],
+      nonTestActivities: [{ slotDetail: { slotId: 888 } }],
+      personalCommitments: [{ commitmentId: 777 }],
+      advanceTestSlots: [{ slotDetail: { slotId: 666 } }],
+      deployments: [{ deploymentId: 555 }],
+    };
+    moqCompressJournal.verify(x => x(It.isValue(journalToCompress)), Times.once());
     expect(result.length).toBe(2);
-    expect(result[0].journal).toEqual(
-      {
-        examiner: { staffNumber: '222' },
-        testSlots: [{ slotDetail: { slotId: 999 } }],
-        nonTestActivities: [{ slotDetail: { slotId: 888 } }],
-        personalCommitments: [{ commitmentId: 777 }],
-        advanceTestSlots: [{ slotDetail: { slotId: 666 } }],
-        deployments: [{ deploymentId: 555 }],
-      },
-    );
+    expect(result[0].journal).toBe('firsthash');
   });
 
   it('should merge datasets including multiple examiners into the journal for each', () => {
+    moqCompressJournal.setup(x => x(It.isAny())).returns(() => 'secondhash');
     const datasets: AllDatasets = {
       testSlots: [
         { examinerId: 111, testSlot: { slotDetail: { slotId: 991 } } },
@@ -78,26 +90,26 @@ describe('buildJournals', () => {
 
     const result = buildJournals(examiners, datasets);
 
+    const firstJournalToCompress = {
+      examiner: { staffNumber: '222' },
+      testSlots: [{ slotDetail: { slotId: 991 } }],
+      nonTestActivities: [{ slotDetail: { slotId: 881 } }],
+      personalCommitments: [{ commitmentId: 771 }],
+      advanceTestSlots: [{ slotDetail: { slotId: 661 } }],
+      deployments: [{ deploymentId: 551 }],
+    };
+    const secondJournalToCompress = {
+      examiner: { staffNumber: '444' },
+      testSlots: [{ slotDetail: { slotId: 992 } }],
+      nonTestActivities: [{ slotDetail: { slotId: 882 } }],
+      personalCommitments: [{ commitmentId: 772 }],
+      advanceTestSlots: [{ slotDetail: { slotId: 662 } }],
+      deployments: [{ deploymentId: 552 }],
+    };
+    moqCompressJournal.verify(x => x(It.isValue(firstJournalToCompress)), Times.once());
+    moqCompressJournal.verify(x => x(It.isValue(secondJournalToCompress)), Times.once());
     expect(result.length).toBe(2);
-    expect(result[0].journal).toEqual(
-      {
-        examiner: { staffNumber: '222' },
-        testSlots: [{ slotDetail: { slotId: 991 } }],
-        nonTestActivities: [{ slotDetail: { slotId: 881 } }],
-        personalCommitments: [{ commitmentId: 771 }],
-        advanceTestSlots: [{ slotDetail: { slotId: 661 } }],
-        deployments: [{ deploymentId: 551 }],
-      },
-    );
-    expect(result[1].journal).toEqual(
-      {
-        examiner: { staffNumber: '444' },
-        testSlots: [{ slotDetail: { slotId: 992 } }],
-        nonTestActivities: [{ slotDetail: { slotId: 882 } }],
-        personalCommitments: [{ commitmentId: 772 }],
-        advanceTestSlots: [{ slotDetail: { slotId: 662 } }],
-        deployments: [{ deploymentId: 552 }],
-      },
-    );
+    expect(result[0].journal).toEqual('firsthash');
+    expect(result[1].journal).toEqual('secondhash');
   });
 });
