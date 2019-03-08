@@ -1,10 +1,8 @@
 /**
  * Handles generating DMS table mappings from a much simpler logical input.
  */
-import { getLogger } from '../util';
 import { DateTime } from 'luxon';
-
-const logger = getLogger('table-mapping', 'debug');
+import { ILogger } from '../logging/Ilogger';
 
 export interface OrCondition {
   operator: string;
@@ -160,7 +158,8 @@ export function addBetweenFilter(options: Options,
                                  tableName: string,
                                  columnName: string,
                                  start: DateTime,
-                                 end: DateTime) {
+                                 end: DateTime,
+                                 logger: ILogger) {
   const filter = {
     column: columnName,
     orConditions: [{
@@ -170,10 +169,14 @@ export function addBetweenFilter(options: Options,
     }],
   };
   findFilters(options, tableName).push(filter);
-  logger.debug('Filtering %s on %s from %s to %s', tableName, columnName, start.toISODate(), end.toISODate());
+  logger.debug(`Filtering ${tableName} on ${columnName} from ${start.toISODate()} to ${end.toISODate()}`);
 }
 
-export function addOnOrAfterFilter(options: Options, tableName: string, columnName: string, value: DateTime) {
+export function addOnOrAfterFilter(options: Options,
+                                   tableName: string,
+                                   columnName: string,
+                                   value: DateTime,
+                                   logger: ILogger) {
   const filter = {
     column: columnName,
     orConditions: [{
@@ -182,10 +185,14 @@ export function addOnOrAfterFilter(options: Options, tableName: string, columnNa
     }],
   };
   findFilters(options, tableName).push(filter);
-  logger.debug('Filtering %s on %s on or after %s', tableName, columnName, value.toISODate());
+  logger.debug(`Filtering ${tableName} on ${columnName} on or after ${value.toISODate()}`);
 }
 
-export function addOnOrBeforeFilter(options: Options, tableName: string, columnName: string, value: DateTime) {
+export function addOnOrBeforeFilter(options: Options,
+                                    tableName: string,
+                                    columnName: string,
+                                    value: DateTime,
+                                    logger: ILogger) {
   const filter = {
     column: columnName,
     orConditions: [{
@@ -194,5 +201,5 @@ export function addOnOrBeforeFilter(options: Options, tableName: string, columnN
     }],
   };
   findFilters(options, tableName).push(filter);
-  logger.debug('Filtering %s on %s on or before %s', tableName, columnName, value.toISO());
+  logger.debug(`Filtering ${tableName} on ${columnName} on or before ${value.toISO()}`);
 }

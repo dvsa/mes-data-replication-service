@@ -1,9 +1,11 @@
-import { getLogger } from './util';
 import { DmsApi } from './dms/dms';
 import { addBetweenFilter, addOnOrAfterFilter, addOnOrBeforeFilter, Options } from './dms/table-mapping';
 import { DateTime, Duration } from 'luxon';
 import { config } from './config/config';
-import winston = require('winston');
+import { ILogger } from './logging/Ilogger';
+import { ConsoleLogger } from './logging/console-logger';
+
+const logger = new ConsoleLogger();
 
 export const modifyTask = async (): Promise<void> => {
   const { dateFilteredTaskName,
@@ -13,12 +15,12 @@ export const modifyTask = async (): Promise<void> => {
     replicationInstanceArn,
     awsRegion,
    } = config();
-  const logger = getLogger('cli-app', 'debug');
-  const dms = new DmsApi(awsRegion);
 
-  logger.debug('source endpoint arn is %s', sourceArn);
-  logger.debug('dest endpoint arn is %s', targetArn);
-  logger.debug('repl instance arn is %s', replicationInstanceArn);
+  const dms = new DmsApi(awsRegion, logger);
+
+  logger.debug(`source endpoint arn is ${sourceArn}`);
+  logger.debug(`dest endpoint arn is ${targetArn}`);
+  logger.debug(`repl instance arn is ${replicationInstanceArn}`);
 
   const dateTaskName = `${environmentPrefix}-${dateFilteredTaskName}`;
 
@@ -33,28 +35,28 @@ export const modifyTask = async (): Promise<void> => {
   await startTaskWhenReady(dateTaskName, dms, logger);
 };
 
-async function startTaskWhenReady(taskName: string, dms: DmsApi, logger: winston.Logger) {
+async function startTaskWhenReady(taskName: string, dms: DmsApi, logger: ILogger) {
   await dms.waitForDesiredTaskStatus(taskName, ['ready', 'stopped']);
   const startStatus = await dms.startTask(taskName, 'reload-target');
-  logger.debug('status of startTask is %s', startStatus);
+  logger.debug(`status of startTask is ${startStatus}`);
 
 }
-async function stopTaskIfExistsAndRunning(taskName: string, dms: DmsApi, logger: winston.Logger) {
+async function stopTaskIfExistsAndRunning(taskName: string, dms: DmsApi, logger: ILogger) {
   let taskStatus = '';
   try {
     taskStatus = await dms.getTaskStatus(taskName);
   } catch (error) {
-    console.log(error);
+    logger.debug(`taskname ${taskName} doesn't exist`);
     taskStatus = 'nonexistant';
   }
 
   if (taskStatus !== 'stopped' && taskStatus !== 'nonexistant') {
     try {
       const stopStatus = await dms.stopTask(taskName);
-      logger.debug('status of stopTask is %s', stopStatus);
+      logger.debug(`status of stopTask is ${stopStatus}`);
       await dms.waitTillTaskStopped(taskName);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 }
@@ -75,17 +77,17 @@ function addDateFilters(options: Options) {
   const startDate = DateTime.local();
   const endDate = startDate.plus(highLevelSlotTimeWindow);
 
-  addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate);
-  addBetweenFilter(options, 'PROGRAMME_SLOT', 'PROGRAMME_DATE', startDate, endDate);
+  addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate, logger);
+  addBetweenFilter(options, 'PROGRAMME_SLOT', 'PROGRAMME_DATE', startDate, endDate, logger);
 
   const personalCommitmentEndDate = startDate.plus(highLevelSlotTimeWindow);
   const personalCommitmentEndDateTime = personalCommitmentEndDate.plus({ hours: 23, minutes: 59, seconds: 59 });
 
   addOnOrBeforeFilter(options, 'PERSONAL_COMMITMENT', 'START_DATE_TIME',
-                      personalCommitmentEndDateTime);
-  addOnOrAfterFilter(options, 'PERSONAL_COMMITMENT', 'END_DATE_TIME', startDate);
+                      personalCommitmentEndDateTime, logger);
+  addOnOrAfterFilter(options, 'PERSONAL_COMMITMENT', 'END_DATE_TIME', startDate, logger);
 
   const deploymentEndDate = startDate.plus(deploymentTimeWindow);
-  addOnOrBeforeFilter(options, 'DEPLOYMENT', 'START_DATE', deploymentEndDate);
-  addOnOrAfterFilter(options, 'DEPLOYMENT', 'END_DATE', startDate);
+  addOnOrBeforeFilter(options, 'DEPLOYMENT', 'START_DATE', deploymentEndDate, logger);
+  addOnOrAfterFilter(options, 'DEPLOYMENT', 'END_DATE', startDate, logger);
 }
