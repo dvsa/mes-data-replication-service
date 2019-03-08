@@ -4,17 +4,19 @@
 import * as DMS from 'aws-sdk/clients/dms'; // just the DMS apis, not the whole SDK
 import * as escapeJSON from 'escape-json-node';
 import { generateTableMapping, Options } from './table-mapping';
-import { getLogger } from '../util';
 import { config } from '../config/config';
 import { getDmsOptions } from '../config/options';
 import { getTaskSettings } from '../config/task-settings';
+import { ILogger } from '../logging/Ilogger';
 type UpdateTableMappingCallback = (options: Options) => void;
 
 export class DmsApi {
   private dms: DMS;
-  private logger = getLogger('DmsApi', 'debug');
 
-  constructor(readonly region: string) {
+  constructor(
+    readonly region: string,
+    private logger: ILogger,
+    ) {
     this.dms = new DMS({ apiVersion: '2016-01-01', region: `${region}` });
   }
 
@@ -33,9 +35,15 @@ export class DmsApi {
 
     } catch (err) {
       if (err.code === 'ResourceNotFoundFault') {
-        this.logger.error('Replication Instance %s not found', taskName);
+        this.logger.error({ err: { name: err.code, message: `Replication Instance ${taskName}` } });
       } else {
-        this.logger.error('Error calling describeReplicationInstances: %j', err);
+        this.logger.error(
+          {
+            err: {
+              name: err.code,
+              message: `Error calling describeReplicationInstances: ${JSON.stringify(err)}`,
+            },
+          });
       }
       throw err;
     }
@@ -51,7 +59,13 @@ export class DmsApi {
       const data = await this.dms.stopReplicationTask(params).promise();
       return data.ReplicationTask.Status;
     } catch (err) {
-      this.logger.error('Error calling stopTask %j', err);
+      this.logger.error(
+        {
+          err: {
+            name: err.code,
+            message: `Error calling stopTask: ${JSON.stringify(err)}`,
+          },
+        });
       throw err;
     }
   }
@@ -67,7 +81,13 @@ export class DmsApi {
       const data = await this.dms.startReplicationTask(params).promise();
       return data.ReplicationTask.Status;
     } catch (err) {
-      this.logger.error('Error calling startTask %j', err);
+      this.logger.error(
+        {
+          err: {
+            name: err.code,
+            message: `Error calling startTask: ${JSON.stringify(err)}`,
+          },
+        });
       throw err;
     }
   }
@@ -83,7 +103,7 @@ export class DmsApi {
 
     const status = await this.createOrModifyFullLoadTask(taskName, replicationInstanceArn,
                                                          sourceEndpointArn, destEndpointArn, tableMapping);
-    this.logger.debug('%s task status is %s', taskName, status);
+    this.logger.debug(`${taskName} task status is ${status}`);
   }
 
   private async createOrModifyFullLoadTask(taskName: string, replicationInstanceArn: string,
@@ -91,12 +111,12 @@ export class DmsApi {
                                            tableMappings: string): Promise<string> {
     try {
       const taskArn = await this.getTaskArn(taskName);
-      this.logger.debug('Task %s already exists, so updating it...', taskName);
+      this.logger.debug(`Task ${taskName} already exists, so updating it...`);
       return await this.updateTask(taskArn, tableMappings);
 
     } catch (e) {
-      if (e === 'No such task') {
-        this.logger.debug('Task %s doesn\'t already exist, so creating it...', taskName);
+      if (e.code === 'ResourceNotFoundFault') {
+        this.logger.debug(`Task ${taskName} doesn\'t already exist, so creating it...`);
         return await this.createFullLoadTask(
           taskName,
           replicationInstanceArn,
@@ -105,6 +125,14 @@ export class DmsApi {
           tableMappings,
           );
       }
+      this.logger.error(
+        {
+          err: {
+            name: e.code,
+            message: `Error calling createOrModifyFullLoadTask: ${JSON.stringify(e)}`,
+          },
+        });
+
       throw e;
     }
   }
@@ -127,7 +155,13 @@ export class DmsApi {
       const data = await this.dms.createReplicationTask(params).promise();
       return data.ReplicationTask.Status;
     } catch (err) {
-      this.logger.error('Error calling createReplicationTask: %j', err);
+      this.logger.error(
+        {
+          err: {
+            name: err.code,
+            message: `Error calling createReplicationTask: ${JSON.stringify(err)}`,
+          },
+        });
       throw err;
     }
   }
@@ -143,7 +177,13 @@ export class DmsApi {
       const data = await this.dms.modifyReplicationTask(params).promise();
       return data.ReplicationTask.Status;
     } catch (err) {
-      this.logger.error('Error calling modifyReplicationTask: %j', err);
+      this.logger.error(
+        {
+          err: {
+            name: err.code,
+            message: `Error calling modifyReplicationTask: ${JSON.stringify(err)}`,
+          },
+        });
       throw err;
     }
   }
@@ -188,10 +228,14 @@ export class DmsApi {
       const data = await this.dms.describeReplicationTasks(params).promise();
       return data.ReplicationTasks[0].ReplicationTaskArn;
     } catch (err) {
-      if (err.code === 'ResourceNotFoundFault') {
-        this.logger.error('Replication Task %s not found', taskName);
-      } else {
-        this.logger.error('Error calling describeReplicationTasks: %j', err);
+      if (err.code !== 'ResourceNotFoundFault') {
+        this.logger.error(
+          {
+            err: {
+              name: err.code,
+              message: `Error calling describeReplicationTasks: ${JSON.stringify(err)}`,
+            },
+          });
       }
       throw err;
     }
