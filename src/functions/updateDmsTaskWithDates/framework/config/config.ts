@@ -13,8 +13,6 @@ export type Config = {
   replicationInstanceArn: string;
   dateFilteredTaskName: string;
   environmentPrefix: string;
-  dmsTaskLoggingEnabled: string;
-
 };
 
 let configuration: Config;
@@ -33,7 +31,6 @@ export const bootstrapConfig = async (): Promise<void> => {
       dateFilteredTaskName: 'dateFiltered-full-load-and-cdc',
       tarsSchema: throwIfNotPresent(process.env.TARS_SCHEMA, 'tarsSchema'),
       environmentPrefix: throwIfNotPresent(process.env.ENVIRONMENT_PREFIX, 'environmentPrefix'),
-      dmsTaskLoggingEnabled: 'false',
     };
   }
 };

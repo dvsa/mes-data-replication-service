@@ -24,13 +24,8 @@ const taskSettings = {
     CommitRate: 10000,
   },
   Logging: {
-    EnableLogging: false,
+    EnableLogging: true,
   },
 };
 
-export const getTaskSettings = () : any => {
-  const logging = config().dmsTaskLoggingEnabled;
-  const returnTaskSettings = taskSettings;
-  returnTaskSettings.Logging.EnableLogging = (logging === 'true');
-  return returnTaskSettings;
-};
+export const getTaskSettings = (): any => taskSettings;
