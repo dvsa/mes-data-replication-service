@@ -171,6 +171,7 @@ export class DmsApi {
     try {
       const params = {
         ReplicationTaskArn: taskArn,
+        ReplicationTaskSettings: JSON.stringify(getTaskSettings()),
         TableMappings: escapeJSON(tableMappings),
       };
 
