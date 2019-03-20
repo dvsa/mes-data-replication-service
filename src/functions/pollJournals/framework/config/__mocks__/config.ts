@@ -7,4 +7,5 @@ export const dummyConfig: Config = {
   tarsReplicaDatabaseName: 'dummydbname',
   tarsReplicaDatabasePassword: 'dummypassword',
   tarsReplicaDatabaseUsername: 'dummyusername',
+  timeTravelDate: '2019-03-13',
 };
