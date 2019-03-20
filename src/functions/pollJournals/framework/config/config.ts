@@ -11,6 +11,7 @@ export type Config = {
   tarsReplicaDatabaseName: string;
   tarsReplicaDatabaseUsername: string;
   tarsReplicaDatabasePassword: string;
+  timeTravelDate: string;
 };
 
 let configuration: Config;
@@ -36,6 +37,7 @@ export const bootstrapConfig = async (): Promise<void> => {
         process.env.ASM_SECRET_DB_PASSWORD_KEY,
         'SECRET_DB_PASSWORD_KEY',
       ),
+      timeTravelDate: process.env.TIME_TRAVEL_DATE,
     };
   }
 };
