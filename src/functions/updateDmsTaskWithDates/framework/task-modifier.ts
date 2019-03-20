@@ -74,7 +74,7 @@ function addDateFilters(options: Options) {
   let startDate: DateTime;
 
   if (process.env.TIME_TRAVEL_DATE != null) {
-    // Assumes fixed format for TIME_TRAVEL_DATE, e.g. 2019-03-13 
+    // Assumes fixed format for TIME_TRAVEL_DATE, e.g. 2019-03-13
     startDate = DateTime.fromFormat(process.env.TIME_TRAVEL_DATE, 'yyyy-MM-dd');
   } else {
     startDate = DateTime.local();
