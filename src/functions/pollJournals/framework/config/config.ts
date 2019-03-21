@@ -33,7 +33,7 @@ export const bootstrapConfig = async (): Promise<void> => {
         'tarsReplicaDatabaseUsername',
       ),
       tarsReplicaDatabasePassword: await tryFetchRdsAccessToken(
-        process.env.TARS_REPLICA_INTERNAL_HOST_NAME,
+        process.env.TARS_REPLICA_ENDPOINT,
         process.env.TARS_REPLICA_DB_USERNAME,
         'SECRET_DB_PASSWORD_KEY',
       ),
