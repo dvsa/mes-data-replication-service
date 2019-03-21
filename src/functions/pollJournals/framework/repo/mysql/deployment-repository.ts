@@ -1,4 +1,4 @@
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { ExaminerDeployment } from '../../../domain/examiner-deployment';
 import { mapRow } from './row-mappers/deployment-row-mapper';
@@ -13,7 +13,7 @@ import { logDuration } from '../../../../../common/framework/log/logger';
  * @returns The deployments
  */
 export const getDeployments = async (connectionPool: mysql.Pool, startDate: Date, durationMonths: number):
-    Promise<ExaminerDeployment[]> => {
+  Promise<ExaminerDeployment[]> => {
   const windowStart = moment(startDate);
   const windowEnd = windowStart.clone().add({ months: durationMonths }).subtract({ days: 1 });
   const sqlDateFormat = 'YYYY-MM-DD';

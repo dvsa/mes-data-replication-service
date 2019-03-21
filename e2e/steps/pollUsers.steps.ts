@@ -1,6 +1,6 @@
 /* tslint:disable:max-line-length */
 import { Given, BeforeAll, setDefaultTimeout, When, Then, After, AfterAll } from 'cucumber';
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import { DynamoDB } from 'aws-sdk';
 import nodeFetch from 'node-fetch';
 import { query } from '../../src/common/framework/mysql/database';

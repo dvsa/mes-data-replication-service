@@ -1,4 +1,4 @@
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
 
@@ -18,7 +18,7 @@ export const getNextWorkingDay = async (connectionPool: mysql.Pool, startDate: D
   const windowStart = moment(startDate).format(sqlYearFormat);
 
   console.log(`running journal end date query starting on ${windowStart}...`);
-  const res =  await query(
+  const res = await query(
     connectionPool,
     'select tarsreplica.getJournalEndDate(1, ?) as next_working_day',
     [windowStart],

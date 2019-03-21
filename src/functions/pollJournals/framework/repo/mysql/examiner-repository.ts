@@ -1,4 +1,4 @@
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
 import { logDuration } from '../../../../../common/framework/log/logger';

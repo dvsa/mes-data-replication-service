@@ -1,7 +1,7 @@
 import {
   defaultIfNotPresent,
   throwIfNotPresent,
-  tryFetchFromSecretsManager,
+  tryFetchRdsAccessToken,
 } from '../../../../common/framework/config/config-helpers';
 
 export type Config = {
@@ -32,9 +32,9 @@ export const bootstrapConfig = async (): Promise<void> => {
         process.env.TARS_REPLICA_DB_USERNAME,
         'tarsReplicaDatabaseUsername',
       ),
-      tarsReplicaDatabasePassword: await tryFetchFromSecretsManager(
-        process.env.ASM_SECRET_NAME,
-        process.env.ASM_SECRET_DB_PASSWORD_KEY,
+      tarsReplicaDatabasePassword: await tryFetchRdsAccessToken(
+        process.env.TARS_REPLICA_INTERNAL_HOST_NAME,
+        process.env.TARS_REPLICA_DB_USERNAME,
         'SECRET_DB_PASSWORD_KEY',
       ),
       timeTravelDate: process.env.TIME_TRAVEL_DATE,

@@ -1,4 +1,4 @@
-import { SecretsManager } from 'aws-sdk';
+import { RDS } from 'aws-sdk';
 import { get } from 'lodash';
 
 export const defaultIfNotPresent = (value: string | null | undefined, defaultValue: string) => {
@@ -15,42 +15,33 @@ export const throwIfNotPresent = (value: string | null | undefined, configKey: s
   return value;
 };
 
-let secretsManagerConfig: { [key: string]: string } = {};
-const tryBootstrapSecretsManager = async () => {
-  return new Promise((resolve, reject) => {
-    const secretName = process.env.ASM_SECRET_NAME;
-    if (secretName && secretName.trim().length > 0) {
-      console.debug(`Fetching secret named ${secretName} from ASM...`);
-      const client = new SecretsManager({ region: process.env.AWS_REGION });
-      client.getSecretValue({ SecretId: secretName }, (err, secretsManagerResponse) => {
-        if (err || !secretsManagerResponse) {
-          console.log(err);
-          reject(err);
-        }
-        secretsManagerConfig = JSON.parse(secretsManagerResponse.SecretString || '{}');
-        resolve();
-      });
-    } else {
-      resolve();
-    }
-  });
+export const generateSignerOptions = (
+  hostname: string,
+  username: string,
+): RDS.Signer.SignerOptions => {
+  return {
+    username,
+    hostname,
+    port: 3306,
+    region: process.env.AWS_REGION,
+  };
 };
 
-const secretsManagerConfigValid = (
-  secretName: string | undefined,
-  secretKey: string | undefined,
+const iamRdsConfigValid = (
+  hostname: string | undefined,
+  username: string | undefined,
 ) => {
-  const secretNameValid = secretName && secretName.trim().length > 0;
-  const secretKeyValid = secretKey && secretKey.trim().length > 0;
-  return secretNameValid && secretKeyValid;
+  const hostnameValid = hostname && hostname.trim().length > 0;
+  const usernameValid = username && username.trim().length > 0;
+  return hostnameValid && usernameValid;
 };
 
-export const tryFetchFromSecretsManager = async (
-  secretName: string | undefined,
-  secretKey: string | undefined,
+export const tryFetchRdsAccessToken = async (
+  hostname: string,
+  username: string,
   fallbackEnvvar: string,
 ): Promise<string> => {
-  if (!secretsManagerConfigValid(secretName, secretKey)) {
+  if (!iamRdsConfigValid(hostname, username)) {
     const envvar = process.env[fallbackEnvvar];
     if (!envvar) {
       throw new Error(`No value for fallback envvar ${fallbackEnvvar} for config`);
@@ -58,11 +49,24 @@ export const tryFetchFromSecretsManager = async (
     return envvar;
   }
 
-  await tryBootstrapSecretsManager();
+  throwIfNotPresent(
+    hostname,
+    'tarsReplicateDatabaseHostname',
+  );
 
-  const valueFromSecretsManager = get(secretsManagerConfig, <string>secretKey);
-  if (!valueFromSecretsManager) {
-    throw new Error(`The key ${secretKey} was not found in the ASM config`);
-  }
-  return valueFromSecretsManager;
+  throwIfNotPresent(
+    username,
+    'tarsReplicaDatabaseUsername',
+  );
+
+  const signer = new RDS.Signer();
+  const signerOptions = generateSignerOptions(hostname, username);
+  return new Promise((resolve, reject) => {
+    signer.getAuthToken(signerOptions, (err, token) => {
+      if (err) {
+        throw new Error(`Generating an auth token failed`);
+      }
+      resolve(token);
+    });
+  });
 };

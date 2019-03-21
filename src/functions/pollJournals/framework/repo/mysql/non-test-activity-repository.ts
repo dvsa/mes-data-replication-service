@@ -1,4 +1,4 @@
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { ExaminerNonTestActivity } from '../../../domain/examiner-non-test-activity';
 import { mapRow } from './row-mappers/non-test-activity-row-mapper';
@@ -13,7 +13,7 @@ import { logDuration } from '../../../../../common/framework/log/logger';
  * @returns The Non-test activities
  */
 export const getNonTestActivities = async (connectionPool: mysql.Pool, startDate: Date, endDate: Date)
-    : Promise<ExaminerNonTestActivity[]> => {
+  : Promise<ExaminerNonTestActivity[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment(startDate).format(sqlYearFormat);
   const windowEnd = moment(endDate).format(sqlYearFormat);
