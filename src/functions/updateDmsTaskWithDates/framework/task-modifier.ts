@@ -71,10 +71,18 @@ function addDateFilters(options: Options) {
     deploymentWindowDays,
   } = config();
 
+  let startDate: DateTime;
+
+  if (process.env.TIME_TRAVEL_DATE != null) {
+    // Assumes fixed format for TIME_TRAVEL_DATE, e.g. 2019-03-13
+    startDate = DateTime.fromFormat(process.env.TIME_TRAVEL_DATE, 'yyyy-MM-dd');
+  } else {
+    startDate = DateTime.local();
+  }
+
   const highLevelSlotTimeWindow = Duration.fromObject({ days: highLevelWindowDays });
   const deploymentTimeWindow = Duration.fromObject({ months: deploymentWindowMonths })
     .minus({ days: deploymentWindowDays });
-  const startDate = DateTime.local();
   const endDate = startDate.plus(highLevelSlotTimeWindow);
 
   addBetweenFilter(options, 'PROGRAMME', 'PROGRAMME_DATE', startDate, endDate, logger);

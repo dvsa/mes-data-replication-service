@@ -12,15 +12,22 @@ import { buildJournals } from './journal-builder';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
 import { filterChangedJournals } from './journal-change-filter';
 import { getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
+import { config } from '../framework/config/config';
 
 export const transferDatasets = async (): Promise<void> => {
   const connectionPool = createConnectionPool();
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
-  let startDate = new Date(); // TODO: replace with now or time travel configuration...
 
-  // time window starts at the beginning of the initial day
-  startDate = moment(startDate).startOf('day').toDate();
+  let startDate: Date;
+
+  if (config().timeTravelDate != null) {
+    // Assumes fixed format for TIME_TRAVEL_DATE, e.g. 2019-03-13
+    startDate = moment(config().timeTravelDate).toDate();
+  } else {
+    // time window starts at the beginning of the initial day
+    startDate = moment(startDate).startOf('day').toDate();
+  }
 
   const [
     examiners,
