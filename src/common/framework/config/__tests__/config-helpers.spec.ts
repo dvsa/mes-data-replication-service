@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 
 describe('config helper: generateSignerOptions', () => {
   afterEach(() => {
-    delete process.env.NODE_ENV;
+    delete process.env.AWS_REGION;
   });
 
   it('should return correct signer options with the given hostname and username', async () => {
