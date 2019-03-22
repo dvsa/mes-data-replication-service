@@ -1,5 +1,4 @@
 import { RDS } from 'aws-sdk';
-import { get } from 'lodash';
 
 export const defaultIfNotPresent = (value: string | null | undefined, defaultValue: string) => {
   if (!value || value.trim().length === 0) {
@@ -15,10 +14,7 @@ export const throwIfNotPresent = (value: string | null | undefined, configKey: s
   return value;
 };
 
-export const generateSignerOptions = (
-  hostname: string,
-  username: string,
-): RDS.Signer.SignerOptions => {
+export const generateSignerOptions = (hostname: string, username: string): RDS.Signer.SignerOptions => {
   return {
     username,
     hostname,
@@ -27,10 +23,7 @@ export const generateSignerOptions = (
   };
 };
 
-const iamRdsConfigValid = (
-  hostname: string | undefined,
-  username: string | undefined,
-) => {
+const iamRdsConfigValid = (hostname: string | undefined, username: string | undefined) => {
   const hostnameValid = hostname && hostname.trim().length > 0;
   const usernameValid = username && username.trim().length > 0;
   return hostnameValid && usernameValid;
@@ -49,22 +42,15 @@ export const tryFetchRdsAccessToken = async (
     return envvar;
   }
 
-  throwIfNotPresent(
-    hostname,
-    'tarsReplicateDatabaseHostname',
-  );
-
-  throwIfNotPresent(
-    username,
-    'tarsReplicaDatabaseUsername',
-  );
+  throwIfNotPresent(hostname, 'tarsReplicateDatabaseHostname');
+  throwIfNotPresent(username, 'tarsReplicaDatabaseUsername');
 
   const signer = new RDS.Signer();
   const signerOptions = generateSignerOptions(hostname, username);
   return new Promise((resolve, reject) => {
     signer.getAuthToken(signerOptions, (err, token) => {
       if (err) {
-        throw new Error(`Generating an auth token failed`);
+        throw new Error(`Generating an auth token failed. Error message: ${err.message}`);
       }
       resolve(token);
     });
