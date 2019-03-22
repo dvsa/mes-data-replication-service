@@ -1,5 +1,4 @@
-import { Mock, It, Times } from 'typemoq';
-import { tryFetchRdsAccessToken, generateSignerOptions } from '../config-helpers';
+import { generateSignerOptions } from '../config-helpers';
 
 const AWS = require('aws-sdk');
 
