@@ -1,4 +1,4 @@
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { ExaminerAdvanceTestSlot } from '../../../domain/examiner-advance-test-slot';
 import { logDuration } from '../../../../../common/framework/log/logger';
@@ -21,7 +21,7 @@ export const getAdvanceTestSlots = async (connectionPool: mysql.Pool, startDate:
 
   console.log(`running advanced test slots query from ${windowStart} to ${windowEnd}...`);
   const start = new Date();
-  const res =  await query(
+  const res = await query(
     connectionPool,
     `
     select w.individual_id, w.slot_id, w.start_time, w.minutes, w.tc_id, tcn.tc_name,

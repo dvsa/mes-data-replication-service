@@ -16,7 +16,7 @@
     "lodash": "^4.17.11",
     "luxon": "^1.4.5",
     "moment": "^2.23.0",
-    "mysql": "^2.16.0",
+    "mysql2": "^1.6.5",
     "node.extend": "^1.1.7"
   },
   "devDependencies": {

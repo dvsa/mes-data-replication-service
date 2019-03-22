@@ -1,4 +1,4 @@
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { ExaminerTestSlot } from '../../../domain/examiner-test-slot';
 import { mapRow } from './row-mappers/test-slot-row-mapper';

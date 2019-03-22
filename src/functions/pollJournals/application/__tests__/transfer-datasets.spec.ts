@@ -11,7 +11,7 @@ import { transferDatasets } from '../transfer-datasets';
 import * as config from '../../framework/config/config';
 import * as pool from '../../framework/repo/mysql/pool';
 import { Mock, Times, It } from 'typemoq';
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import { dummyConfig } from '../../framework/config/__mocks__/config';
 import * as journalChangeFilter from '../journal-change-filter';
 

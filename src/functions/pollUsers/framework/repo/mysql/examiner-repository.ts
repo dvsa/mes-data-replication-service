@@ -1,6 +1,6 @@
 import { query } from '../../../../../common/framework/mysql/database';
 import { config } from '../../config';
-import * as mysql from 'mysql';
+import * as mysql from 'mysql2';
 import * as moment from 'moment';
 
 export const getActiveExaminers = async (): Promise<string[]> => {
@@ -11,6 +11,12 @@ export const getActiveExaminers = async (): Promise<string[]> => {
     database: configuration.tarsReplicaDatabaseName,
     user: configuration.tarsReplicaDatabaseUsername,
     password: configuration.tarsReplicaDatabasePassword,
+    ssl: process.env.TESTING_MODE ? null : 'Amazon RDS',
+    authSwitchHandler(data, cb) {
+      if (data.pluginName === 'mysql_clear_password') {
+        cb(null, Buffer.from(`${configuration.tarsReplicaDatabasePassword}\0`));
+      }
+    },
   });
 
   const queryResult = await query(
