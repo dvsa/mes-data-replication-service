@@ -16,30 +16,28 @@ export type Config = {
 
 let configuration: Config;
 export const bootstrapConfig = async (): Promise<void> => {
-  if (!configuration) {
-    configuration = {
-      isOffline: !!process.env.IS_OFFLINE,
-      journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
-      tarsReplicaDatabaseHostname: throwIfNotPresent(
-        process.env.TARS_REPLICA_HOST_NAME,
-        'tarsReplicateDatabaseHostname',
-      ),
-      tarsReplicaDatabaseName: throwIfNotPresent(
-        process.env.TARS_REPLICA_DB_NAME,
-        'tarsReplicaDatabaseName',
-      ),
-      tarsReplicaDatabaseUsername: throwIfNotPresent(
-        process.env.TARS_REPLICA_DB_USERNAME,
-        'tarsReplicaDatabaseUsername',
-      ),
-      tarsReplicaDatabasePassword: await tryFetchRdsAccessToken(
-        process.env.TARS_REPLICA_ENDPOINT,
-        process.env.TARS_REPLICA_DB_USERNAME,
-        'SECRET_DB_PASSWORD_KEY',
-      ),
-      timeTravelDate: process.env.TIME_TRAVEL_DATE,
-    };
-  }
+  configuration = {
+    isOffline: !!process.env.IS_OFFLINE,
+    journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
+    tarsReplicaDatabaseHostname: throwIfNotPresent(
+      process.env.TARS_REPLICA_HOST_NAME,
+      'tarsReplicateDatabaseHostname',
+    ),
+    tarsReplicaDatabaseName: throwIfNotPresent(
+      process.env.TARS_REPLICA_DB_NAME,
+      'tarsReplicaDatabaseName',
+    ),
+    tarsReplicaDatabaseUsername: throwIfNotPresent(
+      process.env.TARS_REPLICA_DB_USERNAME,
+      'tarsReplicaDatabaseUsername',
+    ),
+    tarsReplicaDatabasePassword: await tryFetchRdsAccessToken(
+      process.env.TARS_REPLICA_ENDPOINT,
+      process.env.TARS_REPLICA_DB_USERNAME,
+      'SECRET_DB_PASSWORD_KEY',
+    ),
+    timeTravelDate: process.env.TIME_TRAVEL_DATE,
+  };
 };
 
 export const config = (): Config => configuration;

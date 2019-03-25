@@ -6,29 +6,27 @@ import {
 let configuration: Config;
 
 export const bootstrapConfig = async () => {
-  if (!configuration) {
-    configuration = {
-      isOffline: !!process.env.IS_OFFLINE,
-      usersDynamodbTableName: defaultIfNotPresent(process.env.USERS_DDB_TABLE_NAME, 'users'),
-      tarsReplicaDatabaseHostname: throwIfNotPresent(
-        process.env.TARS_REPLICA_HOST_NAME,
-        'tarsReplicateDatabaseHostname',
-      ),
-      tarsReplicaDatabaseName: throwIfNotPresent(
-        process.env.TARS_REPLICA_DB_NAME,
-        'tarsReplicaDatabaseName',
-      ),
-      tarsReplicaDatabaseUsername: throwIfNotPresent(
-        process.env.TARS_REPLICA_DB_USERNAME,
-        'tarsReplicaDatabaseUsername',
-      ),
-      tarsReplicaDatabasePassword: await tryFetchRdsAccessToken(
-        process.env.TARS_REPLICA_ENDPOINT,
-        process.env.TARS_REPLICA_DB_USERNAME,
-        'SECRET_DB_PASSWORD_KEY',
-      ),
-    };
-  }
+  configuration = {
+    isOffline: !!process.env.IS_OFFLINE,
+    usersDynamodbTableName: defaultIfNotPresent(process.env.USERS_DDB_TABLE_NAME, 'users'),
+    tarsReplicaDatabaseHostname: throwIfNotPresent(
+      process.env.TARS_REPLICA_HOST_NAME,
+      'tarsReplicateDatabaseHostname',
+    ),
+    tarsReplicaDatabaseName: throwIfNotPresent(
+      process.env.TARS_REPLICA_DB_NAME,
+      'tarsReplicaDatabaseName',
+    ),
+    tarsReplicaDatabaseUsername: throwIfNotPresent(
+      process.env.TARS_REPLICA_DB_USERNAME,
+      'tarsReplicaDatabaseUsername',
+    ),
+    tarsReplicaDatabasePassword: await tryFetchRdsAccessToken(
+      process.env.TARS_REPLICA_ENDPOINT,
+      process.env.TARS_REPLICA_DB_USERNAME,
+      'SECRET_DB_PASSWORD_KEY',
+    ),
+  };
 };
 
 export type Config = {
