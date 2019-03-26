@@ -41,7 +41,7 @@ export class DmsApi {
           {
             err: {
               name: err.code,
-              message: `Error calling describeReplicationInstances: ${JSON.stringify(err)}`,
+              message: `Error calling describeReplicationInstances: ${err.message}`,
             },
           });
       }
@@ -63,7 +63,7 @@ export class DmsApi {
         {
           err: {
             name: err.code,
-            message: `Error calling stopTask: ${JSON.stringify(err)}`,
+            message: `Error calling stopTask: ${err.message}`,
           },
         });
       throw err;
@@ -85,7 +85,7 @@ export class DmsApi {
         {
           err: {
             name: err.code,
-            message: `Error calling startTask: ${JSON.stringify(err)}`,
+            message: `Error calling startTask: ${err.message}`,
           },
         });
       throw err;
@@ -159,7 +159,7 @@ export class DmsApi {
         {
           err: {
             name: err.code,
-            message: `Error calling createReplicationTask: ${JSON.stringify(err)}`,
+            message: `Error calling createReplicationTask: ${err.message}`,
           },
         });
       throw err;
@@ -182,7 +182,7 @@ export class DmsApi {
         {
           err: {
             name: err.code,
-            message: `Error calling modifyReplicationTask: ${JSON.stringify(err)}`,
+            message: `Error calling modifyReplicationTask: ${err.message}`,
           },
         });
       throw err;
@@ -234,7 +234,7 @@ export class DmsApi {
           {
             err: {
               name: err.code,
-              message: `Error calling describeReplicationTasks: ${JSON.stringify(err)}`,
+              message: `Error calling describeReplicationTasks: ${err.message}`,
             },
           });
       }
