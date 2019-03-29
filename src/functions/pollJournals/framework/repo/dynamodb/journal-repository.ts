@@ -1,4 +1,5 @@
 import { DynamoDB, Credentials, config as awsConfig, Request, AWSError } from 'aws-sdk';
+import { Agent } from 'https';
 import { JournalRecord } from '../../../domain/journal-record';
 import { chunk, get, mean } from 'lodash';
 import { config } from '../../config/config';
@@ -15,6 +16,18 @@ const getDynamoClient = () => {
       });
       dynamoDocumentClient = new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000', region: localRegion });
     } else {
+      // enable HTTP keep alive on DynamoDB API calls - improves performance
+      // (since TCP connect can take longer than the API call itself, and we are issuing multiple API calls)
+      const sslAgent = new Agent({
+        keepAlive: true,
+        maxSockets: 50,
+        rejectUnauthorized: true,
+      });
+      awsConfig.update({
+        httpOptions:{
+          agent: sslAgent,
+        },
+      });
       dynamoDocumentClient = new DynamoDB.DocumentClient();
     }
   }
