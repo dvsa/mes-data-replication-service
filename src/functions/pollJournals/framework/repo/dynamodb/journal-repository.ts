@@ -1,6 +1,6 @@
 import { DynamoDB, Credentials, config as awsConfig, Request, AWSError } from 'aws-sdk';
 import { JournalRecord } from '../../../domain/journal-record';
-import { chunk, mean } from 'lodash';
+import { chunk, get, mean } from 'lodash';
 import { config } from '../../config/config';
 import { Key } from 'aws-sdk/clients/dynamodb';
 
@@ -22,7 +22,6 @@ const getDynamoClient = () => {
 };
 
 export const saveJournals = async (journals: JournalRecord[]): Promise<void> => {
-  console.log(`AVERAGE JOURNAL SIZE BEING SAVED: ${calculateAverageJournalSizeInKb(journals)}KB`);
   console.log(`STARTING SAVE: ${new Date()}`);
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
@@ -47,39 +46,30 @@ export const saveJournals = async (journals: JournalRecord[]): Promise<void> => 
   console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
 };
 
-const calculateAverageJournalSizeInKb = (journals: JournalRecord[]) => {
-  const averageBytes = journals
-    .reduce(
-      (progress, journal) => {
-        const newItemCount = progress.count + 1;
-        const differential = (JSON.stringify(journal).length - progress.average) / newItemCount;
-        return {
-          count: newItemCount,
-          average: progress.average + differential,
-        };
-      },
-      { count: 0, average: 0 },
-    ).average;
-  return Math.floor(averageBytes / 1024);
-};
-
 const submitSaveRequests = async (
   writeRequests: Request<DynamoDB.DocumentClient.BatchWriteItemOutput, AWSError>[],
   tableName: string,
 ) => {
   let totalUnprocessedWrites = 0;
   let requestRuntimes: number[] = [];
+  let totalConsumedCapacity = 0;
   for (const writeRequest of writeRequests) {
-    const requestStartHrtime = process.hrtime();
+
+    const start = process.hrtime();
     const result = await writeRequest.promise();
-    const requestEndHrtime = process.hrtime(requestStartHrtime);
-    const requestDurationMs = Math.floor(((requestEndHrtime[0] * 1e9) + requestEndHrtime[1]) / 1e6);
-    requestRuntimes = [...requestRuntimes, requestDurationMs];
+    const timeTaken = process.hrtime(start);
+    totalConsumedCapacity += get(result, 'ConsumedCapacity[0].CapacityUnits', 0);
+    const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
+    console.log(`batch write of journals took ${duration} ms`);
+
+    requestRuntimes = [...requestRuntimes, duration];
     if (result.UnprocessedItems && result.UnprocessedItems[tableName]) {
       const unprocessedWriteCount = result.UnprocessedItems[tableName].length;
       totalUnprocessedWrites += unprocessedWriteCount;
+      console.log(`${unprocessedWriteCount} writes failed/throttled`);
     }
   }
+  console.log(`all journals written, took ${totalConsumedCapacity} WCUs`);
   const averageRequestRuntime = mean(requestRuntimes);
   return { totalUnprocessedWrites, averageRequestRuntime };
 };
@@ -94,18 +84,26 @@ export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalRecord
     ExpressionAttributeNames: {
       '#hash': 'hash',
     },
+    ReturnConsumedCapacity: 'TOTAL',
   };
 
   let scannedItems: Partial<JournalRecord>[] = [];
   let lastEvaluatedKey: Key | undefined;
+  let totalConsumedCapacity = 0;
   do {
     const paramsForRequest = lastEvaluatedKey !== undefined ?
       { ...params, ExclusiveStartKey: lastEvaluatedKey }
       : { ...params };
+    const start = process.hrtime();
     const result = await ddb.scan(paramsForRequest).promise();
+    const timeTaken = process.hrtime(start);
+    const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
     scannedItems = [...scannedItems, ...result.Items as Partial<JournalRecord>[]];
+    console.log(`scan of ${result.Items.length} journal hashes took ${duration} ms`);
+    totalConsumedCapacity += get(result, 'ConsumedCapacity.CapacityUnits', 0);
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey !== undefined);
 
+  console.log(`read ${scannedItems.length} journal hashes, took ${totalConsumedCapacity} RCUs`);
   return scannedItems;
 };
