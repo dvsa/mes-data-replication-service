@@ -47,6 +47,7 @@ describe('transferDatasets', () => {
   const dummyPersonalCommitmentDataset = [{ examinerId: 2, personalCommitment: {} }];
   const dummyTransformedJournals = [{ examinerId: 1 }, { examinerId: 2 }];
   const dummyFilteredJournals = [{ examinerId: 1 }];
+  const dummyStartTime = new Date();
 
   beforeEach(async () => {
     moqConfig.reset();
@@ -95,7 +96,7 @@ describe('transferDatasets', () => {
   });
 
   it('should retrieve all the datasets and transform into a journal and save', async () => {
-    await transferDatasets();
+    await transferDatasets(dummyStartTime);
 
     moqGetTestSlots.verify(x => x(It.isAny(), It.isAny(), It.isAny(), It.isAny()), Times.once());
     moqGetPersonalCommitments.verify(x => x(It.isAny(), It.isAny(), It.isAny()), Times.once());
@@ -112,6 +113,6 @@ describe('transferDatasets', () => {
     };
     moqBuildJournals.verify(x => x(It.isValue(dummyExaminers), It.isValue(expectedDatasets)), Times.once());
     moqFilterChangedJournals.verify(x => x(It.isValue(<any>dummyTransformedJournals)), Times.once());
-    moqSaveJournals.verify(x => x(It.isValue(<any>dummyFilteredJournals)), Times.once());
+    moqSaveJournals.verify(x => x(It.isValue(<any>dummyFilteredJournals), It.isValue(dummyStartTime)), Times.once());
   });
 });

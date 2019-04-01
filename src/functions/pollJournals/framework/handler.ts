@@ -6,8 +6,11 @@ import { bootstrapConfig } from './config/config';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
   try {
+    // cache the Lambda function start time
+    const startTime = new Date();
+
     await bootstrapConfig();
-    await transferDatasets();
+    await transferDatasets(startTime);
     return createResponse({});
   } catch (error) {
     console.error(error);
