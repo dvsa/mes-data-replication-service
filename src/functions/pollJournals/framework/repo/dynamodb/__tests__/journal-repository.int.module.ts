@@ -24,7 +24,7 @@ export const dynamoDBIntegrationTests = () => {
         await putStaffNumberAndHash('123', 'abc');
         await putStaffNumberAndHash('456', 'xyz');
 
-        const result = await getStaffNumbersWithHashes();
+        const result = await getStaffNumbersWithHashes(new Date());
 
         expect(result.length).toBe(2);
         expect(result).toContain({ staffNumber: '123', hash: 'abc' });

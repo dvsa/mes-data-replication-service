@@ -31,7 +31,7 @@ describe('JournalRepository', () => {
         cb(null, ddbResp);
       });
 
-      const result = await getStaffNumbersWithHashes();
+      const result = await getStaffNumbersWithHashes(new Date());
 
       expect(result).toEqual([
         { staffNumber: '1', hash: 'a' },

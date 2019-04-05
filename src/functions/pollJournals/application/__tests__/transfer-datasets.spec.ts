@@ -91,7 +91,7 @@ describe('transferDatasets', () => {
       .returns(() => Promise.resolve(dummyAdvanceTestSlotDataset));
     moqGetDeployments.setup(x => x(It.isAny(), It.isAny(), It.isAny()))
       .returns(() => Promise.resolve(dummyDeploymentDataset));
-    moqFilterChangedJournals.setup(x => x(It.isAny())).returns(() => <any>dummyFilteredJournals);
+    moqFilterChangedJournals.setup(x => x(It.isAny(), It.isAny())).returns(() => <any>dummyFilteredJournals);
     moqBuildJournals.setup(x => x(It.isAny(), It.isAny())).returns(() => <any>dummyTransformedJournals);
   });
 
@@ -112,7 +112,8 @@ describe('transferDatasets', () => {
       deployments: dummyDeploymentDataset,
     };
     moqBuildJournals.verify(x => x(It.isValue(dummyExaminers), It.isValue(expectedDatasets)), Times.once());
-    moqFilterChangedJournals.verify(x => x(It.isValue(<any>dummyTransformedJournals)), Times.once());
+    moqFilterChangedJournals.verify(
+      x => x(It.isValue(<any>dummyTransformedJournals), It.isValue(dummyStartTime)), Times.once());
     moqSaveJournals.verify(x => x(It.isValue(<any>dummyFilteredJournals), It.isValue(dummyStartTime)), Times.once());
   });
 });
