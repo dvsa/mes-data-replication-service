@@ -1,12 +1,37 @@
 import { DynamoDB, Credentials, config as awsConfig } from 'aws-sdk';
 import { Agent } from 'https';
+import { JournalHashesCache } from './journal-hashes-cache';
 import { JournalRecord } from '../../../domain/journal-record';
 import { chunk, get, mean } from 'lodash';
 import { config } from '../../config/config';
 import { Key } from 'aws-sdk/clients/dynamodb';
 import moment = require('moment');
 
+/*
+* Amount of time (in milliseconds), to throttle Journal writes over.
+* Slowing down the writes means using less DynamoDB write capcity units (WCU's) per second,
+* reducing the amount of capacity that needs to be provisioned. If we exceed the capacity (plus burst capacity)
+* then some of the writes will be refused by Dynamo (tracked as unprecessed items).
+*
+* Upon testing in "perf", which has 50 WCUs provisioned, 2083 journals (roughly 4500 WCUs) can be successfully written
+* over 4 seconds if there are no other writes for the previous 5 minutes. Doing it quicker than that (i.e. without any
+* throttling) causes WCU capacity to be exceeded.
+*/
+const totalSaveDuration = 4 * 1000;
+
+/*
+ * Number of seconds between poller invocations.
+ */
+const pollerFrequency = 60;
+
+const journalHashesCache = new JournalHashesCache(pollerFrequency);
 let dynamoDocumentClient: DynamoDB.DocumentClient;
+
+/**
+ * Creates the DynamoDB API client. If offline then points to the local endpoint. If online then enables HTTP keep
+ * alive to improve performance, since TCP connect can take longer than the API call itself, and we are issuing
+ * multiple API calls in a loop.
+ */
 const getDynamoClient = () => {
   if (!dynamoDocumentClient) {
     if (config().isOffline) {
@@ -17,8 +42,6 @@ const getDynamoClient = () => {
       });
       dynamoDocumentClient = new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000', region: localRegion });
     } else {
-      // enable HTTP keep alive on DynamoDB API calls - improves performance
-      // (since TCP connect can take longer than the API call itself, and we are issuing multiple API calls)
       const sslAgent = new Agent({
         keepAlive: true,
         maxSockets: 50,
@@ -43,26 +66,17 @@ const getDynamoClient = () => {
  * @param startTime The date and time the Lambda function started
  */
 export const saveJournals = async (journals: JournalRecord[], startTime: Date): Promise<void> => {
+  // update validity of the hashes cache
+  journalHashesCache.update(startTime, []);
+
   if (journals.length > 0) {
     console.log(`STARTING SAVE: ${new Date()}`);
     const tableName = config().journalDynamodbTableName;
     const maxBatchWriteRequests = 25;
     const journalWriteBatches = chunk(journals, maxBatchWriteRequests);
-    const writeRequests = journalWriteBatches.map((batch) => {
-      return {
-        RequestItems: {
-          [tableName]: batch.map(journalWrapper => ({
-            PutRequest: {
-              Item: journalWrapper,
-            },
-          })),
-        },
-        ReturnConsumedCapacity: 'TOTAL',
-      } as DynamoDB.DocumentClient.BatchWriteItemInput;
-    });
-
     const { totalUnprocessedWrites, averageRequestRuntime } =
-      await submitSaveRequests(writeRequests, tableName, startTime);
+      await submitSaveRequests(journalWriteBatches, tableName, startTime);
+
     console.log(`AVERAGE REQUEST TOOK ${averageRequestRuntime}ms`);
     console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
   } else {
@@ -73,7 +87,7 @@ export const saveJournals = async (journals: JournalRecord[], startTime: Date): 
 /**
  * Saves as many of the changed journals as possible to DynamoDB. Writes in batches, at a throttled rate, and aborts if
  * about to overrun.
- * @param writeRequests The dynamo write requests
+ * @param writeBatches The journals to write, in batches
  * @param tableName The dynamo table name
  * @param startTime The date and time the Lambda function started
  * @returns { totalUnprocessedWrites, averageRequestRuntime }
@@ -81,7 +95,7 @@ export const saveJournals = async (journals: JournalRecord[], startTime: Date): 
  *   Average amount of time (in ms) that each batch write took
  */
 const submitSaveRequests = async (
-  writeRequests: DynamoDB.DocumentClient.BatchWriteItemInput[],
+  writeBatches: JournalRecord[][],
   tableName: string,
   startTime: Date,
 ) => {
@@ -90,36 +104,65 @@ const submitSaveRequests = async (
   let requestRuntimes: number[] = [];
   let totalConsumedCapacity = 0;
 
-  /*
-   * Amount of time (in milliseconds), to throttle Journal writes over.
-   * Slowing down the writes means using less DynamoDB write capcity units (WCU's) per second,
-   * reducing the amount of capacity that needs to be provisioned. If we exceed the capacity (plus burst capacity)
-   * then some of the writes will be refused by Dynamo (tracked as unprecessed items).
-   *
-   * Upon testing in "perf", which has 50 WCUs, 2083 journals (roughly 4500 WCUs) can be successfully written
-   * over 4 seconds if there are no other writes for the previous 5 minutes.
-   */
-  const totalSaveDuration = 4 * 1000;
-
-  const sleepDuration = totalSaveDuration / writeRequests.length;
-  for (const writeRequest of writeRequests) {
+  const sleepDuration = totalSaveDuration / writeBatches.length;
+  for (const writeBatch of writeBatches) {
+    // TODO: add wait time too
     if (runOutOfTime(startTime)) {
       // this is a good point to raise an alert
       console.log('** No more time left, aborting any further writes! **');
       break;
     }
 
+    const writeInput = {
+      RequestItems: {
+        [tableName]: writeBatch.map(journalWrapper => ({
+          PutRequest: {
+            Item: journalWrapper,
+          },
+        })),
+      },
+      ReturnConsumedCapacity: 'TOTAL',
+    } as DynamoDB.DocumentClient.BatchWriteItemInput;
+
     const start = process.hrtime();
-    const result = await ddb.batchWrite(writeRequest).promise();
+    const result = await ddb.batchWrite(writeInput).promise();
     const timeTaken = process.hrtime(start);
     totalConsumedCapacity += get(result, 'ConsumedCapacity[0].CapacityUnits', 0);
     const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
     requestRuntimes = [...requestRuntimes, duration];
-    if (result.UnprocessedItems && result.UnprocessedItems[tableName]) {
-      const unprocessedWriteCount = result.UnprocessedItems[tableName].length;
+
+    console.log(`result is ${JSON.stringify(result)}`);
+
+    const failedStaffNumbers = [] as string[];
+    if (get(result, `UnprocessedItems.${tableName}`)) {
+      result.UnprocessedItems[tableName].forEach((writeRequest) => {
+        const staffNumber = get(writeRequest, 'PutRequest.Item.staffNumber', '0') as string;
+        if (staffNumber !== '0') {
+          failedStaffNumbers.push(staffNumber);
+        }
+      });
+
+      failedStaffNumbers.forEach((staffNumber) => {
+        console.log(`failed to write hash for ${staffNumber}`);
+      });
+
+      const unprocessedWriteCount = failedStaffNumbers.length;
       totalUnprocessedWrites += unprocessedWriteCount;
       console.log(`${unprocessedWriteCount} writes failed/throttled`);
     }
+
+    const writtenHashes = writeBatch.filter((journal) => {
+      // filter out any journals that failed to be written
+      return !failedStaffNumbers.includes(journal.staffNumber);
+    }).map((journal) => {
+      return {
+        staffNumber: journal.staffNumber,
+        hash: journal.hash,
+      } as Partial<JournalRecord>;
+    });
+
+    // cache the journals that were successfully written
+    journalHashesCache.update(startTime, writtenHashes);
 
     await sleep(sleepDuration);
   }
@@ -146,19 +189,17 @@ const sleep = (ms: number) => {
  */
 const runOutOfTime = (startTime: Date): boolean => {
   const now = moment();
-  /*
-   * Allow 60 seconds for each lambda execution run, minus a couple of seconds leniency.
-   * Change this amount if changing how often this poller runs.
-   */
-  const endOfTime = moment(startTime).add({ seconds: 58 });
+  // allow a couple of seconds leniency
+  const endOfTime = moment(startTime).add({ seconds: pollerFrequency - 2 });
   return now.isAfter(endOfTime);
 };
 
 /**
  * Get the staff numbers and journal hashes, for all examiners.
+ * @param startTime The date and time the Lambda function started
  * @returns A Partial objecdt with staffNumber and hash populated
  */
-export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalRecord>[]> => {
+export const getStaffNumbersWithHashes = async (startTime: Date): Promise<Partial<JournalRecord>[]> => {
   const ddb = getDynamoClient();
   const tableName = config().journalDynamodbTableName;
 
@@ -170,6 +211,14 @@ export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalRecord
     },
     ReturnConsumedCapacity: 'TOTAL',
   };
+
+  if (journalHashesCache.isValid(startTime)) {
+    console.log('Journal Hashes Cache hit, using cached data');
+    return new Promise(() => {
+      return journalHashesCache.get();
+    });
+  }
+  console.log('Journal Hashes Cache miss, reading hashes from Dynamo');
 
   let scannedItems: Partial<JournalRecord>[] = [];
   let lastEvaluatedKey: Key | undefined;
@@ -189,5 +238,6 @@ export const getStaffNumbersWithHashes = async (): Promise<Partial<JournalRecord
   } while (lastEvaluatedKey !== undefined);
 
   console.log(`read ${scannedItems.length} journal hashes, took ${totalConsumedCapacity} RCUs`);
+  journalHashesCache.clearAndPopulate(scannedItems, startTime);
   return scannedItems;
 };
