@@ -22,17 +22,19 @@ const totalSaveDuration = 4 * 1000;
 /*
  * Number of seconds between poller invocations.
  */
-const pollerFrequency = 60;
+export const pollerFrequency = 60;
 
-const journalHashesCache = new JournalHashesCache(pollerFrequency);
+export const journalHashesCache = new JournalHashesCache(pollerFrequency);
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 
 /**
  * Creates the DynamoDB API client. If offline then points to the local endpoint. If online then enables HTTP keep
  * alive to improve performance, since TCP connect can take longer than the API call itself, and we are issuing
  * multiple API calls in a loop.
+ *
+ * Only exported to support integration testing.
  */
-const getDynamoClient = () => {
+export const getDynamoClient = () => {
   if (!dynamoDocumentClient) {
     if (config().isOffline) {
       const localRegion = 'localhost';
@@ -106,8 +108,7 @@ const submitSaveRequests = async (
 
   const sleepDuration = totalSaveDuration / writeBatches.length;
   for (const writeBatch of writeBatches) {
-    // TODO: add wait time too
-    if (runOutOfTime(startTime)) {
+    if (runOutOfTime(startTime, sleepDuration)) {
       // this is a good point to raise an alert
       console.log('** No more time left, aborting any further writes! **');
       break;
@@ -130,8 +131,6 @@ const submitSaveRequests = async (
     totalConsumedCapacity += get(result, 'ConsumedCapacity[0].CapacityUnits', 0);
     const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
     requestRuntimes = [...requestRuntimes, duration];
-
-    console.log(`result is ${JSON.stringify(result)}`);
 
     const failedStaffNumbers = [] as string[];
     if (get(result, `UnprocessedItems.${tableName}`)) {
@@ -174,9 +173,12 @@ const submitSaveRequests = async (
 
 /**
  * Synchronous sleep.
+ *
+ * Only exported to support integration testing.
+ *
  * @param ms The amount of milliseconds to sleep for
  */
-const sleep = (ms: number) => {
+export const sleep = (ms: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
@@ -184,14 +186,27 @@ const sleep = (ms: number) => {
 
 /**
  * Determine whether we have run out of time to write any more journals to dynamo.
+ *
  * @param startTime The date and time the Lambda function started
- * @returns true if we have run out of time
+ * @param sleepDuration The amount of time we will sleep for
+ * @returns true if we have run out of time, after the sleep duration
  */
-const runOutOfTime = (startTime: Date): boolean => {
-  const now = moment();
-  // allow a couple of seconds leniency
-  const endOfTime = moment(startTime).add({ seconds: pollerFrequency - 2 });
-  return now.isAfter(endOfTime);
+const runOutOfTime = (startTime: Date, sleepDuration: number): boolean => {
+  const current = now();
+  // add the sleep duration, and also allow a couple of seconds leniency
+  const endOfTime = moment(startTime).add({ seconds: pollerFrequency - 2 }).add({ milliseconds: sleepDuration });
+  return current.isAfter(endOfTime);
+};
+
+/**
+ * Get the current date and time.
+ *
+ * Only exported to support integration testing.
+ *
+ * @returns the current date and time
+ */
+export const now = (): moment.Moment => {
+  return moment();
 };
 
 /**
@@ -214,9 +229,7 @@ export const getStaffNumbersWithHashes = async (startTime: Date): Promise<Partia
 
   if (journalHashesCache.isValid(startTime)) {
     console.log('Journal Hashes Cache hit, using cached data');
-    return new Promise(() => {
-      return journalHashesCache.get();
-    });
+    return Promise.resolve(journalHashesCache.get());
   }
   console.log('Journal Hashes Cache miss, reading hashes from Dynamo');
 

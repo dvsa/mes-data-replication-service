@@ -60,7 +60,7 @@ describe('buildJournals', () => {
     };
     moqCompressJournal.verify(x => x(It.isValue(journalToCompress)), Times.once());
     expect(result.length).toBe(2);
-    expect(result[0].journal).toBe(Buffer.from('firsthash'));
+    expect(result[0].journal).toEqual(Buffer.from('firsthash'));
   });
 
   it('should merge datasets including multiple examiners into the journal for each', () => {

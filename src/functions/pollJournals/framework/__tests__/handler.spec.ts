@@ -42,7 +42,7 @@ describe('pollJournals handler', () => {
     const result = await handler(dummyApigwEvent, dummyContext);
 
     moqConfigBootstrap.verify(x => x(), Times.once());
-    moqTransferDatasets.verify(x => x(It.isValue(dummyStartTime)), Times.once());
+    moqTransferDatasets.verify(x => x(It.isAny()), Times.once());
     moqCreateResponse.verify(x => x(It.isValue({})), Times.once());
     expect(result).toBe(moqResponse.object);
   });
@@ -50,7 +50,7 @@ describe('pollJournals handler', () => {
   it('should return an error response when a dependency throws an exception', async () => {
     dummyContext = lambdaTestUtils.mockContextCreator(() => null);
 
-    moqTransferDatasets.setup(x => x(It.isValue(dummyStartTime))).throws(new Error('testError'));
+    moqTransferDatasets.setup(x => x(It.isAny())).throws(new Error('testError'));
 
     const result = await handler(dummyApigwEvent, dummyContext);
 
