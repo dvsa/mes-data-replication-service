@@ -15,6 +15,8 @@ describe('pollJournals handler', () => {
   const moqTransferDatasets = Mock.ofInstance(transferDatasets.transferDatasets);
   const moqCreateResponse = Mock.ofInstance(createResponse.default);
 
+  const dummyStartTime = new Date();
+
   const moqResponse = Mock.ofType<Response>();
 
   beforeEach(() => {
@@ -40,13 +42,15 @@ describe('pollJournals handler', () => {
     const result = await handler(dummyApigwEvent, dummyContext);
 
     moqConfigBootstrap.verify(x => x(), Times.once());
-    moqTransferDatasets.verify(x => x(), Times.once());
+    moqTransferDatasets.verify(x => x(It.isAny()), Times.once());
     moqCreateResponse.verify(x => x(It.isValue({})), Times.once());
     expect(result).toBe(moqResponse.object);
   });
 
   it('should return an error response when a dependency throws an exception', async () => {
-    moqTransferDatasets.setup(x => x()).throws(new Error('testError'));
+    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
+
+    moqTransferDatasets.setup(x => x(It.isAny())).throws(new Error('testError'));
 
     const result = await handler(dummyApigwEvent, dummyContext);
 

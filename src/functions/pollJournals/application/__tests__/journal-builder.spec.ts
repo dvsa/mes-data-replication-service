@@ -21,7 +21,7 @@ describe('buildJournals', () => {
 
     spyOn(journalCompressor, 'compressJournal').and.callFake(moqCompressJournal.object);
 
-    moqCompressJournal.setup(x => x(It.isAny())).returns(() => 'firsthash');
+    moqCompressJournal.setup(x => x(It.isAny())).returns(() => Buffer.from('firsthash'));
   });
 
   it('should include a journal for every examiner', () => {
@@ -60,11 +60,11 @@ describe('buildJournals', () => {
     };
     moqCompressJournal.verify(x => x(It.isValue(journalToCompress)), Times.once());
     expect(result.length).toBe(2);
-    expect(result[0].journal).toBe('firsthash');
+    expect(result[0].journal).toEqual(Buffer.from('firsthash'));
   });
 
   it('should merge datasets including multiple examiners into the journal for each', () => {
-    moqCompressJournal.setup(x => x(It.isAny())).returns(() => 'secondhash');
+    moqCompressJournal.setup(x => x(It.isAny())).returns(() => Buffer.from('secondhash'));
     const datasets: AllDatasets = {
       testSlots: [
         { examinerId: 111, testSlot: { slotDetail: { slotId: 991 } } },
@@ -109,7 +109,7 @@ describe('buildJournals', () => {
     moqCompressJournal.verify(x => x(It.isValue(firstJournalToCompress)), Times.once());
     moqCompressJournal.verify(x => x(It.isValue(secondJournalToCompress)), Times.once());
     expect(result.length).toBe(2);
-    expect(result[0].journal).toEqual('firsthash');
-    expect(result[1].journal).toEqual('secondhash');
+    expect(result[0].journal).toEqual(Buffer.from('firsthash'));
+    expect(result[1].journal).toEqual(Buffer.from('secondhash'));
   });
 });

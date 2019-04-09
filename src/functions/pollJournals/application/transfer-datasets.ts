@@ -14,7 +14,7 @@ import { filterChangedJournals } from './journal-change-filter';
 import { getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
 import { config } from '../framework/config/config';
 
-export const transferDatasets = async (): Promise<void> => {
+export const transferDatasets = async (startTime: Date): Promise<void> => {
   const connectionPool = createConnectionPool();
 
   console.log(`STARTING QUERY PHASE: ${new Date()}`);
@@ -68,10 +68,10 @@ export const transferDatasets = async (): Promise<void> => {
   const journals: JournalRecord[] = buildJournals(examiners, datasets);
   console.log(`FINISHED TRANFORM PHASE, STARTING FILTER PHASE: ${new Date()}`);
 
-  const changedJournals = await filterChangedJournals(journals);
+  const changedJournals = await filterChangedJournals(journals, startTime);
   console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE FOR ${changedJournals.length} JOURNALS: ${new Date()}`);
 
-  await saveJournals(changedJournals);
+  await saveJournals(changedJournals, startTime);
   console.log(`FINISHED SAVE PHASE: ${new Date()}`);
 };
 

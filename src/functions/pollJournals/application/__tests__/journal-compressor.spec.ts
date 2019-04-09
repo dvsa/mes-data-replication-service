@@ -9,7 +9,7 @@ describe('JournalCompressor', () => {
 
       const compressedJournal = compressJournal(testJournal);
 
-      expect(compressedJournal.indexOf(testJournalCompression.compressedJournalAsBase64)).toBeGreaterThan(0);
+      expect(compressedJournal.byteLength).toBeLessThan(Buffer.from(JSON.stringify(testJournal)).byteLength);
     });
   });
 });
