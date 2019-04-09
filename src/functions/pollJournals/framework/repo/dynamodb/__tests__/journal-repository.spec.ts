@@ -8,7 +8,7 @@ import moment = require('moment');
 describe('JournalRepository', () => {
   const startTime = moment('2019-01-01 10:30:00.000');
   const sufficientTime = startTime.clone().add({ seconds: 2 });
-  const outOfTime = startTime.clone().add({ seconds: JournalRepository.pollerFrequency * 2 });
+  const outOfTime = startTime.clone().add({ seconds: JournalRepository.pollerFrequency - 2 });
 
   beforeEach(() => {
     spyOn(config, 'config').and.returnValue(dummyConfig);
@@ -169,7 +169,7 @@ describe('JournalRepository', () => {
       const { journals, hashes } = generateDummyJournals(10); // less than batch size
       const ddbSpy = jasmine.createSpy();
       spyOn(JournalRepository, 'getDynamoClient').and.returnValue(ddbSpy);
-      spyOn(JournalRepository, 'now').and.callFake(() => { return outOfTime; });
+      spyOn(JournalRepository, 'now').and.returnValue(outOfTime);
 
       await JournalRepository.saveJournals(journals, startTime.toDate());
 

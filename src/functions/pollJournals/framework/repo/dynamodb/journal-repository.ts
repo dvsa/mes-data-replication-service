@@ -105,6 +105,7 @@ const submitSaveRequests = async (
   let totalUnprocessedWrites = 0;
   let requestRuntimes: number[] = [];
   let totalConsumedCapacity = 0;
+  let totalWrittenJournals = 0;
 
   const sleepDuration = totalSaveDuration / writeBatches.length;
   for (const writeBatch of writeBatches) {
@@ -162,11 +163,12 @@ const submitSaveRequests = async (
 
     // cache the journals that were successfully written
     journalHashesCache.update(startTime, writtenHashes);
+    totalWrittenJournals += writtenHashes.length;
 
     await sleep(sleepDuration);
   }
 
-  console.log(`all journals written, took ${totalConsumedCapacity} WCUs`);
+  console.log(`successfully written ${totalWrittenJournals} journals, took ${totalConsumedCapacity} WCUs`);
   const averageRequestRuntime = mean(requestRuntimes);
   return { totalUnprocessedWrites, averageRequestRuntime };
 };
@@ -193,8 +195,8 @@ export const sleep = (ms: number) => {
  */
 const runOutOfTime = (startTime: Date, sleepDuration: number): boolean => {
   const current = now();
-  // add the sleep duration, and also allow a couple of seconds leniency
-  const endOfTime = moment(startTime).add({ seconds: pollerFrequency - 2 }).add({ milliseconds: sleepDuration });
+  // allow a couple of seconds leniency and the sleep duration
+  const endOfTime = moment(startTime).add({ seconds: pollerFrequency - 2 }).subtract({ milliseconds: sleepDuration });
   return current.isAfter(endOfTime);
 };
 
