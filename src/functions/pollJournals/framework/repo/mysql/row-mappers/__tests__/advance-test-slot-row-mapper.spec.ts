@@ -19,7 +19,7 @@ describe('AdvanceTestSlot Row Mapper', () => {
         advanceTestSlot: {
           slotDetail: {
             slotId: 123,
-            start: '2019-02-12T08:20:00+00:00',
+            start: '2019-02-12T08:20:00',
             duration: 100,
           },
           testCentre: {

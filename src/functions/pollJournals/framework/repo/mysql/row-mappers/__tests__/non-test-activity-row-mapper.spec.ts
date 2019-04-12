@@ -23,7 +23,7 @@ describe('NonTestActivity Row Mapper', () => {
           slotDetail: {
             duration: 57,
             slotId: 2,
-            start: '2019-02-15T08:20:00+00:00',
+            start: '2019-02-15T08:20:00',
           },
           testCentre: {
             centreId: 3,
