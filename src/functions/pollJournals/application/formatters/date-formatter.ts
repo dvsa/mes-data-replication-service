@@ -4,7 +4,7 @@ export const formatDateToStartTime = (date: Date): string => {
   if (!date) {
     return '';
   }
-  return moment(date).format('YYYY-MM-DDTHH:mm:ss+00:00');
+  return moment(date).format('YYYY-MM-DDTHH:mm:ss');
 };
 
 export const extractTimeFromDateTime = (date: Date): string => {
