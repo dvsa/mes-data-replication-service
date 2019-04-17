@@ -1,4 +1,4 @@
-service: mes-data-replication-service
+service: mes-data-poller-service
 
 provider:
   name: aws
@@ -21,13 +21,6 @@ functions:
     events:
       - http:
           path: /pollUsers
-          method: get
-  updateDmsTaskWithDates:
-    timeout: 3600
-    handler: src/functions/UpdateDmsTaskWithDates/framework/handler.handler
-    events:
-      - http:
-          path: /UpdateDmsTaskWithDates
           method: get
 
 custom:
