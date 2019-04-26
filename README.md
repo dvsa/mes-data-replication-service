@@ -8,7 +8,15 @@ The source database schema (Oracle) and DMS CDC grants.
 
 ## destination-db
 
-The destination database schema (Aurora MySQL).
+The destination database schema (Aurora MySQL).  Contains the following two sub-folders:
+
+### sample-data-load
+
+These scripts should be run sequentially on a non-integrated Aurora MySQL environment to create the tables and seed them with some sample data scenarios. Further details can be found at https://wiki.i-env.net/display/MES/TARS+Replica+-+Sample+Journal+Data
+
+### post-data-load
+
+These should be run after the scripts in sample-data-load (for a non-integrated environment) or after DMS has set up and initial load completed (for a TARS integrated environment).  Further details can be found at https://wiki.i-env.net/display/MES/TARS+Replica+-+Database+Objects
 
 ## E2E tests
 
