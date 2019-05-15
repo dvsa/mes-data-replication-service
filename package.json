@@ -10,6 +10,7 @@
     "url": "git+https://github.com/dvsa/mes-data-replication-service.git"
   },
   "dependencies": {
+    "@dvsa/mes-journal-schema": "^1.0.1",
     "@types/luxon": "^1.4.0",
     "aws-sdk": "^2.389.0",
     "escape-json-node": "^2.0.0",
@@ -38,7 +39,6 @@
     "husky": "^1.3.1",
     "jasmine": "^3.3.1",
     "jasmine-spec-reporter": "^4.2.1",
-    "json-schema-to-typescript": "^6.1.0",
     "mysql-import": "^1.0.13",
     "node-docker-monitor": "^1.0.11",
     "node-fetch": "^2.3.0",
@@ -67,12 +67,9 @@
     "compile": "tsc",
     "e2e": "run-s clean compile stack:up features stack:down",
     "features": "cucumber-js e2e/ --require 'build/e2e/**/*.js' --tags 'not @skip'",
-    "bootstrap": "json2ts schema/exampleSchema.json > src/common/domain/Schema.d.ts",
     "lint": "tslint --project tslint.json",
     "lint:fix": "tslint --fix -p .",
     "package": "./package.sh",
-    "postci": "npm run bootstrap",
-    "postinstall": "npm run bootstrap",
     "prepush": "npm run security-scan && npm run lint && npm test",
     "security-scan": "git secrets --scan && git log -p | scanrepo",
     "stack:up": "ts-node start-stack.ts",

@@ -1,4 +1,4 @@
-import { Deployment } from '../../../common/domain/Schema';
+import { Deployment } from '@dvsa/mes-journal-schema';
 
 export interface ExaminerDeployment {
   examinerId: number;

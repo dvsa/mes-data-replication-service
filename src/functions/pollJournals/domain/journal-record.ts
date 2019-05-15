@@ -1,4 +1,4 @@
-import { ExaminerWorkSchedule } from '../../../common/domain/Schema';
+import { ExaminerWorkSchedule } from '@dvsa/mes-journal-schema';
 
 export interface JournalRecord {
   staffNumber: string;
