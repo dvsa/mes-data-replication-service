@@ -1,4 +1,4 @@
-import { AdvanceTestSlot } from '../../../common/domain/Schema';
+import { AdvanceTestSlot } from '@dvsa/mes-journal-schema';
 
 export interface ExaminerAdvanceTestSlot {
   examinerId: number;

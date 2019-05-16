@@ -1,5 +1,5 @@
 import { groupBy, get } from 'lodash';
-import { ExaminerWorkSchedule } from '../../../common/domain/Schema';
+import { ExaminerWorkSchedule } from '@dvsa/mes-journal-schema';
 import { JournalRecord } from '../domain/journal-record';
 import * as crypto from 'crypto';
 import { ExaminerNonTestActivity } from '../domain/examiner-non-test-activity';

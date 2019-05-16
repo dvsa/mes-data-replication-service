@@ -6,7 +6,7 @@ import {
     Candidate,
     PreviousCancellation,
     Address,
-} from '../../../../../../common/domain/Schema';
+} from '@dvsa/mes-journal-schema';
 import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
 /**

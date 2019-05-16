@@ -1,4 +1,4 @@
-import { NonTestActivity } from '../../../common/domain/Schema';
+import { NonTestActivity } from '@dvsa/mes-journal-schema';
 
 export interface ExaminerNonTestActivity {
   examinerId: number;
