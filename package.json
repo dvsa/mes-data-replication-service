@@ -10,7 +10,7 @@
     "url": "git+https://github.com/dvsa/mes-data-replication-service.git"
   },
   "dependencies": {
-    "@dvsa/mes-journal-schema": "^1.0.3",
+    "@dvsa/mes-journal-schema": "^1.0.4",
     "@types/luxon": "^1.4.0",
     "aws-sdk": "^2.389.0",
     "escape-json-node": "^2.0.0",
