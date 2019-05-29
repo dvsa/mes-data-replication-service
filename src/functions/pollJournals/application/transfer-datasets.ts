@@ -70,6 +70,12 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
 
   const changedJournals = await filterChangedJournals(journals, startTime);
   console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE FOR ${changedJournals.length} JOURNALS: ${new Date()}`);
+  console.log(JSON.stringify({
+    service: 'journals-poller',
+    name: 'JournalsChanged',
+    description: 'Number of Journals found to have changed',
+    value: changedJournals.length,
+  }));
 
   await saveJournals(changedJournals, startTime);
   console.log(`FINISHED SAVE PHASE: ${new Date()}`);
