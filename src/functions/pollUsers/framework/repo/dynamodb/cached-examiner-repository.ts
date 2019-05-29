@@ -56,7 +56,15 @@ export const cacheStaffNumbers = async (staffNumbers: string[]): Promise<void> =
     };
     return ddb.batchWrite(params).promise();
   });
+
   await Promise.all(writePromises);
+
+  console.log(JSON.stringify({
+    service: 'users-poller',
+    name: 'UsersAdded',
+    description: 'Number of Users added to Dynamo',
+    value: staffNumbers.length,
+  }));
 };
 
 export const uncacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
@@ -75,4 +83,11 @@ export const uncacheStaffNumbers = async (staffNumbers: string[]): Promise<void>
   });
 
   await Promise.all(deletePromises);
+
+  console.log(JSON.stringify({
+    service: 'users-poller',
+    name: 'UsersRemoved',
+    description: 'Number of Users removed from Dynamo',
+    value: staffNumbers.length,
+  }));
 };
