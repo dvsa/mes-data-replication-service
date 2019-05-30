@@ -169,6 +169,13 @@ const submitSaveRequests = async (
   }
 
   console.log(`successfully written ${totalWrittenJournals} journals, took ${totalConsumedCapacity} WCUs`);
+  console.log(JSON.stringify({
+    service: 'journals-poller',
+    name: 'JournalsUpdated',
+    description: 'Number of Journals successfully updated in Dynamo',
+    value: totalWrittenJournals,
+  }));
+
   const averageRequestRuntime = mean(requestRuntimes);
   return { totalUnprocessedWrites, averageRequestRuntime };
 };
