@@ -1,6 +1,7 @@
 destination/*.sql
 destination-db/*.sql
 destination-db/database-objects/*.sql
+destination-db/post-data-load/*.sql
 destination-db/sample-data-load/*.sql
 source/*.sql
 source-db/*.sql
