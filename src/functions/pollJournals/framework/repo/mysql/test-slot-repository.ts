@@ -9,21 +9,20 @@ import { logDuration } from '../../../../../common/framework/log/logger';
  * Get all detailed test slots, for the specified time window.
  * @param connectionPool The MySQL connection pool to use
  * @param examinerIds The examiner ids to use
- * @param startDate The start date of the time window
+ * @param journalStartDate The start date of the time window
  * @param endDate The end date of the time window
  * @returns The detailed test slots
  */
 export const getTestSlots = async (
   connectionPool: mysql.Pool,
   examinerIds: number[],
-  startDate: Date,
+  journalStartDate: Date,
   endDate: Date,
 ): Promise<ExaminerTestSlot[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
-  const windowStart = moment(startDate).format(sqlYearFormat);
+  const windowStart = moment(journalStartDate).format(sqlYearFormat);
   const windowEnd = moment(endDate).format(sqlYearFormat);
 
-  console.log(`Querying ${examinerIds.length} examiners between ${windowStart} and ${windowEnd}`);
   const start = new Date();
   const res = await query(connectionPool, getQuery(examinerIds), [windowStart, windowEnd, windowStart]);
   const results = res.map(mapRow);
