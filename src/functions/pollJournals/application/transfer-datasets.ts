@@ -29,6 +29,16 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     startDate = moment(startDate).startOf('day').toDate();
   }
 
+  let journalStartDate: Date;
+
+  if (config().timeTravelDate != null) {
+    // Assumes fixed format for TIME_TRAVEL_DATE, e.g. 2019-03-13
+    journalStartDate = moment(config().timeTravelDate).subtract(14, 'days').toDate();
+  } else {
+    // time window starts at the beginning of the initial day
+    journalStartDate = moment(startDate).subtract(14, 'days').startOf('day').toDate();
+  }
+
   const [
     examiners,
     nextWorkingDay,
@@ -38,7 +48,7 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
   ]);
   const examinerIds = examiners.map(examiner => examiner.individual_id);
 
-  console.log(`Loading journals for ${examiners.length} examiners from ${formatDate(startDate)}` +
+  console.log(`Loading journals for ${examiners.length} examiners from ${formatDate(journalStartDate)}` +
     ` to ${formatDate(nextWorkingDay)}...`);
 
   const [
@@ -48,7 +58,7 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     advanceTestSlots,
     deployments,
   ] = await Promise.all([
-    getTestSlots(connectionPool, examinerIds, startDate, nextWorkingDay),
+    getTestSlots(connectionPool, examinerIds, journalStartDate, nextWorkingDay),
     getPersonalCommitments(connectionPool, startDate, 14), // 14 days range
     getNonTestActivities(connectionPool, startDate, nextWorkingDay),
     getAdvanceTestSlots(connectionPool, startDate, nextWorkingDay, 14), // 14 days range
