@@ -18,6 +18,7 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 	GearboxType VARCHAR(20),
 	LargeVehicle TINYINT,
 	DriverNumber VARCHAR(24),
+	DateOfBirth DATE,
 	Title VARCHAR(20),
 	FirstName VARCHAR(50),
 	SecondName VARCHAR(50),
@@ -66,8 +67,8 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 		FROM DUAL;
 		
 		-- INDIVIDUAL
-		INSERT INTO INDIVIDUAL (individual_id, driver_number, title_code, family_name, first_forename, second_forename, third_forename)
-		SELECT @CandidateId, DriverNumber, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Title), Surname, FirstName, SecondName, ThirdName
+		INSERT INTO INDIVIDUAL (individual_id, driver_number, date_of_birth, title_code, family_name, first_forename, second_forename, third_forename)
+		SELECT @CandidateId, DriverNumber, DateOfBirth, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Title), Surname, FirstName, SecondName, ThirdName, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = GenderCode), (SELECT ITEM_ID FROM REF_DATA_ITEM_ASTER WHERE ITEM_DESC1 = EthnicOriginCode)
 		FROM DUAL
 		WHERE NTACode IS NULL;
 		

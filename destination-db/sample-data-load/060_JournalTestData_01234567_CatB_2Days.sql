@@ -48,6 +48,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Automatic';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'PEARS015220A99HC';
+SET @DateOfBirth			= '1987-06-27';
 SET @Title					= 'Miss';
 SET @FirstName 				= 'Florence';
 SET @SecondName 			= NULL;
@@ -76,7 +77,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 1;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -93,6 +94,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Manual';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'DOEXX625220A99HC';
+SET @DateOfBirth			= '1960-09-05';
 SET @Title					= 'Mrs';
 SET @FirstName 				= 'Jane';
 SET @SecondName 			= NULL;
@@ -121,7 +123,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 9;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -138,6 +140,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Manual';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'SHAWX885220A99HC';
+SET @DateOfBirth			= '1962-03-05';
 SET @Title					= 'Miss';
 SET @FirstName 				= 'Theresa';
 SET @SecondName 			= NULL;
@@ -166,7 +169,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 2;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -183,6 +186,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Automatic';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'CAMPB805220A89HC';
+SET @DateOfBirth			= '1974-09-15';
 SET @Title					= 'Mr';
 SET @FirstName 				= 'Ali';
 SET @SecondName 			= NULL;
@@ -211,7 +215,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 6;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -228,6 +232,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Manual';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'BROWN915220A99HC';
+SET @DateOfBirth			= '1983-11-11';
 SET @Title					= 'Mr';
 SET @FirstName 				= 'James';
 SET @SecondName 			= NULL;
@@ -256,7 +261,7 @@ SET @BookingSeq				= 2;
 SET @CheckDigit				= 3;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -273,6 +278,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Manual';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'SMYTH375220A99HC';
+SET @DateOfBirth			= '1973-10-05';
 SET @Title					= 'Captain';
 SET @FirstName 				= 'Montague';
 SET @SecondName 			= NULL;
@@ -301,7 +307,7 @@ SET @BookingSeq				= 4;
 SET @CheckDigit				= 7;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -332,6 +338,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Automatic';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'POTSX015220A99HC';
+SET @DateOfBirth			= '1985-03-04';
 SET @Title					= 'Mr';
 SET @FirstName 				= 'Bill';
 SET @SecondName 			= NULL;
@@ -360,7 +367,7 @@ SET @BookingSeq				= 3;
 SET @CheckDigit				= 1;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -377,6 +384,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Automatic';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'COOPE625220A99HC';
+SET @DateOfBirth			= '1975-09-01';
 SET @Title					= 'Miss';
 SET @FirstName 				= 'Alice';
 SET @SecondName 			= NULL;
@@ -405,7 +413,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 1;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -422,6 +430,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Manual';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'BUXTO015220A99HC';
+SET @DateOfBirth			= '1977-10-16';
 SET @Title					= 'Mr';
 SET @FirstName 				= 'Phil';
 SET @SecondName 			= NULL;
@@ -450,7 +459,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 1;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -467,6 +476,7 @@ SET @NTACode				= '198';
 SET @GearboxType			= NULL;
 SET @LargeVehicle			= NULL;
 SET @DriverNumber			= NULL;
+SET @DateOfBirth			= NULL;
 SET @Title					= NULL;
 SET @FirstName 				= NULL;
 SET @SecondName 			= NULL;
@@ -495,7 +505,7 @@ SET @BookingSeq				= NULL;
 SET @CheckDigit				= NULL;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -534,6 +544,7 @@ SET @NTACode				= NULL;
 SET @GearboxType			= 'Automatic';
 SET @LargeVehicle			= 0;
 SET @DriverNumber			= 'SHIRT015220A99HC';
+SET @DateOfBirth			= '1977-10-16';
 SET @Title					= 'Mr';
 SET @FirstName 				= 'Polo';
 SET @SecondName 			= 'Ralph';
@@ -562,5 +573,5 @@ SET @BookingSeq				= 2;
 SET @CheckDigit				= 5;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
