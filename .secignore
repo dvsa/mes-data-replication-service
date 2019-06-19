@@ -4,6 +4,7 @@ destination-db/pre-dms/*.sql
 destination-db/database-objects/*.sql
 destination-db/sample-data-load/*.sql
 destination-db/post-data-load/*.sql
+destination-db/database-initialisation/010_applyLanguageSettings.sql
 source/*.sql
 source-db/*.sql
 src/functions/pollJournals/framework/repo/mysql/__tests__/data/**/*.sql
