@@ -74,7 +74,7 @@ describe('TestSlot Row Mapper', () => {
             application: {
               applicationId: 6,
               bookingSequence: 7,
-              checkDigits: 8,
+              checkDigit: 8,
               welshTest: true,
               extendedTest: false,
               meetingPlace: 'meeting',
@@ -315,7 +315,7 @@ describe('TestSlot Row Mapper', () => {
             application: {
               applicationId: 2222,
               bookingSequence: 333,
-              checkDigits: 44,
+              checkDigit: 44,
               welshTest: false,
               extendedTest: false,
               specialNeedsExtendedTest: true,
@@ -422,7 +422,7 @@ describe('TestSlot Row Mapper', () => {
             application: {
               applicationId: 2222,
               bookingSequence: 333,
-              checkDigits: 44,
+              checkDigit: 44,
               welshTest: false,
               specialNeedsExtendedTest: false,
               extendedTest: false,

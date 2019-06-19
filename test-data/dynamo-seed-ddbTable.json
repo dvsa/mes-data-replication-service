@@ -22,7 +22,7 @@
             "application": {
               "applicationId": 1234567,
               "bookingSequence": 3,
-              "checkDigits": 1,
+              "checkDigit": 1,
               "entitlementCheck": false,
               "extendedTest": false,
               "progressiveAccess": false,
@@ -74,7 +74,7 @@
             "application": {
               "applicationId": 1234569,
               "bookingSequence": 1,
-              "checkDigits": 9,
+              "checkDigit": 9,
               "entitlementCheck": false,
               "extendedTest": false,
               "progressiveAccess": false,
@@ -126,7 +126,7 @@
             "application": {
               "applicationId": 1234570,
               "bookingSequence": 2,
-              "checkDigits": 2,
+              "checkDigit": 2,
               "entitlementCheck": false,
               "extendedTest": false,
               "progressiveAccess": false,
@@ -174,7 +174,7 @@
             "application": {
               "applicationId": 1234571,
               "bookingSequence": 2,
-              "checkDigits": 6,
+              "checkDigit": 6,
               "entitlementCheck": false,
               "extendedTest": false,
               "progressiveAccess": false,
@@ -224,7 +224,7 @@
             "application": {
               "applicationId": 1234572,
               "bookingSequence": 1,
-              "checkDigits": 3,
+              "checkDigit": 3,
               "entitlementCheck": false,
               "extendedTest": false,
               "progressiveAccess": false,
@@ -276,7 +276,7 @@
             "application": {
               "applicationId": 1234573,
               "bookingSequence": 7,
-              "checkDigits": 7,
+              "checkDigit": 7,
               "entitlementCheck": false,
               "extendedTest": false,
               "progressiveAccess": false,

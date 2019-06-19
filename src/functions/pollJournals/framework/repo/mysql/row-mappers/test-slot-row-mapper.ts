@@ -122,7 +122,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
     booking.application = app;
     setNumberIfPopulated(app, 'applicationId', row.app_id);
     setNumberIfPopulated(app, 'bookingSequence', row.booking_seq);
-    setNumberIfPopulated(app, 'checkDigits', row.check_digit);
+    setNumberIfPopulated(app, 'checkDigit', row.check_digit);
     setBooleanIfPopulated(app, 'welshTest', row.welsh_test_ind);
     setBooleanIfPopulated(app, 'extendedTest', row.ext_req_ind);
     setStringIfPopulated(app, 'meetingPlace', row.meeting_place);
