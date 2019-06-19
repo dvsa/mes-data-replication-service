@@ -355,7 +355,7 @@ describe('TestSlot Row Mapper', () => {
       booking_id: 1111,
       app_id: 2222,
       booking_seq: 333,
-      check_digit: 44,
+      check_digit: 0,
       welsh_test_ind: null,
       ext_req_ind: null,
       progressive_access: null,
@@ -422,7 +422,7 @@ describe('TestSlot Row Mapper', () => {
             application: {
               applicationId: 2222,
               bookingSequence: 333,
-              checkDigit: 44,
+              checkDigit: 0,
               welshTest: false,
               specialNeedsExtendedTest: false,
               extendedTest: false,

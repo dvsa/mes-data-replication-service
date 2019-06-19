@@ -120,9 +120,9 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
 
     const app: Application = {};
     booking.application = app;
-    setNumberIfPopulated(app, 'applicationId', row.app_id);
-    setNumberIfPopulated(app, 'bookingSequence', row.booking_seq);
-    setNumberIfPopulated(app, 'checkDigit', row.check_digit);
+    setNumberIfTruthy(app, 'applicationId', row.app_id);
+    setNumberIfTruthy(app, 'bookingSequence', row.booking_seq);
+    setNumberIfNotNull(app, 'checkDigit', row.check_digit);
     setBooleanIfPopulated(app, 'welshTest', row.welsh_test_ind);
     setBooleanIfPopulated(app, 'extendedTest', row.ext_req_ind);
     setStringIfPopulated(app, 'meetingPlace', row.meeting_place);
@@ -131,10 +131,10 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
     setBooleanIfPopulated(app, 'specialNeedsExtendedTest', row.special_needs_extended_test);
     setStringIfPopulated(app, 'specialNeedsCode', row.special_needs_code);
     setBooleanIfPopulated(app, 'entitlementCheck', row.ent_check_ind);
-    setNumberIfPopulated(app, 'vehicleSeats', zeroIfNull(row.cab_seat_count) + zeroIfNull(row.passenger_seat_count));
-    setNumberIfPopulated(app, 'vehicleHeight', row.height_metres);
-    setNumberIfPopulated(app, 'vehicleWidth', row.width_metres);
-    setNumberIfPopulated(app, 'vehicleLength', row.length_metres);
+    setNumberIfTruthy(app, 'vehicleSeats', zeroIfNull(row.cab_seat_count) + zeroIfNull(row.passenger_seat_count));
+    setNumberIfTruthy(app, 'vehicleHeight', row.height_metres);
+    setNumberIfTruthy(app, 'vehicleWidth', row.width_metres);
+    setNumberIfTruthy(app, 'vehicleLength', row.length_metres);
     setStringIfPopulated(app, 'testCategory', row.vehicle_category);
 
     if (row.gearbox_type) {
@@ -174,8 +174,8 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       }
 
       setStringIfPopulated(candidate, 'emailAddress', row.cand_email);
-      setNumberIfPopulated(candidate, 'prn', row.candidate_prn);
-      setNumberIfPopulated(candidate, 'previousADITests', row.prev_attempts);
+      setNumberIfTruthy(candidate, 'prn', row.candidate_prn);
+      setNumberIfTruthy(candidate, 'previousADITests', row.prev_attempts);
 
       candidate.candidateName = {};
       setCapitalisedStringIfPopulated(candidate.candidateName, 'title', row.candidate_title);
@@ -240,13 +240,25 @@ const setAddressIfPopulated = (
 };
 
 /**
- * Sets an object field if the value is populated (not null).
+ * Sets an object field if the value is truthy.
  * @param object The object to update
  * @param field  The object field to set
  * @param value  The value to use
  */
-const setNumberIfPopulated = (object: any, field: string, value: number | null) => {
+const setNumberIfTruthy = (object: any, field: string, value: number | null) => {
   if (value) {
+    object[field] = value;
+  }
+};
+
+/**
+ * Sets an object field if the value is not null.
+ * @param object The object to update
+ * @param field  The object field to set
+ * @param value  The value to use
+ */
+const setNumberIfNotNull = (object: any, field: string, value: number | null) => {
+  if (value !== null) {
     object[field] = value;
   }
 };
