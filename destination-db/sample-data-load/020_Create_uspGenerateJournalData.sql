@@ -24,6 +24,7 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 	SecondName VARCHAR(50),
 	ThirdName VARCHAR(50),
 	Surname VARCHAR(50),
+	Gender VARCHAR(6),
 	PrimaryTelNo VARCHAR(30),
 	SecondaryTelNo VARCHAR(30),
 	MobileTelNo VARCHAR(30),
@@ -67,8 +68,8 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 		FROM DUAL;
 		
 		-- INDIVIDUAL
-		INSERT INTO INDIVIDUAL (individual_id, driver_number, date_of_birth, title_code, family_name, first_forename, second_forename, third_forename)
-		SELECT @CandidateId, DriverNumber, DateOfBirth, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Title), Surname, FirstName, SecondName, ThirdName, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = GenderCode), (SELECT ITEM_ID FROM REF_DATA_ITEM_ASTER WHERE ITEM_DESC1 = EthnicOriginCode)
+		INSERT INTO INDIVIDUAL (individual_id, driver_number, date_of_birth, title_code, family_name, first_forename, second_forename, third_forename, gender_code)
+		SELECT @CandidateId, DriverNumber, DateOfBirth, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Title), Surname, FirstName, SecondName, ThirdName, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = GenderCode)
 		FROM DUAL
 		WHERE NTACode IS NULL;
 		

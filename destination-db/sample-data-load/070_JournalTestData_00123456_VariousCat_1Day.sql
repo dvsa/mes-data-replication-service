@@ -54,6 +54,7 @@ SET @FirstName 				= 'Florence';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Pearson';
+SET @Gender					= 'Female';
 SET @PrimaryTelNo			= '01234 567890';
 SET @SecondaryTelNo			= '04321 098765';
 SET @MobileTelNo			= '07654 123456';
@@ -77,7 +78,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 9;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -100,6 +101,7 @@ SET @FirstName 				= 'Amos';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Quito';
+SET @Gender					= 'Male';
 SET @PrimaryTelNo			= '01234 567890';
 SET @SecondaryTelNo			= NULL;
 SET @MobileTelNo			= NULL;
@@ -123,7 +125,7 @@ SET @BookingSeq				= 5;
 SET @CheckDigit				= 2;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -146,6 +148,7 @@ SET @FirstName 				= 'Jane';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Doe';
+SET @Gender					= 'Female';
 SET @PrimaryTelNo			= NULL;
 SET @SecondaryTelNo			= NULL;
 SET @MobileTelNo			= '07654 123456';
@@ -169,7 +172,7 @@ SET @BookingSeq				= 3;
 SET @CheckDigit				= 1;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -192,6 +195,7 @@ SET @FirstName 				= 'Theresa';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Shaw';
+SET @Gender					= 'Female';
 SET @PrimaryTelNo			= NULL;
 SET @SecondaryTelNo			= NULL;
 SET @MobileTelNo			= '07654 123456';
@@ -215,7 +219,7 @@ SET @BookingSeq				= 2;
 SET @CheckDigit				= 2;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -238,6 +242,7 @@ SET @FirstName 				= 'Ali';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Campbell';
+SET @Gender					= 'Male';
 SET @PrimaryTelNo			= '01234 567890';
 SET @SecondaryTelNo			= NULL;
 SET @MobileTelNo			= '07654 123456';
@@ -261,7 +266,7 @@ SET @BookingSeq				= 2;
 SET @CheckDigit				= 6;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -284,6 +289,7 @@ SET @FirstName 				= 'James';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Brown';
+SET @Gender					= 'Male';
 SET @PrimaryTelNo			= '01234 567890';
 SET @SecondaryTelNo			= '04321 098765';
 SET @MobileTelNo			= '07654 123456';
@@ -307,7 +313,7 @@ SET @BookingSeq				= 1;
 SET @CheckDigit				= 3;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);
 
 
@@ -330,6 +336,7 @@ SET @FirstName 				= 'Montague';
 SET @SecondName 			= NULL;
 SET @ThirdName	 			= NULL;
 SET @Surname				= 'Smythe';
+SET @Gender					= 'Male';
 SET @PrimaryTelNo			= '01234 567890';
 SET @SecondaryTelNo			= NULL;
 SET @MobileTelNo			= NULL;
@@ -353,5 +360,5 @@ SET @BookingSeq				= 2;
 SET @CheckDigit				= 7;
 
 -- Call stored procedure
-CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname
+CALL uspGenerateJournalData(@Date,@IndividualId,@TestCentreId,@CancReason1,@CancReason2,@CancReason3,@SlotHr,@SlotMinute,@TestCategoryRef,@Minutes,@NTACode,@GearboxType,@LargeVehicle,@DriverNumber,@DateOfBirth,@Title,@FirstName,@SecondName,@ThirdName,@Surname,@Gender
 ,@PrimaryTelNo,@SecondaryTelNo,@MobileTelNo,@EmailAddress,@AddressLine1,@AddressLine2,@AddressLine3,@AddressLine4,@AddressLine5,@PostCode,@ExtendedTest,@SpecialNeedsCode,@EntitlementCheck,@WelshTest,@SpecialNeedsText,@ProgressiveAccess,@BookingSeq,@CheckDigit);

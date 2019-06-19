@@ -1,6 +1,8 @@
 -- REF_DATA_ITEM_MASTER
 REPLACE INTO REF_DATA_ITEM_MASTER (item_id, item_desc1, item_desc2, category_id)
 VALUES
+	(879,'Male',NULL,38),
+	(880,'Female',NULL,38),
 	(1242,'Mr',NULL,89),
 	(1243,'Mrs',NULL,89),
 	(1244,'Miss',NULL,89),
