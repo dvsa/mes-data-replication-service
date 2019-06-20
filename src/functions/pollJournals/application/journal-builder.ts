@@ -24,15 +24,16 @@ export const buildJournals = (examiners: any[], datasets: AllDatasets): JournalR
   );
 
   const journals: JournalRecord[] = examiners.map((examiner) => {
-    const individualId = examiner.individual_id.toString();
+    const individualId = examiner.individual_id;
     const staffNumber = examiner.staff_number.toString();
     let journal: ExaminerWorkSchedule = {
       examiner: {
         staffNumber,
+        individualId,
       },
     };
 
-    const enrichWithDataset = enrichJournalWithDataset(individualId);
+    const enrichWithDataset = enrichJournalWithDataset(individualId.toString());
     journal = enrichWithDataset(journal, testSlotsByExaminer, 'testSlot', 'testSlots');
     journal = enrichWithDataset(journal, commitmentsByExaminer, 'personalCommitment', 'personalCommitments');
     journal = enrichWithDataset(journal, nonTestActByExaminer, 'nonTestActivity', 'nonTestActivities');
@@ -52,16 +53,18 @@ const enrichJournalWithDataset = (
   individualId: string,
 ) => (
   journal: ExaminerWorkSchedule,
-  dataset: { [key: string]: (
-    ExaminerTestSlot
-    | ExaminerPersonalCommitment
-    | ExaminerNonTestActivity
-    | ExaminerAdvanceTestSlot
-    | ExaminerDeployment
-  )[] },
+  dataset: {
+    [key: string]: (
+      ExaminerTestSlot
+      | ExaminerPersonalCommitment
+      | ExaminerNonTestActivity
+      | ExaminerAdvanceTestSlot
+      | ExaminerDeployment
+    )[],
+  },
   datasetKey: string,
   journalKey: string,
-): ExaminerWorkSchedule => {
+  ): ExaminerWorkSchedule => {
   let enrichedJournal = journal;
   if (dataset[individualId]) {
     enrichedJournal = {
