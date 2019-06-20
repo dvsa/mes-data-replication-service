@@ -18,7 +18,7 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 	GearboxType VARCHAR(20),
 	LargeVehicle TINYINT,
 	DriverNumber VARCHAR(24),
-	DateOfBirth DATE,
+	DateOfBirth DATETIME,
 	Title VARCHAR(20),
 	FirstName VARCHAR(50),
 	SecondName VARCHAR(50),
