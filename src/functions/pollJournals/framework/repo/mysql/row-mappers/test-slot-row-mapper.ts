@@ -1,11 +1,11 @@
 import { ExaminerTestSlot } from '../../../../domain/examiner-test-slot';
 import {
-    Application,
-    Booking,
-    Business,
-    Candidate,
-    PreviousCancellation,
-    Address,
+  Application,
+  Booking,
+  Business,
+  Candidate,
+  PreviousCancellation,
+  Address,
 } from '@dvsa/mes-journal-schema';
 import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
 
@@ -55,6 +55,9 @@ interface TestSlotRow {
   candidate_third_name: string | null;
   candidate_surname: string | null;
   candidate_driver_number: string | null;
+  candidate_date_of_birth: string | null;
+  candidate_gender_code: number | null;
+  candidate_ethnic_origin_code: number | null;
   cand_primary_tel_ind: number | null;
   cand_primary_tel: string | null;
   cand_secondary_tel_ind: number | null;
@@ -176,6 +179,9 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       setStringIfPopulated(candidate, 'emailAddress', row.cand_email);
       setNumberIfTruthy(candidate, 'prn', row.candidate_prn);
       setNumberIfTruthy(candidate, 'previousADITests', row.prev_attempts);
+      setStringIfPopulated(candidate, 'dateOfBirth', row.candidate_date_of_birth);
+      setNumberIfTruthy(candidate, 'ethnicOriginCode', row.candidate_ethnic_origin_code);
+      setGenderIfPopulated(candidate, row.candidate_gender_code);
 
       candidate.candidateName = {};
       setCapitalisedStringIfPopulated(candidate.candidateName, 'title', row.candidate_title);
@@ -221,14 +227,14 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
  * @param postcode  The address postcode value to use
  */
 const setAddressIfPopulated = (
-    object: any,
-    field: string,
-    line1: string | null,
-    line2: string | null,
-    line3: string | null,
-    line4: string | null,
-    line5: string | null,
-    postcode: string | null) => {
+  object: any,
+  field: string,
+  line1: string | null,
+  line2: string | null,
+  line3: string | null,
+  line4: string | null,
+  line5: string | null,
+  postcode: string | null) => {
   const address: Address = {};
   object[field] = address;
   setStringIfPopulated(address, 'addressLine1', line1);
@@ -308,4 +314,26 @@ const setCapitalisedStringIfPopulated = (object: any, field: string, value: stri
  */
 const zeroIfNull = (value: number | null): number => {
   return value ? value : 0;
+};
+
+/**
+ * The codes that TARS uses to represent gender
+ */
+export enum GenderCode {
+  Male = 879,
+  Female = 880,
+}
+
+/**
+ * Assigns a gender from a test slot query result row into a Candidate object if valid
+ * @param candidate The candidate object to assign into
+ * @param candidateGenderCode The candidate's gender code queried from the DB
+ */
+const setGenderIfPopulated = (candidate: Candidate, candidateGenderCode: number | null) => {
+  if (candidateGenderCode === GenderCode.Male) {
+    candidate.gender = 'M';
+  }
+  if (candidateGenderCode === GenderCode.Female) {
+    candidate.gender = 'F';
+  }
 };
