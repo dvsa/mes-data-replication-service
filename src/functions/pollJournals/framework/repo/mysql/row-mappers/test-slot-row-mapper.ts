@@ -83,6 +83,12 @@ interface TestSlotRow {
   business_post_code: string | null;
   business_telephone: string | null;
   cancel_initiator: string | null;
+  examiner_deployed_to_from_code: number | null;
+}
+
+export enum ExaminerDeployedToFromCode {
+  Home = 0,
+  Away = 1,
 }
 
 /**
@@ -105,6 +111,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
         centreName: row.tc_name,
         costCode: row.tc_cost_centre_code,
       },
+      examinerVisiting: row.examiner_deployed_to_from_code === 0,
     },
   };
 

@@ -1,4 +1,4 @@
-import { mapRow, GenderCode } from '../test-slot-row-mapper';
+import { mapRow, GenderCode, ExaminerDeployedToFromCode } from '../test-slot-row-mapper';
 
 describe('TestSlot Row Mapper', () => {
 
@@ -67,6 +67,7 @@ describe('TestSlot Row Mapper', () => {
     business_post_code: 'bpc',
     business_telephone: '6677',
     cancel_initiator: 'DSA,Act of nature',
+    examiner_deployed_to_from_code: null,
   };
 
   it('should map a fully populated TestSlotRow to an ExaminerTestSlot', () => {
@@ -153,6 +154,7 @@ describe('TestSlot Row Mapper', () => {
           },
           vehicleSlotType: 'B57Minutes',
           vehicleSlotTypeCode: 1,
+          examinerVisiting: false,
         },
       },
     );
@@ -164,6 +166,14 @@ describe('TestSlot Row Mapper', () => {
       candidate_gender_code: GenderCode.Female,
     });
     expect(result.testSlot.booking.candidate.gender).toBe('F');
+  });
+
+  it('should indicate the fact that an examiner is not at their home test centre', () => {
+    const result = mapRow({
+      ...sampleRow,
+      examiner_deployed_to_from_code: 0,
+    });
+    expect(result.testSlot.examinerVisiting).toBe(true);
   });
 
   it('should map an empty slot to an ExaminerTestSlot', () => {
@@ -232,6 +242,7 @@ describe('TestSlot Row Mapper', () => {
       business_post_code: null,
       business_telephone: null,
       cancel_initiator: null,
+      examiner_deployed_to_from_code: null,
     });
     expect(result).toEqual(
       {
@@ -247,6 +258,7 @@ describe('TestSlot Row Mapper', () => {
             centreName: 'testcentre',
             costCode: 'costcentre',
           },
+          examinerVisiting: false,
         },
       },
     );
@@ -318,6 +330,7 @@ describe('TestSlot Row Mapper', () => {
       business_post_code: '',
       business_telephone: '  ',
       cancel_initiator: '',
+      examiner_deployed_to_from_code: null,
     });
     expect(result).toEqual(
       {
@@ -357,6 +370,7 @@ describe('TestSlot Row Mapper', () => {
               },
             },
           },
+          examinerVisiting: false,
         },
       },
     );
@@ -428,6 +442,7 @@ describe('TestSlot Row Mapper', () => {
       business_post_code: null,
       business_telephone: null,
       cancel_initiator: null,
+      examiner_deployed_to_from_code: null,
     });
     expect(result).toEqual(
       {
@@ -467,6 +482,7 @@ describe('TestSlot Row Mapper', () => {
               },
             },
           },
+          examinerVisiting: false,
         },
       },
     );
