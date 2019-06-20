@@ -7,7 +7,7 @@ import {
   PreviousCancellation,
   Address,
 } from '@dvsa/mes-journal-schema';
-import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
+import { formatDateToStartTime, formatDateToIso8601 } from '../../../../application/formatters/date-formatter';
 
 /**
  * Defines the possible rows that the test slot query can return.
@@ -55,7 +55,7 @@ interface TestSlotRow {
   candidate_third_name: string | null;
   candidate_surname: string | null;
   candidate_driver_number: string | null;
-  candidate_date_of_birth: string | null;
+  candidate_date_of_birth: Date | null;
   candidate_gender_code: number | null;
   candidate_ethnic_origin_code: number | null;
   cand_primary_tel_ind: number | null;
@@ -186,7 +186,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       setStringIfPopulated(candidate, 'emailAddress', row.cand_email);
       setNumberIfTruthy(candidate, 'prn', row.candidate_prn);
       setNumberIfTruthy(candidate, 'previousADITests', row.prev_attempts);
-      setStringIfPopulated(candidate, 'dateOfBirth', row.candidate_date_of_birth);
+      candidate.dateOfBirth = formatDateToIso8601(row.candidate_date_of_birth);
       setNumberIfTruthy(candidate, 'ethnicOriginCode', row.candidate_ethnic_origin_code);
       setGenderIfPopulated(candidate, row.candidate_gender_code);
 

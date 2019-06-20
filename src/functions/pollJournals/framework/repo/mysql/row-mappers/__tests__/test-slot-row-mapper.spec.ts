@@ -1,4 +1,4 @@
-import { mapRow, GenderCode, ExaminerDeployedToFromCode } from '../test-slot-row-mapper';
+import { mapRow, GenderCode } from '../test-slot-row-mapper';
 
 describe('TestSlot Row Mapper', () => {
 
@@ -39,7 +39,7 @@ describe('TestSlot Row Mapper', () => {
     candidate_third_name: 'Kyle',
     candidate_surname: 'Bloggs',
     candidate_driver_number: '16',
-    candidate_date_of_birth: '1990-05-12',
+    candidate_date_of_birth: new Date('1990-05-12'),
     candidate_gender_code: GenderCode.Male,
     candidate_ethnic_origin_code: 1272,
     cand_primary_tel_ind: 1,
@@ -302,7 +302,7 @@ describe('TestSlot Row Mapper', () => {
       candidate_third_name: ' ',
       candidate_surname: '',
       candidate_driver_number: ' ',
-      candidate_date_of_birth: ' ',
+      candidate_date_of_birth: null,
       candidate_gender_code: null,
       candidate_ethnic_origin_code: null,
       cand_primary_tel_ind: 0, // not 1
@@ -414,7 +414,7 @@ describe('TestSlot Row Mapper', () => {
       candidate_third_name: 'ccc',
       candidate_surname: 'ddd',
       candidate_driver_number: null,
-      candidate_date_of_birth: '',
+      candidate_date_of_birth: null,
       candidate_gender_code: null,
       candidate_ethnic_origin_code: null,
       cand_primary_tel_ind: null,
