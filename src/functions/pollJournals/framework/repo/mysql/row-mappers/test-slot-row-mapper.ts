@@ -86,11 +86,6 @@ interface TestSlotRow {
   examiner_deployed_to_from_code: number | null;
 }
 
-export enum ExaminerDeployedToFromCode {
-  Home = 0,
-  Away = 1,
-}
-
 /**
  * Marshalls test slot query results into the JSON representation.
  * @param row The query results
@@ -186,7 +181,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       setStringIfPopulated(candidate, 'emailAddress', row.cand_email);
       setNumberIfTruthy(candidate, 'prn', row.candidate_prn);
       setNumberIfTruthy(candidate, 'previousADITests', row.prev_attempts);
-      candidate.dateOfBirth = formatDateToIso8601(row.candidate_date_of_birth);
+      setStringIfPopulated(candidate, 'dateOfBirth', formatDateToIso8601(row.candidate_date_of_birth));
       setNumberIfTruthy(candidate, 'ethnicOriginCode', row.candidate_ethnic_origin_code);
       setGenderIfPopulated(candidate, row.candidate_gender_code);
 
