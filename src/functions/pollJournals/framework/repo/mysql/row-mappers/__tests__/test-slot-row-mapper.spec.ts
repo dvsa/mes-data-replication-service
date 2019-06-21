@@ -1,71 +1,77 @@
-import { mapRow } from '../test-slot-row-mapper';
+import { mapRow, GenderCode } from '../test-slot-row-mapper';
 
 describe('TestSlot Row Mapper', () => {
 
+  const sampleRow = {
+    slot_id: 1,
+    start_time: new Date('2019-02-12 08:20:00'),
+    minutes: 57,
+    vehicle_slot_type: 'B57Minutes',
+    vehicle_slot_type_code: 1,
+    tc_id: 3,
+    tc_cost_centre_code: 'costcentre',
+    tc_name: 'testcentre',
+    individual_id: 4,
+    programme_date: '2019-02-12 00:00:00',
+    booking_id: 5,
+    app_id: 6,
+    booking_seq: 7,
+    check_digit: 8,
+    welsh_test_ind: 1,
+    ext_req_ind: 0,
+    progressive_access: 0,
+    meeting_place: 'meeting',
+    special_needs: 'special',
+    special_needs_extended_test: 0,
+    special_needs_code: 'NONE',
+    ent_check_ind: 1,
+    cab_seat_count: 9,
+    passenger_seat_count: 10,
+    height_metres: 11,
+    length_metres: 12,
+    width_metres: 13,
+    vehicle_category: 'vehcat',
+    gearbox_type: 1,
+    candidate_id: 14,
+    candidate_title: 'Mr',
+    candidate_first_name: 'Joe',
+    candidate_second_name: 'Adam',
+    candidate_third_name: 'Kyle',
+    candidate_surname: 'Bloggs',
+    candidate_driver_number: '16',
+    candidate_date_of_birth: new Date('1990-05-12'),
+    candidate_gender_code: GenderCode.Male,
+    candidate_ethnic_origin_code: 1272,
+    cand_primary_tel_ind: 1,
+    cand_primary_tel: '0011',
+    cand_secondary_tel_ind: 1,
+    cand_secondary_tel: '2233',
+    cand_mobile_tel_ind: 1,
+    cand_mobile_tel: '4455',
+    cand_email: 'joe.bloggs@example.com',
+    candidate_addr_line1: 'addr1',
+    candidate_addr_line2: 'addr2',
+    candidate_addr_line3: 'addr3',
+    candidate_addr_line4: 'addr4',
+    candidate_addr_line5: 'addr5',
+    candidate_post_code: 'abc123',
+    candidate_prn: 17,
+    prev_attempts: 18,
+    business_id: 18,
+    business_name: 'business',
+    business_addr_line1: 'ba1',
+    business_addr_line2: 'ba2',
+    business_addr_line3: 'ba3',
+    business_addr_line4: 'ba4',
+    business_addr_line5: 'ba5',
+    business_post_code: 'bpc',
+    business_telephone: '6677',
+    cancel_initiator: 'DSA,Act of nature',
+    examiner_deployed_to_from_code: null,
+  };
+
   it('should map a fully populated TestSlotRow to an ExaminerTestSlot', () => {
-    const result = mapRow({
-      slot_id: 1,
-      start_time: new Date('2019-02-12 08:20:00'),
-      minutes: 57,
-      vehicle_slot_type: 'B57Minutes',
-      vehicle_slot_type_code: 1,
-      tc_id: 3,
-      tc_cost_centre_code: 'costcentre',
-      tc_name: 'testcentre',
-      individual_id: 4,
-      programme_date: '2019-02-12 00:00:00',
-      booking_id: 5,
-      app_id: 6,
-      booking_seq: 7,
-      check_digit: 8,
-      welsh_test_ind: 1,
-      ext_req_ind: 0,
-      progressive_access: 0,
-      meeting_place: 'meeting',
-      special_needs: 'special',
-      special_needs_extended_test: 0,
-      special_needs_code: 'NONE',
-      ent_check_ind: 1,
-      cab_seat_count: 9,
-      passenger_seat_count: 10,
-      height_metres: 11,
-      length_metres: 12,
-      width_metres: 13,
-      vehicle_category: 'vehcat',
-      gearbox_type: 1,
-      candidate_id: 14,
-      candidate_title: 'Mr',
-      candidate_first_name: 'Joe',
-      candidate_second_name: 'Adam',
-      candidate_third_name: 'Kyle',
-      candidate_surname: 'Bloggs',
-      candidate_driver_number: '16',
-      cand_primary_tel_ind: 1,
-      cand_primary_tel: '0011',
-      cand_secondary_tel_ind: 1,
-      cand_secondary_tel: '2233',
-      cand_mobile_tel_ind: 1,
-      cand_mobile_tel: '4455',
-      cand_email: 'joe.bloggs@example.com',
-      candidate_addr_line1: 'addr1',
-      candidate_addr_line2: 'addr2',
-      candidate_addr_line3: 'addr3',
-      candidate_addr_line4: 'addr4',
-      candidate_addr_line5: 'addr5',
-      candidate_post_code: 'abc123',
-      candidate_prn: 17,
-      prev_attempts: 18,
-      business_id: 18,
-      business_name: 'business',
-      business_addr_line1: 'ba1',
-      business_addr_line2: 'ba2',
-      business_addr_line3: 'ba3',
-      business_addr_line4: 'ba4',
-      business_addr_line5: 'ba5',
-      business_post_code: 'bpc',
-      business_telephone: '6677',
-      cancel_initiator: 'DSA,Act of nature',
-    });
+    const result = mapRow(sampleRow);
     expect(result).toEqual(
       {
         examinerId: 4,
@@ -121,6 +127,9 @@ describe('TestSlot Row Mapper', () => {
                 title: 'Mr',
               },
               driverNumber: '16',
+              dateOfBirth: '1990-05-12',
+              gender: 'M',
+              ethnicOriginCode: 1272,
               emailAddress: 'joe.bloggs@example.com',
               mobileTelephone: '4455',
               primaryTelephone: '0011',
@@ -145,9 +154,26 @@ describe('TestSlot Row Mapper', () => {
           },
           vehicleSlotType: 'B57Minutes',
           vehicleSlotTypeCode: 1,
+          examinerVisiting: false,
         },
       },
     );
+  });
+
+  it('should map a slot for a female candidate to the correct gender indicator', () => {
+    const result = mapRow({
+      ...sampleRow,
+      candidate_gender_code: GenderCode.Female,
+    });
+    expect(result.testSlot.booking.candidate.gender).toBe('F');
+  });
+
+  it('should indicate the fact that an examiner is not at their home test centre', () => {
+    const result = mapRow({
+      ...sampleRow,
+      examiner_deployed_to_from_code: 0,
+    });
+    expect(result.testSlot.examinerVisiting).toBe(true);
   });
 
   it('should map an empty slot to an ExaminerTestSlot', () => {
@@ -171,7 +197,7 @@ describe('TestSlot Row Mapper', () => {
       progressive_access: null,
       meeting_place: null,
       special_needs: null,
-      special_needs_extended_test:  null,
+      special_needs_extended_test: null,
       special_needs_code: null,
       ent_check_ind: null,
       cab_seat_count: null,
@@ -188,6 +214,9 @@ describe('TestSlot Row Mapper', () => {
       candidate_third_name: null,
       candidate_surname: null,
       candidate_driver_number: null,
+      candidate_date_of_birth: null,
+      candidate_gender_code: null,
+      candidate_ethnic_origin_code: null,
       cand_primary_tel_ind: null,
       cand_primary_tel: null,
       cand_secondary_tel_ind: null,
@@ -213,6 +242,7 @@ describe('TestSlot Row Mapper', () => {
       business_post_code: null,
       business_telephone: null,
       cancel_initiator: null,
+      examiner_deployed_to_from_code: null,
     });
     expect(result).toEqual(
       {
@@ -228,6 +258,7 @@ describe('TestSlot Row Mapper', () => {
             centreName: 'testcentre',
             costCode: 'costcentre',
           },
+          examinerVisiting: false,
         },
       },
     );
@@ -271,6 +302,9 @@ describe('TestSlot Row Mapper', () => {
       candidate_third_name: ' ',
       candidate_surname: '',
       candidate_driver_number: ' ',
+      candidate_date_of_birth: null,
+      candidate_gender_code: null,
+      candidate_ethnic_origin_code: null,
       cand_primary_tel_ind: 0, // not 1
       cand_primary_tel: '',
       cand_secondary_tel_ind: 2, // not 1
@@ -296,6 +330,7 @@ describe('TestSlot Row Mapper', () => {
       business_post_code: '',
       business_telephone: '  ',
       cancel_initiator: '',
+      examiner_deployed_to_from_code: null,
     });
     expect(result).toEqual(
       {
@@ -335,6 +370,7 @@ describe('TestSlot Row Mapper', () => {
               },
             },
           },
+          examinerVisiting: false,
         },
       },
     );
@@ -378,6 +414,9 @@ describe('TestSlot Row Mapper', () => {
       candidate_third_name: 'ccc',
       candidate_surname: 'ddd',
       candidate_driver_number: null,
+      candidate_date_of_birth: null,
+      candidate_gender_code: null,
+      candidate_ethnic_origin_code: null,
       cand_primary_tel_ind: null,
       cand_primary_tel: null,
       cand_secondary_tel_ind: null,
@@ -403,6 +442,7 @@ describe('TestSlot Row Mapper', () => {
       business_post_code: null,
       business_telephone: null,
       cancel_initiator: null,
+      examiner_deployed_to_from_code: null,
     });
     expect(result).toEqual(
       {
@@ -442,6 +482,7 @@ describe('TestSlot Row Mapper', () => {
               },
             },
           },
+          examinerVisiting: false,
         },
       },
     );

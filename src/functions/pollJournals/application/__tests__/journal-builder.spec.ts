@@ -4,11 +4,11 @@ import * as journalCompressor from '../../application/journal-compressor';
 import { Mock, It, Times } from 'typemoq';
 const examiners = [
   {
-    individual_id: '111',
+    individual_id: 111,
     staff_number: '222',
   },
   {
-    individual_id: '333',
+    individual_id: 333,
     staff_number: '444',
   },
 ];
@@ -51,7 +51,7 @@ describe('buildJournals', () => {
     const result = buildJournals(examiners, datasets);
 
     const journalToCompress = {
-      examiner: { staffNumber: '222' },
+      examiner: { staffNumber: '222', individualId: 111 },
       testSlots: [{ slotDetail: { slotId: 999 } }],
       nonTestActivities: [{ slotDetail: { slotId: 888 } }],
       personalCommitments: [{ commitmentId: 777 }],
@@ -91,7 +91,7 @@ describe('buildJournals', () => {
     const result = buildJournals(examiners, datasets);
 
     const firstJournalToCompress = {
-      examiner: { staffNumber: '222' },
+      examiner: { staffNumber: '222', individualId: 111 },
       testSlots: [{ slotDetail: { slotId: 991 } }],
       nonTestActivities: [{ slotDetail: { slotId: 881 } }],
       personalCommitments: [{ commitmentId: 771 }],
@@ -99,7 +99,7 @@ describe('buildJournals', () => {
       deployments: [{ deploymentId: 551 }],
     };
     const secondJournalToCompress = {
-      examiner: { staffNumber: '444' },
+      examiner: { staffNumber: '444', individualId: 333 },
       testSlots: [{ slotDetail: { slotId: 992 } }],
       nonTestActivities: [{ slotDetail: { slotId: 882 } }],
       personalCommitments: [{ commitmentId: 772 }],
