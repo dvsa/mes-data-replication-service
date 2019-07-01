@@ -228,24 +228,24 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
  * @param line5  The address line 5 value to use
  * @param postcode  The address postcode value to use
  */
-const setAddressIfPopulated = (
-  object: any,
-  field: string,
+function setAddressIfPopulated<T>(
+  object: T,
+  field: keyof T,
   line1: string | null,
   line2: string | null,
   line3: string | null,
   line4: string | null,
   line5: string | null,
-  postcode: string | null) => {
+  postcode: string | null) {
   const address: Address = {};
-  object[field] = address;
+  object[field as string] = address;
   setStringIfPopulated(address, 'addressLine1', line1);
   setStringIfPopulated(address, 'addressLine2', line2);
   setStringIfPopulated(address, 'addressLine3', line3);
   setStringIfPopulated(address, 'addressLine4', line4);
   setStringIfPopulated(address, 'addressLine5', line5);
   setStringIfPopulated(address, 'postcode', postcode);
-};
+}
 
 /**
  * Sets an object field if the value is truthy.
@@ -253,11 +253,11 @@ const setAddressIfPopulated = (
  * @param field  The object field to set
  * @param value  The value to use
  */
-const setNumberIfTruthy = (object: any, field: string, value: number | null) => {
+function setNumberIfTruthy<T>(object: T, field: keyof T, value: number | null) {
   if (value) {
-    object[field] = value;
+    object[field as string] = value;
   }
-};
+}
 
 /**
  * Sets an object field if the value is not null.
@@ -265,11 +265,11 @@ const setNumberIfTruthy = (object: any, field: string, value: number | null) => 
  * @param field  The object field to set
  * @param value  The value to use
  */
-const setNumberIfNotNull = (object: any, field: string, value: number | null) => {
+function setNumberIfNotNull<T>(object: T, field: keyof T, value: number | null) {
   if (value !== null) {
-    object[field] = value;
+    object[field as string] = value;
   }
-};
+}
 
 /**
  * Sets an object field to true (if the value is 1), otherwise set to false.
@@ -277,13 +277,13 @@ const setNumberIfNotNull = (object: any, field: string, value: number | null) =>
  * @param field  The object field to set
  * @param value  The value to use (0 or 1 meaning true or false)
  */
-const setBooleanIfPopulated = (object: any, field: string, value: number | null) => {
+function setBooleanIfPopulated<T>(object: T, field: keyof T, value: number | null) {
   if (value) {
-    object[field] = (value === 1);
+    object[field as string] = (value === 1);
   } else {
-    object[field] = false;
+    object[field as string] = false;
   }
-};
+}
 
 /**
  * Sets an object field if the value is populated (not null and not empty or just whitespace).
@@ -291,11 +291,11 @@ const setBooleanIfPopulated = (object: any, field: string, value: number | null)
  * @param field  The object field to set
  * @param value  The value to use
  */
-const setStringIfPopulated = (object: any, field: string, value: string | null) => {
+function setStringIfPopulated<T>(object: T, field: keyof T, value: string | null) {
   if (value && value.trim().length > 0) {
-    object[field] = value;
+    object[field as string] = value;
   }
-};
+}
 
 /**
  * Sets an object field with an initial capital letter, if the value is populated (not null and not empty
@@ -304,11 +304,11 @@ const setStringIfPopulated = (object: any, field: string, value: string | null) 
  * @param field  The object field to set
  * @param value  The value to use
  */
-const setCapitalisedStringIfPopulated = (object: any, field: string, value: string | null) => {
+function setCapitalisedStringIfPopulated<T>(object: T, field: keyof T, value: string | null) {
   if (value && value.trim().length > 0) {
-    object[field] = value.charAt(0).toUpperCase() + value.slice(1);
+    object[field as string] = value.charAt(0).toUpperCase() + value.slice(1);
   }
-};
+}
 
 /**
  * Returns the value (if not null) otherwise zero.

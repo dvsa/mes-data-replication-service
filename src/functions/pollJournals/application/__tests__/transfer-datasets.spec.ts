@@ -36,11 +36,11 @@ describe('transferDatasets', () => {
   const moqConnectionPool = Mock.ofType<mysql.Pool>();
 
   const dummyExaminers = [
-    { individual_id: 1 },
-    { individual_id: 2 },
-    { individual_id: 3 },
-    { individual_id: 4 },
-    { individual_id: 5 },
+    { individual_id: 1, staff_number: '99' },
+    { individual_id: 2, staff_number: '98' },
+    { individual_id: 3, staff_number: '97' },
+    { individual_id: 4, staff_number: '96' },
+    { individual_id: 5, staff_number: '95' },
   ];
   const dummyNextWorkingDay = new Date();
   const dummyTestSlotDataset = [{ examinerId: 1, testSlot: {} }];
