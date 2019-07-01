@@ -2,6 +2,7 @@ import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
 import { logDuration } from '../../../../../common/framework/log/logger';
+import { ExaminerRecord } from '../../../domain/examiner-record';
 
 /**
  * Get all active examiners, for the specified time window.
@@ -9,7 +10,7 @@ import { logDuration } from '../../../../../common/framework/log/logger';
  * @param startDate The start date of the time window
  * @returns The examiners
  */
-export const getExaminers = async (connectionPool: mysql.Pool, startDate: Date): Promise<any[]> => {
+export const getExaminers = async (connectionPool: mysql.Pool, startDate: Date): Promise<ExaminerRecord[]> => {
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment(startDate).format(sqlYearFormat);
 
