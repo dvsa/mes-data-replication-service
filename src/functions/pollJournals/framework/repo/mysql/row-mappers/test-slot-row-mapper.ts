@@ -6,6 +6,7 @@ import {
   Candidate,
   PreviousCancellation,
   Address,
+  VehicleTypeCode,
 } from '@dvsa/mes-journal-schema';
 import { formatDateToStartTime, formatDateToIso8601 } from '../../../../application/formatters/date-formatter';
 
@@ -21,7 +22,7 @@ interface TestSlotRow {
   slot_id: number; // not nullable
   start_time: Date; // not nullable
   minutes: number; // not nullable
-  vehicle_slot_type: string | null; // nullable
+  vehicle_type_code: string | null; // nullable
   vehicle_slot_type_code: number | null; // nullable
   tc_id: number; // not nullable
   tc_cost_centre_code: string; // not nullable
@@ -111,8 +112,8 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
   };
 
   // ...then add the nullable fields, if returned in results
-  if (row.vehicle_slot_type) {
-    slot.testSlot.vehicleSlotType = row.vehicle_slot_type;
+  if (row.vehicle_type_code) {
+    slot.testSlot.vehicleTypeCode = row.vehicle_type_code as VehicleTypeCode;
   }
 
   if (row.vehicle_slot_type_code) {

@@ -1,4 +1,5 @@
 import { mapRow } from '../advance-test-slot-row-mapper';
+import { VehicleTypeCode } from '@dvsa/mes-journal-schema';
 
 describe('AdvanceTestSlot Row Mapper', () => {
 
@@ -11,7 +12,7 @@ describe('AdvanceTestSlot Row Mapper', () => {
       tc_id: 3,
       tc_name: 'test-tc',
       tc_cost_centre_code: 'csc',
-      short_vst_desc: 'B57mins',
+      vehicle_type_code: '6',
     });
     expect(result).toEqual(
       {
@@ -27,7 +28,7 @@ describe('AdvanceTestSlot Row Mapper', () => {
             centreName: 'test-tc',
             costCode: 'csc',
           },
-          vehicleSlotType: 'B57mins',
+          vehicleTypeCode: '6' as VehicleTypeCode,
         },
       },
     );

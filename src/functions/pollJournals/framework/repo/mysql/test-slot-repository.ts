@@ -39,7 +39,7 @@ export const getTestSlots = async (
 const getQuery = (ids: number[]) => {
   return `
  select w.slot_id, w.start_time as start_time, w.minutes as minutes,
-     vst.short_vst_desc as vehicle_slot_type, w.tc_id, tc.tc_cost_centre_code as tc_cost_centre_code,
+     vst.vehicle_type_code as vehicle_type_code, w.tc_id, tc.tc_cost_centre_code as tc_cost_centre_code,
      tcn.tc_name as tc_name, w.individual_id, w.programme_date, booking_details.booking_id,
      booking_details.app_id, booking_details.booking_seq, booking_details.check_digit,
      booking_details.welsh_test_ind, booking_details.ext_req_ind, booking_details.progressive_access,

@@ -1,4 +1,5 @@
 import { mapRow, GenderCode } from '../test-slot-row-mapper';
+import { VehicleTypeCode } from '@dvsa/mes-journal-schema';
 
 describe('TestSlot Row Mapper', () => {
 
@@ -6,7 +7,7 @@ describe('TestSlot Row Mapper', () => {
     slot_id: 1,
     start_time: new Date('2019-02-12 08:20:00'),
     minutes: 57,
-    vehicle_slot_type: 'B57Minutes',
+    vehicle_type_code: '6',
     vehicle_slot_type_code: 1,
     tc_id: 3,
     tc_cost_centre_code: 'costcentre',
@@ -152,7 +153,7 @@ describe('TestSlot Row Mapper', () => {
             centreName: 'testcentre',
             costCode: 'costcentre',
           },
-          vehicleSlotType: 'B57Minutes',
+          vehicleTypeCode: '6' as VehicleTypeCode,
           vehicleSlotTypeCode: 1,
           examinerVisiting: false,
         },
@@ -181,7 +182,7 @@ describe('TestSlot Row Mapper', () => {
       slot_id: 1,
       start_time: new Date('2019-02-12 08:20:00'),
       minutes: 57,
-      vehicle_slot_type: null,
+      vehicle_type_code: null,
       vehicle_slot_type_code: null,
       tc_id: 3,
       tc_cost_centre_code: 'costcentre',
@@ -269,7 +270,7 @@ describe('TestSlot Row Mapper', () => {
       slot_id: 1,
       start_time: new Date('2019-02-12 08:20:00'),
       minutes: 57,
-      vehicle_slot_type: null,
+      vehicle_type_code: null,
       vehicle_slot_type_code: null,
       tc_id: 3,
       tc_cost_centre_code: 'costcentre',
@@ -381,7 +382,7 @@ describe('TestSlot Row Mapper', () => {
       slot_id: 1,
       start_time: new Date('2019-02-12 08:20:00'),
       minutes: 57,
-      vehicle_slot_type: null,
+      vehicle_type_code: null,
       vehicle_slot_type_code: null,
       tc_id: 3,
       tc_cost_centre_code: 'costcentre',
