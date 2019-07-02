@@ -25,7 +25,7 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 	ThirdName VARCHAR(50),
 	Surname VARCHAR(50),
 	Gender VARCHAR(6),
-	Ethnicity VARCHAR(33),
+	EthnicityCode VARCHAR(1),
 	PrimaryTelNo VARCHAR(30),
 	SecondaryTelNo VARCHAR(30),
 	MobileTelNo VARCHAR(30),
@@ -69,10 +69,16 @@ CREATE PROCEDURE tarsreplica.uspGenerateJournalData
 		FROM DUAL;
 		
 		-- INDIVIDUAL
-		INSERT INTO INDIVIDUAL (individual_id, driver_number, date_of_birth, title_code, family_name, first_forename, second_forename, third_forename, gender_code, ethnic_origin_code)
-		SELECT @CandidateId, DriverNumber, DateOfBirth, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Title), Surname, FirstName, SecondName, ThirdName, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Gender), (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Ethnicity)
+		INSERT INTO INDIVIDUAL (individual_id, driver_number, date_of_birth, title_code, family_name, first_forename, second_forename, third_forename, gender_code)
+		SELECT @CandidateId, DriverNumber, DateOfBirth, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Title), Surname, FirstName, SecondName, ThirdName, (SELECT ITEM_ID FROM REF_DATA_ITEM_MASTER WHERE ITEM_DESC1 = Gender)
 		FROM DUAL
 		WHERE NTACode IS NULL;
+
+		-- ETHNIC_ORIGIN
+		INSERT INTO ETHNIC_ORIGIN (driver_number, ethnicity_code, loaded_date)
+		SELECT DriverNumber, EthnicityCode, Date
+		FROM DUAL
+		WHERE DriverNumber IS NOT NULL;
 		
 		-- CONTACT_DETAILS
 		INSERT INTO CONTACT_DETAILS (contact_details_id, organisation_register_id, individual_id, primary_tel_number, secondary_tel_number, email_address, mobile_tel_number, prim_tel_voicemail_ind, sec_tel_voicemail_ind, mobile_voicemail_ind)
