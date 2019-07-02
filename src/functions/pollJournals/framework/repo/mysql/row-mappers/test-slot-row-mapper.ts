@@ -58,7 +58,7 @@ interface TestSlotRow {
   candidate_driver_number: string | null;
   candidate_date_of_birth: Date | null;
   candidate_gender_code: number | null;
-  candidate_ethnic_origin_code: number | null;
+  candidate_ethnicity_code: string | null;
   cand_primary_tel_ind: number | null;
   cand_primary_tel: string | null;
   cand_secondary_tel_ind: number | null;
@@ -183,7 +183,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       setNumberIfTruthy(candidate, 'prn', row.candidate_prn);
       setNumberIfTruthy(candidate, 'previousADITests', row.prev_attempts);
       setStringIfPopulated(candidate, 'dateOfBirth', formatDateToIso8601(row.candidate_date_of_birth));
-      setNumberIfTruthy(candidate, 'ethnicOriginCode', row.candidate_ethnic_origin_code);
+      setStringIfPopulated(candidate, 'ethnicityCode', row.candidate_ethnicity_code);
       setGenderIfPopulated(candidate, row.candidate_gender_code);
 
       candidate.candidateName = {};

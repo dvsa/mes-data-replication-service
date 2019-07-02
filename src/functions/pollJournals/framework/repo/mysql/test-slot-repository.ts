@@ -61,7 +61,7 @@ const getQuery = (ids: number[]) => {
      booking_details.candidate_driver_number as candidate_driver_number,
      booking_details.candidate_date_of_birth as candidate_date_of_birth,
      booking_details.candidate_gender_code as candidate_gender_code,
-     booking_details.candidate_ethnic_origin_code as candidate_ethnic_origin_code,
+     booking_details.candidate_ethnicity_code as candidate_ethnicity_code,
      booking_details.prim_tel_voicemail_ind as cand_primary_tel_ind,
      booking_details.primary_tel_number as cand_primary_tel,
      booking_details.sec_tel_voicemail_ind as cand_secondary_tel_ind,
@@ -109,7 +109,7 @@ const getQuery = (ids: number[]) => {
          i.second_forename as candidate_second_name, i.third_forename as candidate_third_name,
          i.family_name as candidate_surname, i.driver_number as candidate_driver_number,
          i.date_of_birth as candidate_date_of_birth, i.gender_code as candidate_gender_code,
-         i.ethnic_origin_code as candidate_ethnic_origin_code,
+         eo.ethnicity_code as candidate_ethnicity_code,
          ccd.contact_details_id as candidate_cd_id, ccd.prim_tel_voicemail_ind, ccd.primary_tel_number,
          ccd.sec_tel_voicemail_ind, ccd.secondary_tel_number, ccd.mobile_voicemail_ind, ccd.mobile_tel_number,
          ccd.email_address as cand_email, cand_addr.address_id as candidate_addr_id, cand_addr.address_line_1,
@@ -146,6 +146,14 @@ const getQuery = (ids: number[]) => {
          left join ADDRESS bus_addr on
              bus_addr.address_type_code = 1280 and org.organisation_id = bus_addr.organisation_id
          left join CONTACT_DETAILS bus_cd on bus_cd.organisation_register_id = org_reg.organisation_register_id
+         left join (
+           select driver_number, ethnicity_code from ETHNIC_ORIGIN, (
+             select driver_number as dn2, max(loaded_date) as date2
+             from ETHNIC_ORIGIN
+             group by driver_number
+           ) eo2
+          where driver_number = dn2 and loaded_date = date2
+         ) eo on i.driver_number = eo.driver_number
          left join (
                select cancelled_bookings.app_id, group_concat(bcr.initiator_code) as cancel_initiator
                from BOOKING cancelled_bookings
