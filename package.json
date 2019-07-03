@@ -20,7 +20,7 @@
     "node.extend": "^1.1.7"
   },
   "devDependencies": {
-    "@dvsa/mes-journal-schema": "^1.0.7",
+    "@dvsa/mes-journal-schema": "^1.0.8",
     "@types/aws-lambda": "^8.10.13",
     "@types/aws-sdk": "^2.7.0",
     "@types/chai": "^4.1.7",
