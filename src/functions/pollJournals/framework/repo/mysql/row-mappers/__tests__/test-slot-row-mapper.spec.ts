@@ -1,5 +1,4 @@
 import { mapRow, GenderCode } from '../test-slot-row-mapper';
-import { VehicleTypeCode } from '@dvsa/mes-journal-schema';
 
 describe('TestSlot Row Mapper', () => {
 
@@ -153,7 +152,7 @@ describe('TestSlot Row Mapper', () => {
             centreName: 'testcentre',
             costCode: 'costcentre',
           },
-          vehicleTypeCode: '6' as VehicleTypeCode,
+          vehicleTypeCode: '6',
           vehicleSlotTypeCode: 1,
           examinerVisiting: false,
         },

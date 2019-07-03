@@ -1,5 +1,4 @@
 import { mapRow } from '../advance-test-slot-row-mapper';
-import { VehicleTypeCode } from '@dvsa/mes-journal-schema';
 
 describe('AdvanceTestSlot Row Mapper', () => {
 
@@ -28,7 +27,7 @@ describe('AdvanceTestSlot Row Mapper', () => {
             centreName: 'test-tc',
             costCode: 'csc',
           },
-          vehicleTypeCode: '6' as VehicleTypeCode,
+          vehicleTypeCode: '6',
         },
       },
     );

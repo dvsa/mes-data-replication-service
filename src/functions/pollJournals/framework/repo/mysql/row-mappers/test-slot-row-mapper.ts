@@ -6,7 +6,6 @@ import {
   Candidate,
   PreviousCancellation,
   Address,
-  VehicleTypeCode,
 } from '@dvsa/mes-journal-schema';
 import { formatDateToStartTime, formatDateToIso8601 } from '../../../../application/formatters/date-formatter';
 
@@ -113,7 +112,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
 
   // ...then add the nullable fields, if returned in results
   if (row.vehicle_type_code) {
-    slot.testSlot.vehicleTypeCode = row.vehicle_type_code as VehicleTypeCode;
+    slot.testSlot.vehicleTypeCode = row.vehicle_type_code;
   }
 
   if (row.vehicle_slot_type_code) {

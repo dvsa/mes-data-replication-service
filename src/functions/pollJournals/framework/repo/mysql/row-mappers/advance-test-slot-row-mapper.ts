@@ -1,6 +1,5 @@
 import { ExaminerAdvanceTestSlot } from '../../../../domain/examiner-advance-test-slot';
 import { formatDateToStartTime } from '../../../../application/formatters/date-formatter';
-import { VehicleTypeCode } from '@dvsa/mes-journal-schema';
 
 interface AdvanceTestSlotRow {
   individual_id: number;
@@ -27,7 +26,7 @@ export const mapRow = (row: AdvanceTestSlotRow): ExaminerAdvanceTestSlot => {
         centreName: row.tc_name,
         costCode: row.tc_cost_centre_code,
       },
-      vehicleTypeCode: row.vehicle_type_code as VehicleTypeCode,
+      vehicleTypeCode: row.vehicle_type_code,
     },
   };
 };
