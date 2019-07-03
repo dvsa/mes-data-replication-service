@@ -22,7 +22,7 @@ const totalSaveDuration = 4 * 1000;
 /*
  * Number of seconds between poller invocations.
  */
-export const pollerFrequency = 60;
+export const pollerFrequency = 120;
 
 export const journalHashesCache = new JournalHashesCache(pollerFrequency);
 let dynamoDocumentClient: DynamoDB.DocumentClient;
@@ -50,7 +50,7 @@ export const getDynamoClient = () => {
         rejectUnauthorized: true,
       });
       awsConfig.update({
-        httpOptions:{
+        httpOptions: {
           agent: sslAgent,
         },
       });
