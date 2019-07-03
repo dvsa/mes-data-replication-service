@@ -147,12 +147,12 @@ const getQuery = (ids: number[]) => {
              bus_addr.address_type_code = 1280 and org.organisation_id = bus_addr.organisation_id
          left join CONTACT_DETAILS bus_cd on bus_cd.organisation_register_id = org_reg.organisation_register_id
          left join (
-           select driver_number, ethnicity_code from ETHNIC_ORIGIN, (
+           select driver_number, ethnicity_code from ETHNIC_ORIGIN
+           join (
              select driver_number as dn2, max(loaded_date) as date2
              from ETHNIC_ORIGIN
              group by driver_number
-           ) eo2
-          where driver_number = dn2 and loaded_date = date2
+           ) eo2 on driver_number = dn2 and loaded_date = date2
          ) eo on i.driver_number = eo.driver_number
          left join (
                select cancelled_bookings.app_id, group_concat(bcr.initiator_code) as cancel_initiator
