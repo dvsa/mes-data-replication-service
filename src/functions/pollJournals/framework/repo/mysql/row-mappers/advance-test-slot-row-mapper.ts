@@ -9,7 +9,7 @@ interface AdvanceTestSlotRow {
   tc_id: number;
   tc_name: string;
   tc_cost_centre_code: string;
-  short_vst_desc: string;
+  vehicle_type_code: string;
 }
 
 export const mapRow = (row: AdvanceTestSlotRow): ExaminerAdvanceTestSlot => {
@@ -26,7 +26,7 @@ export const mapRow = (row: AdvanceTestSlotRow): ExaminerAdvanceTestSlot => {
         centreName: row.tc_name,
         costCode: row.tc_cost_centre_code,
       },
-      vehicleSlotType: row.short_vst_desc,
+      vehicleTypeCode: row.vehicle_type_code,
     },
   };
 };

@@ -39,7 +39,7 @@ export const getTestSlots = async (
 const getQuery = (ids: number[]) => {
   return `
  select w.slot_id, w.start_time as start_time, w.minutes as minutes,
-     vst.short_vst_desc as vehicle_slot_type, w.tc_id, tc.tc_cost_centre_code as tc_cost_centre_code,
+     vst.vehicle_type_code as vehicle_type_code, w.tc_id, tc.tc_cost_centre_code as tc_cost_centre_code,
      tcn.tc_name as tc_name, w.individual_id, w.programme_date, booking_details.booking_id,
      booking_details.app_id, booking_details.booking_seq, booking_details.check_digit,
      booking_details.welsh_test_ind, booking_details.ext_req_ind, booking_details.progressive_access,
@@ -61,7 +61,7 @@ const getQuery = (ids: number[]) => {
      booking_details.candidate_driver_number as candidate_driver_number,
      booking_details.candidate_date_of_birth as candidate_date_of_birth,
      booking_details.candidate_gender_code as candidate_gender_code,
-     booking_details.candidate_ethnic_origin_code as candidate_ethnic_origin_code,
+     booking_details.candidate_ethnicity_code as candidate_ethnicity_code,
      booking_details.prim_tel_voicemail_ind as cand_primary_tel_ind,
      booking_details.primary_tel_number as cand_primary_tel,
      booking_details.sec_tel_voicemail_ind as cand_secondary_tel_ind,
@@ -109,7 +109,7 @@ const getQuery = (ids: number[]) => {
          i.second_forename as candidate_second_name, i.third_forename as candidate_third_name,
          i.family_name as candidate_surname, i.driver_number as candidate_driver_number,
          i.date_of_birth as candidate_date_of_birth, i.gender_code as candidate_gender_code,
-         i.ethnic_origin_code as candidate_ethnic_origin_code,
+         eo.ethnicity_code as candidate_ethnicity_code,
          ccd.contact_details_id as candidate_cd_id, ccd.prim_tel_voicemail_ind, ccd.primary_tel_number,
          ccd.sec_tel_voicemail_ind, ccd.secondary_tel_number, ccd.mobile_voicemail_ind, ccd.mobile_tel_number,
          ccd.email_address as cand_email, cand_addr.address_id as candidate_addr_id, cand_addr.address_line_1,
@@ -146,6 +146,14 @@ const getQuery = (ids: number[]) => {
          left join ADDRESS bus_addr on
              bus_addr.address_type_code = 1280 and org.organisation_id = bus_addr.organisation_id
          left join CONTACT_DETAILS bus_cd on bus_cd.organisation_register_id = org_reg.organisation_register_id
+         left join (
+           select driver_number, ethnicity_code from ETHNIC_ORIGIN
+           join (
+             select driver_number as dn2, max(loaded_date) as date2
+             from ETHNIC_ORIGIN
+             group by driver_number
+           ) eo2 on driver_number = dn2 and loaded_date = date2
+         ) eo on i.driver_number = eo.driver_number
          left join (
                select cancelled_bookings.app_id, group_concat(bcr.initiator_code) as cancel_initiator
                from BOOKING cancelled_bookings

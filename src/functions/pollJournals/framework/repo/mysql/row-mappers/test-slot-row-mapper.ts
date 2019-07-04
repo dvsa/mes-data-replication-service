@@ -21,7 +21,7 @@ interface TestSlotRow {
   slot_id: number; // not nullable
   start_time: Date; // not nullable
   minutes: number; // not nullable
-  vehicle_slot_type: string | null; // nullable
+  vehicle_type_code: string | null; // nullable
   vehicle_slot_type_code: number | null; // nullable
   tc_id: number; // not nullable
   tc_cost_centre_code: string; // not nullable
@@ -57,7 +57,7 @@ interface TestSlotRow {
   candidate_driver_number: string | null;
   candidate_date_of_birth: Date | null;
   candidate_gender_code: number | null;
-  candidate_ethnic_origin_code: number | null;
+  candidate_ethnicity_code: string | null;
   cand_primary_tel_ind: number | null;
   cand_primary_tel: string | null;
   cand_secondary_tel_ind: number | null;
@@ -111,8 +111,8 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
   };
 
   // ...then add the nullable fields, if returned in results
-  if (row.vehicle_slot_type) {
-    slot.testSlot.vehicleSlotType = row.vehicle_slot_type;
+  if (row.vehicle_type_code) {
+    slot.testSlot.vehicleTypeCode = row.vehicle_type_code;
   }
 
   if (row.vehicle_slot_type_code) {
@@ -182,7 +182,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
       setNumberIfTruthy(candidate, 'prn', row.candidate_prn);
       setNumberIfTruthy(candidate, 'previousADITests', row.prev_attempts);
       setStringIfPopulated(candidate, 'dateOfBirth', formatDateToIso8601(row.candidate_date_of_birth));
-      setNumberIfTruthy(candidate, 'ethnicOriginCode', row.candidate_ethnic_origin_code);
+      setStringIfPopulated(candidate, 'ethnicityCode', row.candidate_ethnicity_code);
       setGenderIfPopulated(candidate, row.candidate_gender_code);
 
       candidate.candidateName = {};
