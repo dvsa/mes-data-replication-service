@@ -3,6 +3,7 @@ import * as examinerRepository from '../../framework/repo/mysql/examiner-reposit
 import { transferUsers } from '../transfer-users';
 import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cached-examiner-repository';
 import * as examinerCacheReconciler from '../examiner-cache-reconciler';
+import { StaffDetail } from '../../../../common/application/models/staff-details';
 
 /* tslint:disable:max-line-length */
 describe('transferUsers module', () => {
@@ -21,14 +22,14 @@ describe('transferUsers module', () => {
   });
   describe('transferUsers', () => {
     it('should retrieve all the active examiners in the replica, all the IDs in the cache and pass them to the reconciler', async () => {
-      const activeStaffNumbers = ['1', '2', '3'];
+      const activeStaffDetails = [new StaffDetail('1', false), new StaffDetail('2', true)];
       const cachedStaffNumbers = ['1', '2', '5'];
-      moqExaminerRepo.setup(x => x()).returns(() => Promise.resolve(activeStaffNumbers));
+      moqExaminerRepo.setup(x => x()).returns(() => Promise.resolve(activeStaffDetails));
       moqCachedExaminerRepo.setup(x => x()).returns(() => Promise.resolve(cachedStaffNumbers));
 
       await transferUsers();
 
-      moqReconciler.verify(x => x(It.isValue(activeStaffNumbers), It.isValue(cachedStaffNumbers)), Times.once());
+      moqReconciler.verify(x => x(It.isValue(activeStaffDetails), It.isValue(cachedStaffNumbers)), Times.once());
     });
   });
 });
