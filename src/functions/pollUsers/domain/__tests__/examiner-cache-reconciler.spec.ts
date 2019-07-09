@@ -39,4 +39,61 @@ describe('examiner cache reconciler', () => {
       moqUncacheStaffNumbers.verify(x => x(It.isValue(['2', '3'])), Times.once());
     });
   });
+
+  describe('conduct permission period handling', () => {
+    it('should re-cache any examiner whose conduct permissions have changed', async () => {
+      const cachedStaffDetails = [
+        new StaffDetail('1', false, [
+          {
+            testCategory: 'B',
+            conductPermissionPeriods: [
+              [new Date('1970-01-01'), null],
+            ],
+          },
+        ]),
+      ];
+      const activeStaffDetails = [
+        new StaffDetail('1', false, [
+          {
+            testCategory: 'B',
+            conductPermissionPeriods: [
+              [new Date('1970-01-02'), null], // Delayed start
+            ],
+          },
+        ]),
+      ];
+
+      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
+
+      moqCacheStaffNumbers.verify(x => x(It.isValue(activeStaffDetails)), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+    });
+
+    it('should not re-cache an examiner if all their staff details are identical', async () => {
+      const staffDetails = [
+        new StaffDetail('1', false, [
+          {
+            testCategory: 'B',
+            conductPermissionPeriods: [
+              [new Date('1970-01-01'), null],
+            ],
+          },
+        ]),
+        new StaffDetail('2', true, [
+          {
+            testCategory: 'A',
+            conductPermissionPeriods: [
+              [new Date('1970-01-01'), new Date('1970-01-05')],
+              [new Date('1971-01-01'), new Date('1971-01-05')],
+            ],
+          },
+        ]),
+      ];
+
+      await reconcileActiveAndCachedExaminers(staffDetails, staffDetails);
+
+      moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+    });
+  });
 });
