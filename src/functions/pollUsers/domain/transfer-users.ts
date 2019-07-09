@@ -4,6 +4,6 @@ import { reconcileActiveAndCachedExaminers } from './examiner-cache-reconciler';
 
 export const transferUsers = async () => {
   const activeStaffDetails = await getActiveExaminers();
-  const cachedStaffNumbers = await getCachedExaminers();
-  await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffNumbers);
+  const cachedStaffDetails = await getCachedExaminers();
+  await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
 };

@@ -22,14 +22,21 @@ describe('transferUsers module', () => {
   });
   describe('transferUsers', () => {
     it('should retrieve all the active examiners in the replica, all the IDs in the cache and pass them to the reconciler', async () => {
-      const activeStaffDetails = [new StaffDetail('1', false), new StaffDetail('2', true)];
-      const cachedStaffNumbers = ['1', '2', '5'];
+      const activeStaffDetails = [
+        new StaffDetail('1', false),
+        new StaffDetail('2', true),
+      ];
+      const cachedStaffDetails = [
+        new StaffDetail('1', false),
+        new StaffDetail('2', true),
+        new StaffDetail('5', false),
+      ];
       moqExaminerRepo.setup(x => x()).returns(() => Promise.resolve(activeStaffDetails));
-      moqCachedExaminerRepo.setup(x => x()).returns(() => Promise.resolve(cachedStaffNumbers));
+      moqCachedExaminerRepo.setup(x => x()).returns(() => Promise.resolve(cachedStaffDetails));
 
       await transferUsers();
 
-      moqReconciler.verify(x => x(It.isValue(activeStaffDetails), It.isValue(cachedStaffNumbers)), Times.once());
+      moqReconciler.verify(x => x(It.isValue(activeStaffDetails), It.isValue(cachedStaffDetails)), Times.once());
     });
   });
 });
