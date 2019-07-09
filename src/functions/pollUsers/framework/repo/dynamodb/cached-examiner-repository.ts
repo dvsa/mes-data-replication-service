@@ -1,6 +1,7 @@
 import { config as awsConfig, Credentials, DynamoDB } from 'aws-sdk';
 import { config } from '../../../../pollUsers/framework/config';
 import { chunk } from 'lodash';
+import { StaffDetail } from '../../../../../common/application/models/staff-details';
 
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 const getDynamoClient = () => {
@@ -34,22 +35,20 @@ export const getCachedExaminers = async (): Promise<string[]> => {
   return scanResult.Items.map(item => item.staffNumber);
 };
 
-export const cacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
-  console.log(`Caching ${staffNumbers.length} staff numbers...`);
+export const cacheStaffDetails = async (staffDetail: StaffDetail[]): Promise<void> => {
+  console.log(`Caching ${staffDetail.length} staff numbers...`);
   const ddb = getDynamoClient();
   const tableName = config().usersDynamodbTableName;
 
   const maxBatchWriteRequests = 25;
-  const staffNumberWriteBatches = chunk(staffNumbers, maxBatchWriteRequests);
+  const staffDetailWriteBatches: StaffDetail[][] = chunk(staffDetail, maxBatchWriteRequests);
 
-  const writePromises = staffNumberWriteBatches.map((batch) => {
+  const writePromises = staffDetailWriteBatches.map((batch) => {
     const params = {
       RequestItems: {
-        [tableName]: batch.map(staffNumber => ({
+        [tableName]: batch.map(staffDetail => ({
           PutRequest: {
-            Item: {
-              staffNumber,
-            },
+            Item: staffDetail,
           },
         })),
       },
@@ -63,7 +62,7 @@ export const cacheStaffNumbers = async (staffNumbers: string[]): Promise<void> =
     service: 'users-poller',
     name: 'UsersAdded',
     description: 'Number of Users added to Dynamo',
-    value: staffNumbers.length,
+    value: staffDetail.length,
   }));
 };
 

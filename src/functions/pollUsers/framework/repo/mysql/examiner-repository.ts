@@ -2,8 +2,9 @@ import { query } from '../../../../../common/framework/mysql/database';
 import { config } from '../../config';
 import * as mysql from 'mysql2';
 import * as moment from 'moment';
+import { StaffDetail } from '../../../../../common/application/models/staff-details';
 
-export const getActiveExaminers = async (): Promise<string[]> => {
+export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
   const configuration = config();
 
   const connection = mysql.createConnection({
@@ -23,17 +24,22 @@ export const getActiveExaminers = async (): Promise<string[]> => {
   const queryResult = await query(
     connection,
     `
-    select e.individual_id, e.staff_number
+    select e.individual_id, e.staff_number, eg.test_centre_manager_ind
     from EXAMINER e
         left join EXAMINER_STATUS es on es.individual_id = e.individual_id
+        left join EXAMINER_GRADE eg on eg.examiner_grade_code = e.grade_code
     where IFNULL(e.grade_code, 'ZZZ') <> 'DELE'
     and IFNULL(es.end_date, '4000-01-01') >= ?
     `,
     [moment().format('YYYY-MM-DD')],
   );
 
-  // @ts-ignore
-  const activeExaminerStaffNumbers = queryResult.map(row => row.staff_number);
+  const staffDetails = [];
+  queryResult.map((row) => {
+    // map isLDTM to a strict boolean value
+    const isLDTM = row.test_centre_manager_ind === 1 ? true : false;
+    staffDetails.push(new StaffDetail(row.staff_number, isLDTM));
+  });
 
-  return activeExaminerStaffNumbers;
+  return staffDetails;
 };
