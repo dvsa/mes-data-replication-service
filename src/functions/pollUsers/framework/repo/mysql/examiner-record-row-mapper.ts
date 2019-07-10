@@ -1,10 +1,8 @@
 import { ExaminerQueryRecord } from './examiner-repository';
 import {
-  StaffDetail,
-  TestCategoryConductPermissionPeriods,
-  ConductPermissionPeriod,
+  StaffDetail, TestPermissionPeriod,
 } from '../../../../../common/application/models/staff-details';
-import { groupBy, Dictionary } from 'lodash';
+import { groupBy } from 'lodash';
 
 export const buildStaffDetailsFromQueryResult = (queryResult: ExaminerQueryRecord[]): StaffDetail[] => {
   const queryResultsByExaminer = groupBy(queryResult, record => record.staff_number);
@@ -14,35 +12,21 @@ export const buildStaffDetailsFromQueryResult = (queryResult: ExaminerQueryRecor
       const staffNumber = recordsForExaminer[0].staff_number;
       const isLDTM = recordsForExaminer[0].test_centre_manager_ind === 1;
 
-      const recordsByCategory = groupBy(recordsForExaminer, record => record.test_category_ref);
-      const categoryPermissionPeriods = buildTestCategoryPermissionPeriods(recordsByCategory);
+      const formatDate = (date: Date) => date === null ? null : date.toISOString().split('T')[0];
 
-      return [...staffDetailsAcc, new StaffDetail(staffNumber, isLDTM, categoryPermissionPeriods)];
+      const testPermissionPeriods: TestPermissionPeriod[] = examinerHasPermissions(recordsForExaminer)
+        ? recordsForExaminer.map(record => ({
+          testCategory: record.test_category_ref,
+          from: formatDate(record.with_effect_from),
+          to: formatDate(record.with_effect_to),
+        }))
+        : [];
+
+      return [...staffDetailsAcc, new StaffDetail(staffNumber, isLDTM, testPermissionPeriods)];
     },
     [] as StaffDetail[]);
 };
 
-const buildTestCategoryPermissionPeriods = (
-  recordsByCategory: Dictionary<ExaminerQueryRecord[]>,
-): TestCategoryConductPermissionPeriods[] => {
-  return Object.entries(recordsByCategory)
-    .filter(categoryEntry => categoryEntry[0] !== 'null') // Don't build periods if there's no category
-    .map((categoryEntry) => {
-      const testCategory = categoryEntry[0];
-      const recordsForCategory = categoryEntry[1];
-      const conductPermissionPeriods = getConductPermissionPeriodsForCategory(recordsForCategory);
-      return {
-        testCategory,
-        conductPermissionPeriods,
-      };
-    });
-};
-
-const getConductPermissionPeriodsForCategory = (
-  recordsForCategory: ExaminerQueryRecord[],
-): ConductPermissionPeriod[] => {
-  return recordsForCategory.map((categoryRecord) => {
-    const { with_effect_from, with_effect_to } = categoryRecord;
-    return [with_effect_from, with_effect_to] as ConductPermissionPeriod;
-  });
+const examinerHasPermissions = (examinerRecords: ExaminerQueryRecord[]): boolean => {
+  return examinerRecords.length !== 1 || examinerRecords[0].test_category_ref !== null;
 };

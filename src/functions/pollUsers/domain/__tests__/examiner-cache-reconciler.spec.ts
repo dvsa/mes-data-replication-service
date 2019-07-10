@@ -40,15 +40,14 @@ describe('examiner cache reconciler', () => {
     });
   });
 
-  describe('conduct permission period handling', () => {
-    it('should re-cache any examiner whose conduct permissions have changed', async () => {
+  describe('test permission handling', () => {
+    it('should re-cache any examiner whose test permissions have changed', async () => {
       const cachedStaffDetails = [
         new StaffDetail('1', false, [
           {
             testCategory: 'B',
-            conductPermissionPeriods: [
-              [new Date('1970-01-01'), null],
-            ],
+            from: '1970-01-01',
+            to: null,
           },
         ]),
       ];
@@ -56,9 +55,8 @@ describe('examiner cache reconciler', () => {
         new StaffDetail('1', false, [
           {
             testCategory: 'B',
-            conductPermissionPeriods: [
-              [new Date('1970-01-02'), null], // Delayed start
-            ],
+            from: '1970-01-02',
+            to: null,
           },
         ]),
       ];
@@ -74,18 +72,20 @@ describe('examiner cache reconciler', () => {
         new StaffDetail('1', false, [
           {
             testCategory: 'B',
-            conductPermissionPeriods: [
-              [new Date('1970-01-01'), null],
-            ],
+            from: '1970-01-01',
+            to: null,
           },
         ]),
         new StaffDetail('2', true, [
           {
             testCategory: 'A',
-            conductPermissionPeriods: [
-              [new Date('1970-01-01'), new Date('1970-01-05')],
-              [new Date('1971-01-01'), new Date('1971-01-05')],
-            ],
+            from: '1970-01-01',
+            to: '1970-01-05',
+          },
+          {
+            testCategory: 'A',
+            from: '1971-01-01',
+            to: '1971-01-05',
           },
         ]),
       ];

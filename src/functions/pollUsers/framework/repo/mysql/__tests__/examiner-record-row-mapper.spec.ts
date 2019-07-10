@@ -57,24 +57,23 @@ describe('ExmainerRecordRowMapper', () => {
     expect(result[1].isLDTM).toBe(true);
   });
 
-  it('should add a permission periods object for each distinct category an exmainer is allowed to conduct', () => {
+  it('should add a TestPermissionPeriod object for each category/date qualified record for the examiner', () => {
     const result = buildStaffDetailsFromQueryResult(examinerRecords);
 
-    expect(result[0].testCategoryConductPermissionPeriods.length).toBe(2);
-    expect(result[1].testCategoryConductPermissionPeriods.length).toBe(1);
+    expect(result[0].testPermissionPeriods.length).toBe(3);
+    expect(result[1].testPermissionPeriods.length).toBe(1);
   });
 
   it('should include the permission period to/from dates correctly', () => {
     const result = buildStaffDetailsFromQueryResult(examinerRecords);
 
-    const examiner1CatBRanges = result[0].testCategoryConductPermissionPeriods[0].conductPermissionPeriods;
-    const examiner1CatBPlusERanges = result[0].testCategoryConductPermissionPeriods[1].conductPermissionPeriods;
-    expect(examiner1CatBRanges[0][0]).toEqual(new Date('2019-07-05'));
-    expect(examiner1CatBRanges[0][1]).toEqual(new Date('2019-07-12'));
-    expect(examiner1CatBRanges[1][0]).toEqual(new Date('2019-08-01'));
-    expect(examiner1CatBRanges[1][1]).toBeNull();
-    expect(examiner1CatBPlusERanges[0][0]).toEqual(new Date('2019-09-01'));
-    expect(examiner1CatBPlusERanges[0][1]).toBeNull();
+    const examiner1PermissionPeriods = result[0].testPermissionPeriods;
+    expect(examiner1PermissionPeriods[0]).toEqual({ testCategory: 'B', from: '2019-07-05', to: '2019-07-12' });
+    expect(examiner1PermissionPeriods[1]).toEqual({ testCategory: 'B', from: '2019-08-01', to: null });
+    expect(examiner1PermissionPeriods[2]).toEqual({ testCategory: 'B+E', from: '2019-09-01', to: null });
+
+    const examiner2PermissionPeriods = result[1].testPermissionPeriods;
+    expect(examiner2PermissionPeriods[0]).toEqual({ testCategory: 'B', from: '2019-10-01', to: null });
   });
 
   it('should handle an examiner record without any permissions', () => {

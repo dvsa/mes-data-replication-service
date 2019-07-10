@@ -39,8 +39,8 @@ export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
       e.staff_number,
       eg.test_centre_manager_ind,
       dtc.test_category_ref,
-      dtc.with_effect_to,
-      dtc.with_effect_from
+      dtc.with_effect_from,
+      dtc.with_effect_to
     from EXAMINER e
       left join EXAMINER_STATUS es on es.individual_id = e.individual_id
       left join EXAMINER_GRADE eg on eg.examiner_grade_code = e.grade_code
