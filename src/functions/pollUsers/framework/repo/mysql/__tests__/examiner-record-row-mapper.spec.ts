@@ -1,4 +1,5 @@
 import { buildStaffDetailsFromQueryResult } from '../examiner-record-row-mapper';
+import { StaffDetail } from '../../../../../../common/application/models/staff-details';
 
 describe('ExmainerRecordRowMapper', () => {
   const examinerRecords = [
@@ -74,5 +75,20 @@ describe('ExmainerRecordRowMapper', () => {
     expect(examiner1CatBRanges[1][1]).toBeNull();
     expect(examiner1CatBPlusERanges[0][0]).toEqual(new Date('2019-09-01'));
     expect(examiner1CatBPlusERanges[0][1]).toBeNull();
+  });
+
+  it('should handle an examiner record without any permissions', () => {
+    const permissionlessExaminerRecord = {
+      individual_id: 1,
+      staff_number: '01',
+      test_centre_manager_ind: 0,
+      test_category_ref: null,
+      with_effect_from: null,
+      with_effect_to: null,
+    };
+
+    const result = buildStaffDetailsFromQueryResult([permissionlessExaminerRecord]);
+
+    expect(result).toEqual([new StaffDetail('01', false)]);
   });
 });
