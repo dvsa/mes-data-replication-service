@@ -47,7 +47,7 @@ export const cacheStaffDetails = async (staffDetail: StaffDetail[]): Promise<voi
       RequestItems: {
         [tableName]: batch.map(staffDetail => ({
           PutRequest: {
-            Item: staffDetail,
+            Item: staffDetail.withSerialisableDates(),
           },
         })),
       },
