@@ -1,12 +1,12 @@
 export class StaffDetail {
   staffNumber: string;
   isLDTM: boolean;
-  testCategoryConductPermissionPeriods: TestCategoryConductPermissionPeriod[];
+  testCategoryConductPermissionPeriods: TestCategoryConductPermissionPeriods[];
 
   constructor(
     staffNumber: string,
     isLDTM: boolean,
-    testCategoryConductPermissionPeriods: TestCategoryConductPermissionPeriod[] = [],
+    testCategoryConductPermissionPeriods: TestCategoryConductPermissionPeriods[] = [],
   ) {
     this.staffNumber = staffNumber;
     this.isLDTM = isLDTM;
@@ -14,7 +14,7 @@ export class StaffDetail {
   }
 }
 
-export interface TestCategoryConductPermissionPeriod {
+export interface TestCategoryConductPermissionPeriods {
   testCategory: string;
   conductPermissionPeriods: ConductPermissionPeriod[];
 }
