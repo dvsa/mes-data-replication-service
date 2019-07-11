@@ -4,7 +4,10 @@ import {
 } from '../../../../../common/application/models/staff-details';
 import { groupBy } from 'lodash';
 
-export const buildStaffDetailsFromQueryResult = (queryResult: ExaminerQueryRecord[]): StaffDetail[] => {
+export const buildStaffDetailsFromQueryResult = (
+  queryResult: ExaminerQueryRecord[],
+  universalTestPermissions: TestPermissionPeriod[],
+): StaffDetail[] => {
   const queryResultsByExaminer = groupBy(queryResult, record => record.staff_number);
 
   return Object.values(queryResultsByExaminer).reduce(
@@ -15,12 +18,15 @@ export const buildStaffDetailsFromQueryResult = (queryResult: ExaminerQueryRecor
       const formatDate = (date: Date) => date === null ? null : date.toISOString().split('T')[0];
 
       const testPermissionPeriods: TestPermissionPeriod[] = examinerHasPermissions(recordsForExaminer)
-        ? recordsForExaminer.map(record => ({
-          testCategory: record.test_category_ref,
-          from: formatDate(record.with_effect_from),
-          to: formatDate(record.with_effect_to),
-        }))
-        : [];
+        ? [
+          ...recordsForExaminer.map(record => ({
+            testCategory: record.test_category_ref,
+            from: formatDate(record.with_effect_from),
+            to: formatDate(record.with_effect_to),
+          })),
+          ...universalTestPermissions,
+        ]
+        : universalTestPermissions;
 
       return [...staffDetailsAcc, new StaffDetail(staffNumber, isLDTM, testPermissionPeriods)];
     },

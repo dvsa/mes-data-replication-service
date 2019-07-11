@@ -1,5 +1,6 @@
 import { buildStaffDetailsFromQueryResult } from '../examiner-record-row-mapper';
-import { StaffDetail } from '../../../../../../common/application/models/staff-details';
+import { StaffDetail, TestPermissionPeriod } from '../../../../../../common/application/models/staff-details';
+import { isEqual } from 'lodash';
 
 describe('ExmainerRecordRowMapper', () => {
   const examinerRecords = [
@@ -36,36 +37,43 @@ describe('ExmainerRecordRowMapper', () => {
       with_effect_to: null,
     },
   ];
+  const universalPermissions: TestPermissionPeriod[] = [
+    {
+      testCategory: 'B',
+      from: '2020-01-01',
+      to: null,
+    },
+  ];
 
   it('should generate a staffDetail for each distinct examiner', () => {
-    const result = buildStaffDetailsFromQueryResult(examinerRecords);
+    const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
     expect(result.length).toBe(2);
   });
 
   it('should put the staff number from the query result into the StaffDetail object', () => {
-    const result = buildStaffDetailsFromQueryResult(examinerRecords);
+    const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
     expect(result[0].staffNumber).toBe('01');
     expect(result[1].staffNumber).toBe('02');
   });
 
   it('should determine whether each examiner is an LDTM or not', () => {
-    const result = buildStaffDetailsFromQueryResult(examinerRecords);
+    const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
     expect(result[0].isLDTM).toBe(false);
     expect(result[1].isLDTM).toBe(true);
   });
 
   it('should add a TestPermissionPeriod object for each category/date qualified record for the examiner', () => {
-    const result = buildStaffDetailsFromQueryResult(examinerRecords);
+    const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
-    expect(result[0].testPermissionPeriods.length).toBe(3);
-    expect(result[1].testPermissionPeriods.length).toBe(1);
+    expect(result[0].testPermissionPeriods.length).toBe(4);
+    expect(result[1].testPermissionPeriods.length).toBe(2);
   });
 
   it('should include the permission period to/from dates correctly', () => {
-    const result = buildStaffDetailsFromQueryResult(examinerRecords);
+    const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
     const examiner1PermissionPeriods = result[0].testPermissionPeriods;
     expect(examiner1PermissionPeriods[0]).toEqual({ testCategory: 'B', from: '2019-07-05', to: '2019-07-12' });
@@ -86,8 +94,21 @@ describe('ExmainerRecordRowMapper', () => {
       with_effect_to: null,
     };
 
-    const result = buildStaffDetailsFromQueryResult([permissionlessExaminerRecord]);
+    const result = buildStaffDetailsFromQueryResult([permissionlessExaminerRecord], []);
 
     expect(result).toEqual([new StaffDetail('01', false)]);
+  });
+
+  it('should include universal permissions in each examiners StaffDetails', () => {
+    const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
+
+    expect(
+      result[0].testPermissionPeriods
+        .some(permPeriod => isEqual(permPeriod, universalPermissions[0])),
+    ).toBe(true);
+    expect(
+      result[1].testPermissionPeriods
+        .some(permPeriod => isEqual(permPeriod, universalPermissions[0])),
+    ).toBe(true);
   });
 });

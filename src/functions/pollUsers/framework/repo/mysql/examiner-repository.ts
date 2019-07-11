@@ -53,5 +53,5 @@ export const getActiveExaminers = async (
     [moment().format('YYYY-MM-DD')],
   );
 
-  return buildStaffDetailsFromQueryResult(queryResult);
+  return buildStaffDetailsFromQueryResult(queryResult, universalPermissionPeriods);
 };
