@@ -3,6 +3,7 @@ import { config } from '../../config';
 import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { StaffDetail } from '../../../../../common/application/models/staff-details';
+import { ExaminerRole } from '../../../domain/constants/examiner-roles';
 
 export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
   const configuration = config();
@@ -37,7 +38,7 @@ export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
   const staffDetails = [];
   queryResult.map((row) => {
     // may change in the future if we wish to interact with more TARS data
-    const role = row.test_centre_manager_ind === 1 ? 'LDTM' : 'DE';
+    const role = row.test_centre_manager_ind === 1 ? ExaminerRole.LDTM : ExaminerRole.DE;
     staffDetails.push(new StaffDetail(row.staff_number, role));
   });
 
