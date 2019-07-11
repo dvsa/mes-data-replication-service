@@ -44,7 +44,7 @@ export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
     from EXAMINER e
       left join EXAMINER_STATUS es on es.individual_id = e.individual_id
       left join EXAMINER_GRADE eg on eg.examiner_grade_code = e.grade_code
-      left join DES_TEST_CRITERIA dtc on dtc.examiner_staff_number = e.staff_number
+      left join DES_TEST_CRITERIA dtc on dtc.examiner_staff_number = e.staff_number or dtc.examiner_staff_number is null
     where IFNULL(e.grade_code, 'ZZZ') <> 'DELE'
     and IFNULL(es.end_date, '4000-01-01') >= ?
     `,
