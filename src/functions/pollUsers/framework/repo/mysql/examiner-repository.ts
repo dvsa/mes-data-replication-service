@@ -2,7 +2,7 @@ import { query } from '../../../../../common/framework/mysql/database';
 import { config } from '../../config';
 import * as mysql from 'mysql2';
 import * as moment from 'moment';
-import { StaffDetail } from '../../../../../common/application/models/staff-details';
+import { StaffDetail, TestPermissionPeriod } from '../../../../../common/application/models/staff-details';
 import { buildStaffDetailsFromQueryResult } from './examiner-record-row-mapper';
 
 export interface ExaminerQueryRecord {
@@ -14,7 +14,9 @@ export interface ExaminerQueryRecord {
   with_effect_to: Date | null;
 }
 
-export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
+export const getActiveExaminers = async (
+  universalPermissionPeriods: TestPermissionPeriod[],
+): Promise<StaffDetail[]> => {
   const configuration = config();
 
   const connection = mysql.createConnection({
@@ -44,7 +46,7 @@ export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
     from EXAMINER e
       left join EXAMINER_STATUS es on es.individual_id = e.individual_id
       left join EXAMINER_GRADE eg on eg.examiner_grade_code = e.grade_code
-      left join DES_TEST_CRITERIA dtc on dtc.examiner_staff_number = e.staff_number or dtc.examiner_staff_number is null
+      left join DES_TEST_CRITERIA dtc on dtc.examiner_staff_number = e.staff_number
     where IFNULL(e.grade_code, 'ZZZ') <> 'DELE'
     and IFNULL(es.end_date, '4000-01-01') >= ?
     `,
