@@ -19,20 +19,82 @@ describe('examiner cache reconciler', () => {
 
   describe('reconcileActiveAndCachedExaminers', () => {
     it('should issue writes to the cache for every active examiner not already cached', async () => {
-      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.LDTM), new StaffDetail('2', ExaminerRole.DE)];
+      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.DE), new StaffDetail('2', ExaminerRole.LDTM)];
+      const cachedStaffDetails: StaffDetail[] = [];
       const cachedStaffNumbers: string[] = [];
-      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffNumbers);
+      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
 
       moqCacheStaffNumbers.verify(x => x(It.isValue(activeStaffDetails)), Times.once());
       moqUncacheStaffNumbers.verify(x => x(It.isValue(cachedStaffNumbers)), Times.once());
     });
 
     it('should cache active examiners not already in the cache and uncache those that are cached but not active', async () => {
-      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.LDTM)];
-      const cachedStaffNumbers = ['1', '2', '3'];
-      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffNumbers);
+      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.DE)];
+      const cachedStaffDetails = [
+        new StaffDetail('1', ExaminerRole.DE),
+        new StaffDetail('2', ExaminerRole.LDTM),
+        new StaffDetail('3', ExaminerRole.DE),
+      ];
+      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
       moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
       moqUncacheStaffNumbers.verify(x => x(It.isValue(['2', '3'])), Times.once());
+    });
+  });
+
+  describe('test permission handling', () => {
+    it('should re-cache any examiner whose test permissions have changed', async () => {
+      const cachedStaffDetails = [
+        new StaffDetail('1', ExaminerRole.DE, [
+          {
+            testCategory: 'B',
+            from: '1970-01-01',
+            to: null,
+          },
+        ]),
+      ];
+      const activeStaffDetails = [
+        new StaffDetail('1', ExaminerRole.DE, [
+          {
+            testCategory: 'B',
+            from: '1970-01-02',
+            to: null,
+          },
+        ]),
+      ];
+
+      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
+
+      moqCacheStaffNumbers.verify(x => x(It.isValue(activeStaffDetails)), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+    });
+
+    it('should not re-cache an examiner if all their staff details are identical', async () => {
+      const staffDetails = [
+        new StaffDetail('1', ExaminerRole.DE, [
+          {
+            testCategory: 'B',
+            from: '1970-01-01',
+            to: null,
+          },
+        ]),
+        new StaffDetail('2', ExaminerRole.LDTM, [
+          {
+            testCategory: 'A',
+            from: '1970-01-01',
+            to: '1970-01-05',
+          },
+          {
+            testCategory: 'A',
+            from: '1971-01-01',
+            to: '1971-01-05',
+          },
+        ]),
+      ];
+
+      await reconcileActiveAndCachedExaminers(staffDetails, staffDetails);
+
+      moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
     });
   });
 });

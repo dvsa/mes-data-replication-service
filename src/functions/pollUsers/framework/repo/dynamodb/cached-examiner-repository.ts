@@ -20,11 +20,10 @@ const getDynamoClient = () => {
   return dynamoDocumentClient;
 };
 
-export const getCachedExaminers = async (): Promise<string[]> => {
+export const getCachedExaminers = async (): Promise<StaffDetail[]> => {
   const ddb = getDynamoClient();
   const scanParams = {
     TableName: config().usersDynamodbTableName,
-    ProjectionExpression: 'staffNumber',
   };
   const scanResult = await ddb.scan(scanParams).promise();
 
@@ -32,7 +31,7 @@ export const getCachedExaminers = async (): Promise<string[]> => {
     return [];
   }
 
-  return scanResult.Items.map(item => item.staffNumber);
+  return scanResult.Items as StaffDetail[];
 };
 
 export const cacheStaffDetails = async (staffDetail: StaffDetail[]): Promise<void> => {
