@@ -5,6 +5,7 @@ import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cached-
 import * as examinerCacheReconciler from '../examiner-cache-reconciler';
 import { StaffDetail, TestPermissionPeriod } from '../../../../common/application/models/staff-details';
 import * as universalPermissionsRepository from '../../framework/repo/mysql/universal-permissions-repository';
+import { ExaminerRole } from '../constants/examiner-roles';
 
 /* tslint:disable:max-line-length */
 describe('transferUsers module', () => {
@@ -34,13 +35,13 @@ describe('transferUsers module', () => {
         },
       ];
       const activeStaffDetails = [
-        new StaffDetail('1', false, univeralPermissionPeriods),
-        new StaffDetail('2', true, univeralPermissionPeriods),
+        new StaffDetail('1', ExaminerRole.DE, univeralPermissionPeriods),
+        new StaffDetail('2', ExaminerRole.LDTM, univeralPermissionPeriods),
       ];
       const cachedStaffDetails = [
-        new StaffDetail('1', false, univeralPermissionPeriods),
-        new StaffDetail('2', true, univeralPermissionPeriods),
-        new StaffDetail('5', false, univeralPermissionPeriods),
+        new StaffDetail('1', ExaminerRole.DE, univeralPermissionPeriods),
+        new StaffDetail('2', ExaminerRole.LDTM, univeralPermissionPeriods),
+        new StaffDetail('5', ExaminerRole.DE, univeralPermissionPeriods),
       ];
       moqExaminerRepo.setup(x => x(It.isValue(univeralPermissionPeriods))).returns(() => Promise.resolve(activeStaffDetails));
       moqCachedExaminerRepo.setup(x => x()).returns(() => Promise.resolve(cachedStaffDetails));

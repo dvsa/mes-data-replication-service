@@ -3,6 +3,7 @@ import {
   StaffDetail, TestPermissionPeriod,
 } from '../../../../../common/application/models/staff-details';
 import { groupBy } from 'lodash';
+import { ExaminerRole } from '../../../domain/constants/examiner-roles';
 
 export const buildStaffDetailsFromQueryResult = (
   queryResult: ExaminerQueryRecord[],
@@ -13,7 +14,7 @@ export const buildStaffDetailsFromQueryResult = (
   return Object.values(queryResultsByExaminer).reduce(
     (staffDetailsAcc, recordsForExaminer) => {
       const staffNumber = recordsForExaminer[0].staff_number;
-      const isLDTM = recordsForExaminer[0].test_centre_manager_ind === 1;
+      const role = recordsForExaminer[0].test_centre_manager_ind === 1 ? ExaminerRole.LDTM : ExaminerRole.DE;
 
       const formatDate = (date: Date) => date === null ? null : date.toISOString().split('T')[0];
 
@@ -28,7 +29,7 @@ export const buildStaffDetailsFromQueryResult = (
         ]
         : universalTestPermissions;
 
-      return [...staffDetailsAcc, new StaffDetail(staffNumber, isLDTM, testPermissionPeriods)];
+      return [...staffDetailsAcc, new StaffDetail(staffNumber, role, testPermissionPeriods)];
     },
     [] as StaffDetail[]);
 };

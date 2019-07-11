@@ -3,6 +3,7 @@ import { reconcileActiveAndCachedExaminers } from '../examiner-cache-reconciler'
 import { Mock, It, Times } from 'typemoq';
 import * as cachedExaminerRepository from '../../framework/repo/dynamodb/cached-examiner-repository';
 import { StaffDetail } from '../../../../common/application/models/staff-details';
+import { ExaminerRole } from '../constants/examiner-roles';
 
 describe('examiner cache reconciler', () => {
   const moqCacheStaffNumbers = Mock.ofInstance(cachedExaminerRepository.cacheStaffDetails);
@@ -18,7 +19,7 @@ describe('examiner cache reconciler', () => {
 
   describe('reconcileActiveAndCachedExaminers', () => {
     it('should issue writes to the cache for every active examiner not already cached', async () => {
-      const activeStaffDetails = [new StaffDetail('1', false), new StaffDetail('2', true)];
+      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.DE), new StaffDetail('2', ExaminerRole.LDTM)];
       const cachedStaffDetails: StaffDetail[] = [];
       const cachedStaffNumbers: string[] = [];
       await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
@@ -28,11 +29,11 @@ describe('examiner cache reconciler', () => {
     });
 
     it('should cache active examiners not already in the cache and uncache those that are cached but not active', async () => {
-      const activeStaffDetails = [new StaffDetail('1', false)];
+      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.DE)];
       const cachedStaffDetails = [
-        new StaffDetail('1', false),
-        new StaffDetail('2', true),
-        new StaffDetail('3', false),
+        new StaffDetail('1', ExaminerRole.DE),
+        new StaffDetail('2', ExaminerRole.LDTM),
+        new StaffDetail('3', ExaminerRole.DE),
       ];
       await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
       moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
@@ -43,7 +44,7 @@ describe('examiner cache reconciler', () => {
   describe('test permission handling', () => {
     it('should re-cache any examiner whose test permissions have changed', async () => {
       const cachedStaffDetails = [
-        new StaffDetail('1', false, [
+        new StaffDetail('1', ExaminerRole.DE, [
           {
             testCategory: 'B',
             from: '1970-01-01',
@@ -52,7 +53,7 @@ describe('examiner cache reconciler', () => {
         ]),
       ];
       const activeStaffDetails = [
-        new StaffDetail('1', false, [
+        new StaffDetail('1', ExaminerRole.DE, [
           {
             testCategory: 'B',
             from: '1970-01-02',
@@ -69,14 +70,14 @@ describe('examiner cache reconciler', () => {
 
     it('should not re-cache an examiner if all their staff details are identical', async () => {
       const staffDetails = [
-        new StaffDetail('1', false, [
+        new StaffDetail('1', ExaminerRole.DE, [
           {
             testCategory: 'B',
             from: '1970-01-01',
             to: null,
           },
         ]),
-        new StaffDetail('2', true, [
+        new StaffDetail('2', ExaminerRole.LDTM, [
           {
             testCategory: 'A',
             from: '1970-01-01',

@@ -41,8 +41,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: staffNumber
             AttributeType: S
-          - AttributeName: isLDTM
-            AttributeType: Boolean
+          - AttributeName: role
+            AttributeType: S
         KeySchema:
           - AttributeName: staffNumber
             KeyType: HASH

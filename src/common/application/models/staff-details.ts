@@ -1,15 +1,15 @@
 export class StaffDetail {
   staffNumber: string;
-  isLDTM: boolean;
+  role: string;
   testPermissionPeriods: TestPermissionPeriod[];
 
   constructor(
     staffNumber: string,
-    isLDTM: boolean,
+    role: string,
     testPermissionPeriods: TestPermissionPeriod[] = [],
   ) {
     this.staffNumber = staffNumber;
-    this.isLDTM = isLDTM;
+    this.role = role;
     this.testPermissionPeriods = testPermissionPeriods;
   }
 }

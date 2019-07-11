@@ -1,6 +1,7 @@
 import { buildStaffDetailsFromQueryResult } from '../examiner-record-row-mapper';
 import { StaffDetail, TestPermissionPeriod } from '../../../../../../common/application/models/staff-details';
 import { isEqual } from 'lodash';
+import { ExaminerRole } from '../../../../domain/constants/examiner-roles';
 
 describe('ExmainerRecordRowMapper', () => {
   const examinerRecords = [
@@ -61,8 +62,8 @@ describe('ExmainerRecordRowMapper', () => {
   it('should determine whether each examiner is an LDTM or not', () => {
     const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
-    expect(result[0].isLDTM).toBe(false);
-    expect(result[1].isLDTM).toBe(true);
+    expect(result[0].role).toBe(ExaminerRole.DE);
+    expect(result[1].role).toBe(ExaminerRole.LDTM);
   });
 
   it('should add a TestPermissionPeriod object for each category/date qualified record for the examiner', () => {
@@ -96,7 +97,7 @@ describe('ExmainerRecordRowMapper', () => {
 
     const result = buildStaffDetailsFromQueryResult([permissionlessExaminerRecord], []);
 
-    expect(result).toEqual([new StaffDetail('01', false)]);
+    expect(result).toEqual([new StaffDetail('01', ExaminerRole.DE)]);
   });
 
   it('should include universal permissions in each examiners StaffDetails', () => {
