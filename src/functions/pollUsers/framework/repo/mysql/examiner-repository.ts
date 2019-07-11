@@ -36,9 +36,9 @@ export const getActiveExaminers = async (): Promise<StaffDetail[]> => {
 
   const staffDetails = [];
   queryResult.map((row) => {
-    // map isLDTM to a strict boolean value
-    const isLDTM = row.test_centre_manager_ind === 1 ? true : false;
-    staffDetails.push(new StaffDetail(row.staff_number, isLDTM));
+    // may change in the future if we wish to interact with more TARS data
+    const role = row.test_centre_manager_ind === 1 ? 'LDTM' : 'DE';
+    staffDetails.push(new StaffDetail(row.staff_number, role));
   });
 
   return staffDetails;

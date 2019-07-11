@@ -18,7 +18,7 @@ describe('examiner cache reconciler', () => {
 
   describe('reconcileActiveAndCachedExaminers', () => {
     it('should issue writes to the cache for every active examiner not already cached', async () => {
-      const activeStaffDetails = [new StaffDetail('1', false), new StaffDetail('2', true)];
+      const activeStaffDetails = [new StaffDetail('1', 'LDTM'), new StaffDetail('2', 'DE')];
       const cachedStaffNumbers: string[] = [];
       await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffNumbers);
 
@@ -27,7 +27,7 @@ describe('examiner cache reconciler', () => {
     });
 
     it('should cache active examiners not already in the cache and uncache those that are cached but not active', async () => {
-      const activeStaffDetails = [new StaffDetail('1', false)];
+      const activeStaffDetails = [new StaffDetail('1', 'LDTM')];
       const cachedStaffNumbers = ['1', '2', '3'];
       await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffNumbers);
       moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());

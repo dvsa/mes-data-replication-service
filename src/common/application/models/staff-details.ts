@@ -1,9 +1,9 @@
 export class StaffDetail {
   staffNumber: string;
-  isLDTM: boolean;
+  role: string;
 
-  constructor(staffNumber: string, isLDTM: boolean) {
+  constructor(staffNumber: string, role: string) {
     this.staffNumber = staffNumber;
-    this.isLDTM = isLDTM;
+    this.role = role;
   }
 }

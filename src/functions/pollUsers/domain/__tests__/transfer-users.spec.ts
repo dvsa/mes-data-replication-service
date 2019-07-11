@@ -22,7 +22,7 @@ describe('transferUsers module', () => {
   });
   describe('transferUsers', () => {
     it('should retrieve all the active examiners in the replica, all the IDs in the cache and pass them to the reconciler', async () => {
-      const activeStaffDetails = [new StaffDetail('1', false), new StaffDetail('2', true)];
+      const activeStaffDetails = [new StaffDetail('1', 'LDTM'), new StaffDetail('2', 'DE')];
       const cachedStaffNumbers = ['1', '2', '5'];
       moqExaminerRepo.setup(x => x()).returns(() => Promise.resolve(activeStaffDetails));
       moqCachedExaminerRepo.setup(x => x()).returns(() => Promise.resolve(cachedStaffNumbers));
