@@ -104,3 +104,16 @@ VALUES
 	(3,'2019-12-02 00:00:00',1),
 	(3,'2019-12-25 00:00:00',1),
 	(3,'2019-12-26 00:00:00',1);
+
+INSERT INTO DES_TEST_CRITERIA
+	SELECT
+		NULL, "B", "2019-01-01 00:00:00", NULL
+	FROM DUAL
+	WHERE NOT EXISTS(
+		SELECT test_category_ref, with_effect_from
+		FROM DES_TEST_CRITERIA
+		WHERE examiner_staff_number IS NULL
+		AND test_category_ref = 'B'
+		AND with_effect_from = '2019-01-01 00:00:00'
+		AND with_effect_to IS NULL
+	);
