@@ -1,7 +1,7 @@
 import {
   uncacheStaffNumbers, cacheStaffDetails,
 } from '../framework/repo/dynamodb/cached-examiner-repository';
-import { StaffDetail } from '../../../common/application/models/staff-details';
+import { StaffDetail, TestPermissionPeriod } from '../../../common/application/models/staff-details';
 import { isEqual } from 'lodash';
 
 export const reconcileActiveAndCachedExaminers = async (
@@ -35,5 +35,23 @@ const staffDetailEligibleForCache = (staffDetail: StaffDetail, cachedStaffDetail
     return true;
   }
 
-  return !isEqual(staffDetail, oldStaffDetailForExaminer);
+  // Simple isEqual comparision won't work here, probably because of differing prototypes
+  return !staffDetailIsEqual(staffDetail, oldStaffDetailForExaminer);
+};
+
+const staffDetailIsEqual = (sd1: StaffDetail, sd2: StaffDetail): boolean => {
+  return sd1.staffNumber === sd2.staffNumber
+    && sd1.role === sd2.role
+    && testPermissionPeriodsMatch(sd1.testPermissionPeriods, sd2.testPermissionPeriods);
+};
+
+const testPermissionPeriodsMatch = (tp1: TestPermissionPeriod[], tp2: TestPermissionPeriod[]): boolean => {
+  let allMatch = true;
+  for (const compareFromPeriod of tp1) {
+    if (tp2.find(compareToPeriod => isEqual(compareToPeriod, compareFromPeriod)) === undefined) {
+      allMatch = false;
+      break;
+    }
+  }
+  return allMatch;
 };
