@@ -10,6 +10,7 @@ import { ExaminerPersonalCommitment } from '../domain/examiner-personal-commitme
 import { AllDatasets } from '../domain/all-datasets';
 import { compressJournal } from '../application/journal-compressor';
 import { ExaminerRecord } from '../domain/examiner-record';
+import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets): JournalRecord[] => {
   const testSlotsByExaminer: { [examinerId: number]: ExaminerTestSlot[] } = groupBy(
@@ -33,9 +34,15 @@ export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets
     (personalCommitment: ExaminerPersonalCommitment) => personalCommitment.examinerId,
   );
 
-  const journals: JournalRecord[] = examiners.map((examiner) => {
+  const journals: (JournalRecord | null)[] = examiners.map((examiner) => {
     const individualId = examiner.individual_id;
     const staffNumber = Number.parseInt(examiner.staff_number, 10);
+
+    if (Number.isNaN(staffNumber)) {
+      warn('Omitting journal for non-numeric staff number', staffNumber);
+      return null;
+    }
+
     let journal: ExaminerWorkSchedule = {
       examiner: {
         individualId,
@@ -56,7 +63,7 @@ export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets
     return { staffNumber, hash, lastUpdatedAt, journal: compressedJournal };
   });
 
-  return journals;
+  return journals.filter(journal => journal !== null);
 };
 
 const enrichJournalWithDataset = (individualId: string) => function <D>(

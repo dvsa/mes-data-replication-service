@@ -113,7 +113,23 @@ describe('buildJournals', () => {
     expect(result[1].journal).toEqual(Buffer.from('secondhash'));
   });
 
-  xit('should omit any journals where a numeric staff number cannot be derived', () => {
-    fail();
+  it('should omit any journals where a numeric staff number cannot be derived', () => {
+    const nonNumericExaminers = [
+      {
+        individual_id: 111,
+        staff_number: 'o1234',
+      },
+    ];
+    const datasets: AllDatasets = {
+      testSlots: [{ examinerId: 111, testSlot: { slotDetail: { slotId: 999 } } }],
+      nonTestActivities: [{ examinerId: 111, nonTestActivity: { slotDetail: { slotId: 888 } } }],
+      personalCommitments: [{ examinerId: 111, personalCommitment: { commitmentId: 777 } }],
+      advanceTestSlots: [{ examinerId: 111, advanceTestSlot: { slotDetail: { slotId: 666 } } }],
+      deployments: [{ examinerId: 111, deployment: { deploymentId: 555 } }],
+    };
+
+    const result = buildJournals(nonNumericExaminers, datasets);
+
+    expect(result.length).toBe(0);
   });
 });
