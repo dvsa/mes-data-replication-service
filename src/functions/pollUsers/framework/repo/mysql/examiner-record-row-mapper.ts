@@ -11,7 +11,7 @@ export const buildStaffDetailsFromQueryResult = (
 ): StaffDetail[] => {
   const queryResultsByExaminer = groupBy(queryResult, record => record.staff_number);
 
-  const res = Object.values(queryResultsByExaminer).reduce(
+  return Object.values(queryResultsByExaminer).reduce(
     (staffDetailsAcc, recordsForExaminer) => {
       const staffNumber = trimLeadingZeroes(recordsForExaminer[0].staff_number);
 
@@ -37,7 +37,6 @@ export const buildStaffDetailsFromQueryResult = (
       return [...staffDetailsAcc, new StaffDetail(staffNumber, role, testPermissionPeriods)];
     },
     [] as StaffDetail[]);
-  return res;
 };
 
 const examinerHasPermissions = (examinerRecords: ExaminerQueryRecord[]): boolean => {

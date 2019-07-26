@@ -46,12 +46,6 @@ const staffDetailIsEqual = (sd1: StaffDetail, sd2: StaffDetail): boolean => {
 };
 
 const testPermissionPeriodsMatch = (tp1: TestPermissionPeriod[], tp2: TestPermissionPeriod[]): boolean => {
-  let allMatch = true;
-  for (const compareFromPeriod of tp1) {
-    if (tp2.find(compareToPeriod => isEqual(compareToPeriod, compareFromPeriod)) === undefined) {
-      allMatch = false;
-      break;
-    }
-  }
-  return allMatch;
+  return tp1.every(compareFromPeriod =>
+    tp2.find(compareToPeriod => isEqual(compareFromPeriod, compareToPeriod)) !== undefined);
 };
