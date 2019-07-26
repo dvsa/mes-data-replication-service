@@ -4,6 +4,7 @@ import {
 } from '../../../../../common/application/models/staff-details';
 import { groupBy } from 'lodash';
 import { ExaminerRole } from '../../../domain/constants/examiner-roles';
+import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export const buildStaffDetailsFromQueryResult = (
   queryResult: ExaminerQueryRecord[],
@@ -13,9 +14,11 @@ export const buildStaffDetailsFromQueryResult = (
 
   return Object.values(queryResultsByExaminer).reduce(
     (staffDetailsAcc, recordsForExaminer) => {
-      const staffNumber = trimLeadingZeroes(recordsForExaminer[0].staff_number);
+      const recordStaffNumber = recordsForExaminer[0].staff_number;
+      const staffNumber = trimLeadingZeroes(recordStaffNumber);
 
       if (staffNumber === null) {
+        warn('Omitting user record for non-numeric staff number', recordStaffNumber);
         return [...staffDetailsAcc];
       }
 
