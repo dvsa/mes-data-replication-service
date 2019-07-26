@@ -16,10 +16,10 @@ describe('JournalRepository', () => {
 
   describe('getStaffNumbersWithHashes', () => {
 
-    const hash1 = { staffNumber: '1', hash: 'a' };
-    const hash2 = { staffNumber: '2', hash: 'b' };
-    const hash3 = { staffNumber: '3', hash: 'c' };
-    const hash4 = { staffNumber: '4', hash: 'd' };
+    const hash1 = { staffNumber: 1, hash: 'a' };
+    const hash2 = { staffNumber: 2, hash: 'b' };
+    const hash3 = { staffNumber: 3, hash: 'c' };
+    const hash4 = { staffNumber: 4, hash: 'd' };
 
     it('should call dynamo then populate cache if cache invalid', async () => {
       spyOn(JournalRepository.journalHashesCache, 'isValid').and.returnValue(false);
@@ -87,7 +87,7 @@ describe('JournalRepository', () => {
       spyOn(JournalRepository, 'now').and.callFake(() => { return sufficientTime; });
 
       AWSMock.mock('DynamoDB.DocumentClient', 'batchWrite', (params, cb) => {
-        const ddbResp =  {
+        const ddbResp = {
           UnprocessedItems: {},
           ConsumedCapacity: [
             {
@@ -109,7 +109,7 @@ describe('JournalRepository', () => {
       spyOn(JournalRepository, 'now').and.callFake(() => { return sufficientTime; });
 
       AWSMock.mock('DynamoDB.DocumentClient', 'batchWrite', (params, cb) => {
-        const ddbResp =  {
+        const ddbResp = {
           UnprocessedItems: {},
           ConsumedCapacity: [
             {
@@ -128,11 +128,11 @@ describe('JournalRepository', () => {
 
     it('should exclude any failed writes from the cache', async () => {
       const { journals, hashes } = generateDummyJournals(10); // less than batch size
-      const expectedHashes = hashes.filter((hash) => { hash.staffNumber === '2000'; }); // examiner 2000 failed
+      const expectedHashes = hashes.filter((hash) => { hash.staffNumber === 2000; }); // examiner 2000 failed
       spyOn(JournalRepository, 'now').and.callFake(() => { return sufficientTime; });
 
       AWSMock.mock('DynamoDB.DocumentClient', 'batchWrite', (params, cb) => {
-        const ddbResp =  {
+        const ddbResp = {
           UnprocessedItems: { // examiner 2000 failed...
             journals: [
               {
@@ -185,14 +185,14 @@ const generateDummyJournals = (count: number): { journals: JournalRecord[], hash
 
   for (let index = 0; index < count; index += 1) {
     journals[index] = {
-      staffNumber: (index * 1000).toString(),
+      staffNumber: (index * 1000),
       hash: (index * 10000).toString(),
       lastUpdatedAt: index * 100000,
       journal: Buffer.from('aabbcc'),
     };
 
     hashes[index] = {
-      staffNumber: (index * 1000).toString(),
+      staffNumber: (index * 1000),
       hash: (index * 10000).toString(),
     };
   }

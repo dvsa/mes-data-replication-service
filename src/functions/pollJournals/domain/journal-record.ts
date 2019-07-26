@@ -1,7 +1,5 @@
-import { ExaminerWorkSchedule } from '@dvsa/mes-journal-schema';
-
 export interface JournalRecord {
-  staffNumber: string;
+  staffNumber: number;
   hash: string;
   lastUpdatedAt: number;
   journal: Buffer;

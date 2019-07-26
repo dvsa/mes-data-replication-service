@@ -9,7 +9,7 @@ const examiners = [
   },
   {
     individual_id: 333,
-    staff_number: '444',
+    staff_number: '00444',
   },
 ];
 
@@ -35,8 +35,8 @@ describe('buildJournals', () => {
     const result = buildJournals(examiners, datasets);
 
     expect(result.length).toBe(2);
-    expect(result[0].staffNumber).toBe('222');
-    expect(result[1].staffNumber).toBe('444');
+    expect(result[0].staffNumber).toBe(222);
+    expect(result[1].staffNumber).toBe(444);
   });
 
   it('should merge datasets for an examiner into a single journal', () => {
@@ -111,5 +111,9 @@ describe('buildJournals', () => {
     expect(result.length).toBe(2);
     expect(result[0].journal).toEqual(Buffer.from('firsthash'));
     expect(result[1].journal).toEqual(Buffer.from('secondhash'));
+  });
+
+  xit('should omit any journals where a numeric staff number cannot be derived', () => {
+    fail();
   });
 });

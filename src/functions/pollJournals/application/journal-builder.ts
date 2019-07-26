@@ -35,11 +35,11 @@ export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets
 
   const journals: JournalRecord[] = examiners.map((examiner) => {
     const individualId = examiner.individual_id;
-    const staffNumber = examiner.staff_number.toString();
+    const staffNumber = Number.parseInt(examiner.staff_number, 10);
     let journal: ExaminerWorkSchedule = {
       examiner: {
-        staffNumber,
         individualId,
+        staffNumber: staffNumber.toString(),
       },
     };
 

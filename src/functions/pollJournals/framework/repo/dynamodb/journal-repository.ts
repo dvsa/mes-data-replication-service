@@ -133,11 +133,11 @@ const submitSaveRequests = async (
     const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
     requestRuntimes = [...requestRuntimes, duration];
 
-    const failedStaffNumbers = [] as string[];
+    const failedStaffNumbers: number[] = [];
     if (get(result, `UnprocessedItems.${tableName}`)) {
       result.UnprocessedItems[tableName].forEach((writeRequest) => {
-        const staffNumber = get(writeRequest, 'PutRequest.Item.staffNumber', '0') as string;
-        if (staffNumber !== '0') {
+        const staffNumber = Number.parseInt(get(writeRequest, 'PutRequest.Item.staffNumber', 0), 10);
+        if (staffNumber !== 0 && !Number.isNaN(staffNumber)) {
           failedStaffNumbers.push(staffNumber);
         }
       });

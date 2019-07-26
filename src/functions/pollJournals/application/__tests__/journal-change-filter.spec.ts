@@ -37,12 +37,12 @@ describe('JournalChangeFilter', () => {
       expect(result).toEqual(journalsToFilter);
     });
 
-    it('should retain all journals when every the hash has changed', async () => {
+    it('should retain all journals when every hash has changed', async () => {
       const journalsToFilter = [dummyJournal1.object, dummyJournal2.object];
       moqGetStaffNumberHashMappings.setup(x => x(It.isAny())).returns(() => Promise.resolve(
         [
-          { staffNumber: '123', hash: 'abc999' },
-          { staffNumber: '456', hash: 'abc888' },
+          { staffNumber: 123, hash: 'abc999' },
+          { staffNumber: 456, hash: 'abc888' },
         ],
       ));
 
@@ -56,9 +56,9 @@ describe('JournalChangeFilter', () => {
       const journalsToFilter = [dummyJournal1.object, dummyJournal2.object, dummyJournal3.object];
       moqGetStaffNumberHashMappings.setup(x => x(It.isAny())).returns(() => Promise.resolve(
         [
-          { staffNumber: '123', hash: 'abc123' },
-          { staffNumber: '456', hash: 'abc456' },
-          { staffNumber: '789', hash: 'abc789' },
+          { staffNumber: 123, hash: 'abc123' },
+          { staffNumber: 456, hash: 'abc456' },
+          { staffNumber: 789, hash: 'abc789' },
         ],
       ));
 
@@ -71,9 +71,9 @@ describe('JournalChangeFilter', () => {
       const journalsToFilter = [dummyJournal1.object, dummyJournal2.object, dummyJournal3.object];
       moqGetStaffNumberHashMappings.setup(x => x(It.isAny())).returns(() => Promise.resolve(
         [
-          { staffNumber: '123', hash: 'abc123' },
-          { staffNumber: '456', hash: 'abc222' },
-          { staffNumber: '789', hash: 'abc789' },
+          { staffNumber: 123, hash: 'abc123' },
+          { staffNumber: 456, hash: 'abc222' },
+          { staffNumber: 789, hash: 'abc789' },
         ],
       ));
 

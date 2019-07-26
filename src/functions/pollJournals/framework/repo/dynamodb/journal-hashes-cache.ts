@@ -8,7 +8,7 @@ import { debug } from 'util';
 export class JournalHashesCache {
   pollerFrequency: number;
   previousStartTime: Date;
-  hashes: Map<string, Partial<JournalRecord>>;
+  hashes: Map<number, Partial<JournalRecord>>;
 
   /**
    * Creates a new instance.
@@ -64,7 +64,7 @@ export class JournalHashesCache {
        */
       const timeDifference = moment.duration(moment(currentStartTime).diff(this.previousStartTime)).asSeconds();
 
-      // use a 20% tollerance
+      // use a 20% tolerance
       const maxDifference = this.pollerFrequency * 1.2;
       const minDifference = this.pollerFrequency * 0.8;
 
@@ -78,7 +78,7 @@ export class JournalHashesCache {
    */
   debug() {
     console.log(`map has ${this.hashes.size} entries`);
-    this.hashes.forEach((value: Partial<JournalRecord>, key: string) => {
+    this.hashes.forEach((value: Partial<JournalRecord>, key: number) => {
       console.log(`map entry ${key} -> ${JSON.stringify(value)}`);
     });
   }
