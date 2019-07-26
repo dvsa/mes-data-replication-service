@@ -47,8 +47,8 @@ export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets
 
     let journal: ExaminerWorkSchedule = {
       examiner: {
+        staffNumber,
         individualId,
-        staffNumber: numericStaffNumber.toString(),
       },
     };
 
