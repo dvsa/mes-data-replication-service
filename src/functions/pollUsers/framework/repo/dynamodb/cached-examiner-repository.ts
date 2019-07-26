@@ -2,6 +2,7 @@ import { config as awsConfig, Credentials, DynamoDB } from 'aws-sdk';
 import { config } from '../../../../pollUsers/framework/config';
 import { chunk } from 'lodash';
 import { StaffDetail } from '../../../../../common/application/models/staff-details';
+import { customMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 let dynamoDocumentClient: DynamoDB.DocumentClient;
 const getDynamoClient = () => {
@@ -35,7 +36,6 @@ export const getCachedExaminers = async (): Promise<StaffDetail[]> => {
 };
 
 export const cacheStaffDetails = async (staffDetail: StaffDetail[]): Promise<void> => {
-  console.log(`Caching ${staffDetail.length} staff numbers...`);
   const ddb = getDynamoClient();
   const tableName = config().usersDynamodbTableName;
 
@@ -57,16 +57,10 @@ export const cacheStaffDetails = async (staffDetail: StaffDetail[]): Promise<voi
 
   await Promise.all(writePromises);
 
-  console.log(JSON.stringify({
-    service: 'users-poller',
-    name: 'UsersAdded',
-    description: 'Number of Users added to Dynamo',
-    value: staffDetail.length,
-  }));
+  customMetric('UsersAdded', 'Number of Users added to Dynamo', staffDetail.length);
 };
 
 export const uncacheStaffNumbers = async (staffNumbers: string[]): Promise<void> => {
-  console.log(`Uncaching ${staffNumbers.length} staff numbers...`);
   const ddb = getDynamoClient();
   const tableName = config().usersDynamodbTableName;
 
@@ -82,10 +76,5 @@ export const uncacheStaffNumbers = async (staffNumbers: string[]): Promise<void>
 
   await Promise.all(deletePromises);
 
-  console.log(JSON.stringify({
-    service: 'users-poller',
-    name: 'UsersRemoved',
-    description: 'Number of Users removed from Dynamo',
-    value: staffNumbers.length,
-  }));
+  customMetric('UsersRemoved', 'Number of Users removed from Dynamo', staffNumbers.length);
 };

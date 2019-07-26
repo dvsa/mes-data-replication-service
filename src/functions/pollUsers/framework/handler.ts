@@ -4,9 +4,11 @@ import Response from '../../../common/application/api/Response';
 import { bootstrapConfig } from '../../pollUsers/framework/config';
 import { transferUsers } from '../domain/transfer-users';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
+import { bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
   try {
+    bootstrapLogging('users-poller', event);
     await bootstrapConfig();
     await transferUsers();
     return createResponse({});
