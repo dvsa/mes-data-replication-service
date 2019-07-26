@@ -36,17 +36,19 @@ export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets
 
   const journals: (JournalRecord | null)[] = examiners.map((examiner) => {
     const individualId = examiner.individual_id;
-    const staffNumber = Number.parseInt(examiner.staff_number, 10);
+    const numericStaffNumber = Number.parseInt(examiner.staff_number, 10);
 
-    if (Number.isNaN(staffNumber)) {
-      warn('Omitting journal for non-numeric staff number', staffNumber);
+    if (Number.isNaN(numericStaffNumber)) {
+      warn('Omitting journal for non-numeric staff number', numericStaffNumber);
       return null;
     }
+
+    const staffNumber = numericStaffNumber.toString();
 
     let journal: ExaminerWorkSchedule = {
       examiner: {
         individualId,
-        staffNumber: staffNumber.toString(),
+        staffNumber: numericStaffNumber.toString(),
       },
     };
 

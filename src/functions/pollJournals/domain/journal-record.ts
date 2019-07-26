@@ -1,5 +1,5 @@
 export interface JournalRecord {
-  staffNumber: number;
+  staffNumber: string;
   hash: string;
   lastUpdatedAt: number;
   journal: Buffer;

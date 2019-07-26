@@ -8,7 +8,7 @@ import { debug } from 'util';
 export class JournalHashesCache {
   pollerFrequency: number;
   previousStartTime: Date;
-  hashes: Map<number, Partial<JournalRecord>>;
+  hashes: Map<string, Partial<JournalRecord>>;
 
   /**
    * Creates a new instance.
@@ -78,7 +78,7 @@ export class JournalHashesCache {
    */
   debug() {
     console.log(`map has ${this.hashes.size} entries`);
-    this.hashes.forEach((value: Partial<JournalRecord>, key: number) => {
+    this.hashes.forEach((value: Partial<JournalRecord>, key: string) => {
       console.log(`map entry ${key} -> ${JSON.stringify(value)}`);
     });
   }

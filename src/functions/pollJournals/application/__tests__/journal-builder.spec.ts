@@ -35,8 +35,8 @@ describe('buildJournals', () => {
     const result = buildJournals(examiners, datasets);
 
     expect(result.length).toBe(2);
-    expect(result[0].staffNumber).toBe(222);
-    expect(result[1].staffNumber).toBe(444);
+    expect(result[0].staffNumber).toBe('222');
+    expect(result[1].staffNumber).toBe('444');
   });
 
   it('should merge datasets for an examiner into a single journal', () => {

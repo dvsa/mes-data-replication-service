@@ -17,12 +17,12 @@ describe('JournalHashesCache', () => {
   const subsequentTooLate = subsequentStartTime.clone().add({ seconds: pollerFrequency * 2 });
 
   const hash1 = {
-    staffNumber: 12345,
+    staffNumber: '12345',
     hash: 'aaabbb',
   } as Partial<JournalRecord>;
 
   const hash2 = {
-    staffNumber: 67890,
+    staffNumber: '67890',
     hash: 'cccddd',
   } as Partial<JournalRecord>;
 
