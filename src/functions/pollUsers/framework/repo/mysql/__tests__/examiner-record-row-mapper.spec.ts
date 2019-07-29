@@ -52,11 +52,11 @@ describe('ExmainerRecordRowMapper', () => {
     expect(result.length).toBe(2);
   });
 
-  it('should put the staff number from the query result into the StaffDetail object', () => {
+  it('should put the staff number from the query result into the StaffDetail object without leading zeroes', () => {
     const result = buildStaffDetailsFromQueryResult(examinerRecords, universalPermissions);
 
-    expect(result[0].staffNumber).toBe('01');
-    expect(result[1].staffNumber).toBe('02');
+    expect(result[0].staffNumber).toBe('1');
+    expect(result[1].staffNumber).toBe('2');
   });
 
   it('should determine whether each examiner is an LDTM or not', () => {
@@ -97,7 +97,7 @@ describe('ExmainerRecordRowMapper', () => {
 
     const result = buildStaffDetailsFromQueryResult([permissionlessExaminerRecord], []);
 
-    expect(result).toEqual([new StaffDetail('01', ExaminerRole.DE)]);
+    expect(result).toEqual([new StaffDetail('1', ExaminerRole.DE)]);
   });
 
   it('should include universal permissions in each examiners StaffDetails', () => {
@@ -111,5 +111,30 @@ describe('ExmainerRecordRowMapper', () => {
       result[1].testPermissionPeriods
         .some(permPeriod => isEqual(permPeriod, universalPermissions[0])),
     ).toBe(true);
+  });
+
+  it('should not generate a StaffDetail object for any examiner records with a non-numeric staff number', () => {
+    const nonNumericExaminerRecords = [
+      {
+        individual_id: 1,
+        staff_number: 'o3',
+        test_category_ref: 'B',
+        test_centre_manager_ind: 0,
+        with_effect_from: new Date('2019-07-05'),
+        with_effect_to: new Date('2019-07-12'),
+      },
+      {
+        individual_id: 1,
+        staff_number: 'o1',
+        test_category_ref: 'B',
+        test_centre_manager_ind: 0,
+        with_effect_from: new Date('2019-08-01'),
+        with_effect_to: null,
+      },
+    ];
+
+    const result = buildStaffDetailsFromQueryResult(nonNumericExaminerRecords, []);
+
+    expect(result.length).toBe(0);
   });
 });

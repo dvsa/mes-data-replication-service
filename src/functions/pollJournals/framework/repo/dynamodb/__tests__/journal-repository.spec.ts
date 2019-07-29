@@ -87,7 +87,7 @@ describe('JournalRepository', () => {
       spyOn(JournalRepository, 'now').and.callFake(() => { return sufficientTime; });
 
       AWSMock.mock('DynamoDB.DocumentClient', 'batchWrite', (params, cb) => {
-        const ddbResp =  {
+        const ddbResp = {
           UnprocessedItems: {},
           ConsumedCapacity: [
             {
@@ -109,7 +109,7 @@ describe('JournalRepository', () => {
       spyOn(JournalRepository, 'now').and.callFake(() => { return sufficientTime; });
 
       AWSMock.mock('DynamoDB.DocumentClient', 'batchWrite', (params, cb) => {
-        const ddbResp =  {
+        const ddbResp = {
           UnprocessedItems: {},
           ConsumedCapacity: [
             {
@@ -132,7 +132,7 @@ describe('JournalRepository', () => {
       spyOn(JournalRepository, 'now').and.callFake(() => { return sufficientTime; });
 
       AWSMock.mock('DynamoDB.DocumentClient', 'batchWrite', (params, cb) => {
-        const ddbResp =  {
+        const ddbResp = {
           UnprocessedItems: { // examiner 2000 failed...
             journals: [
               {

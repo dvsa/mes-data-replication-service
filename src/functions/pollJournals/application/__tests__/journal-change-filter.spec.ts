@@ -37,7 +37,7 @@ describe('JournalChangeFilter', () => {
       expect(result).toEqual(journalsToFilter);
     });
 
-    it('should retain all journals when every the hash has changed', async () => {
+    it('should retain all journals when every hash has changed', async () => {
       const journalsToFilter = [dummyJournal1.object, dummyJournal2.object];
       moqGetStaffNumberHashMappings.setup(x => x(It.isAny())).returns(() => Promise.resolve(
         [

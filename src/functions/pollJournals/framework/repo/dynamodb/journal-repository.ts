@@ -133,10 +133,10 @@ const submitSaveRequests = async (
     const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
     requestRuntimes = [...requestRuntimes, duration];
 
-    const failedStaffNumbers = [] as string[];
+    const failedStaffNumbers: string[] = [];
     if (get(result, `UnprocessedItems.${tableName}`)) {
       result.UnprocessedItems[tableName].forEach((writeRequest) => {
-        const staffNumber = get(writeRequest, 'PutRequest.Item.staffNumber', '0') as string;
+        const staffNumber = get(writeRequest, 'PutRequest.Item.staffNumber', '0');
         if (staffNumber !== '0') {
           failedStaffNumbers.push(staffNumber);
         }
