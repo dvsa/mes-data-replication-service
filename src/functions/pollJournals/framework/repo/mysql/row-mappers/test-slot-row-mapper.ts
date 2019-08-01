@@ -8,6 +8,7 @@ import {
   Address,
 } from '@dvsa/mes-journal-schema';
 import { formatDateToStartTime, formatDateToIso8601 } from '../../../../application/formatters/date-formatter';
+import { error } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Defines the possible rows that the test slot query can return.
@@ -157,7 +158,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
           break;
 
         default:
-          console.log(`Invalid Gearbox Code ${row.gearbox_type} for app id ${row.app_id}`);
+          error(`Invalid Gearbox Code ${row.gearbox_type} for app id ${row.app_id}`);
       }
     }
 

@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { ExaminerDeployment } from '../../../domain/examiner-deployment';
 import { mapRow } from './row-mappers/deployment-row-mapper';
 import { query } from '../../../../../common/framework/mysql/database';
-import { logDuration } from '../../../../../common/framework/log/logger';
+import { customDurationMetric, info } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Get all deployments, for the specified time window.
@@ -20,7 +20,7 @@ export const getDeployments = async (connectionPool: mysql.Pool, startDate: Date
   const windowStartString = windowStart.format(sqlDateFormat);
   const windowEndString = windowEnd.format(sqlDateFormat);
 
-  console.log(`running deployment query from on ${windowStartString} to ${windowEndString}...`);
+  info(`running deployment query from on ${windowStartString} to ${windowEndString}...`);
   const start = new Date();
   const res = await query(
     connectionPool,
@@ -49,6 +49,7 @@ export const getDeployments = async (connectionPool: mysql.Pool, startDate: Date
   );
   const results = res.map(mapRow);
   const end = new Date();
-  logDuration(start, end, `${results.length} deployments loaded and mapped`);
+  info(`${results.length} deployments loaded and mapped`);
+  customDurationMetric('DeploymentsQuery', 'Time taken querying deployments, in seconds', start, end);
   return results;
 };

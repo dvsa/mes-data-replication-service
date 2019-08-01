@@ -1,6 +1,6 @@
 import { JournalRecord } from '../../../domain/journal-record';
 import moment = require('moment');
-import { debug } from 'util';
+import { debug } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Encapsulates a cache of journal hashes.
@@ -77,9 +77,9 @@ export class JournalHashesCache {
    * Logs the cache contents.
    */
   debug() {
-    console.log(`map has ${this.hashes.size} entries`);
+    debug(`map has ${this.hashes.size} entries`);
     this.hashes.forEach((value: Partial<JournalRecord>, key: string) => {
-      console.log(`map entry ${key} -> ${JSON.stringify(value)}`);
+      debug(`map entry ${key} -> ${JSON.stringify(value)}`);
     });
   }
 }

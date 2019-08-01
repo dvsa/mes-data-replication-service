@@ -1,8 +1,8 @@
 import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
-import { logDuration } from '../../../../../common/framework/log/logger';
 import { ExaminerRecord } from '../../../domain/examiner-record';
+import { info, customDurationMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Get all active examiners, for the specified time window.
@@ -14,7 +14,7 @@ export const getExaminers = async (connectionPool: mysql.Pool, startDate: Date):
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment(startDate).format(sqlYearFormat);
 
-  console.log(`Issued examiner query starting on ${windowStart}...`);
+  info(`Issued examiner query starting on ${windowStart}...`);
   const start = new Date();
   const res = await query(
     connectionPool,
@@ -28,6 +28,7 @@ export const getExaminers = async (connectionPool: mysql.Pool, startDate: Date):
     [windowStart],
   );
   const end = new Date();
-  logDuration(start, end, 'examiner query returned');
+  info('examiner query returned');
+  customDurationMetric('ExaminerQuery', 'Time taken querying examiners, in seconds', start, end);
   return res;
 };

@@ -1,6 +1,7 @@
 import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
+import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 // Typesafe result mapping for statement below
 interface JournalEndDateRow {
@@ -17,7 +18,7 @@ export const getNextWorkingDay = async (connectionPool: mysql.Pool, startDate: D
   const sqlYearFormat = 'YYYY-MM-DD';
   const windowStart = moment(startDate).format(sqlYearFormat);
 
-  console.log(`running journal end date query starting on ${windowStart}...`);
+  info(`running journal end date query starting on ${windowStart}...`);
   const res = await query(
     connectionPool,
     'select tarsreplica.getJournalEndDate(1, ?) as next_working_day',

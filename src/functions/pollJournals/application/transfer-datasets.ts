@@ -13,11 +13,12 @@ import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
 import { filterChangedJournals } from './journal-change-filter';
 import { getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
 import { config } from '../framework/config/config';
+import { info, customMetric, customDurationMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export const transferDatasets = async (startTime: Date): Promise<void> => {
   const connectionPool = createConnectionPool();
 
-  console.log(`STARTING QUERY PHASE: ${new Date()}`);
+  info(`STARTING QUERY PHASE: ${new Date()}`);
 
   let startDate: Date;
 
@@ -42,6 +43,8 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     journalStartDate = moment(startDate).subtract(journalDaysPast, 'days').startOf('day').toDate();
   }
 
+  const journalQueryPhaseStart = new Date();
+
   const [
     examiners,
     nextWorkingDay,
@@ -51,7 +54,7 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
   ]);
   const examinerIds = examiners.map(examiner => examiner.individual_id);
 
-  console.log(`Loading journals for ${examiners.length} examiners from ${formatDate(journalStartDate)}` +
+  info(`Loading journals for ${examiners.length} examiners from ${formatDate(journalStartDate)}` +
     ` to ${formatDate(nextWorkingDay)}...`);
 
   const [
@@ -68,6 +71,10 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     getDeployments(connectionPool, startDate, 6), // 6 months range
   ]);
 
+  const journalQueryPhaseEnd = new Date();
+  customDurationMetric('JournalQueryPhase', 'Time taken running all TARSREPL queries, in seconds',
+                       journalQueryPhaseStart, journalQueryPhaseEnd);
+
   const datasets: AllDatasets = {
     testSlots,
     personalCommitments,
@@ -77,21 +84,20 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
   };
   connectionPool.end();
 
-  console.log(`FINISHED QUERY PHASE, STARTING TRANSFORM PHASE: ${new Date()}`);
+  info(`FINISHED QUERY PHASE, STARTING TRANSFORM PHASE: ${new Date()}`);
   const journals: JournalRecord[] = buildJournals(examiners, datasets);
-  console.log(`FINISHED TRANFORM PHASE, STARTING FILTER PHASE: ${new Date()}`);
+  info(`FINISHED TRANFORM PHASE, STARTING FILTER PHASE: ${new Date()}`);
 
   const changedJournals = await filterChangedJournals(journals, startTime);
-  console.log(`FINISHED FILTER PHASE, STARTING SAVE PHASE FOR ${changedJournals.length} JOURNALS: ${new Date()}`);
-  console.log(JSON.stringify({
-    service: 'journals-poller',
-    name: 'JournalsChanged',
-    description: 'Number of Journals found to have changed',
-    value: changedJournals.length,
-  }));
+  info(`FINISHED FILTER PHASE, STARTING SAVE PHASE FOR ${changedJournals.length} JOURNALS: ${new Date()}`);
+  customMetric('JournalsChanged', 'Number of Journals found to have changed', changedJournals.length);
 
+  const journalWritePhaseStart = new Date();
   await saveJournals(changedJournals, startTime);
-  console.log(`FINISHED SAVE PHASE: ${new Date()}`);
+  const journalWritePhaseEnd = new Date();
+  customDurationMetric('JournalWritePhase', 'Time taken running all Dynamo writes, in seconds',
+                       journalWritePhaseStart, journalWritePhaseEnd);
+  info(`FINISHED SAVE PHASE: ${new Date()}`);
 };
 
 const formatDate = (date: Date): string => {
