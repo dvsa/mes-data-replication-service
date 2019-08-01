@@ -65,7 +65,8 @@ export const buildJournals = (examiners: ExaminerRecord[], datasets: AllDatasets
     return { staffNumber, hash, lastUpdatedAt, journal: compressedJournal };
   });
 
-  return journals.filter(journal => journal !== null);
+  const filteredJournals = filterNullAndDuplicateJournals(journals);
+  return filteredJournals;
 };
 
 const enrichJournalWithDataset = (individualId: string) => function <D>(
@@ -84,4 +85,20 @@ const enrichJournalWithDataset = (individualId: string) => function <D>(
     };
   }
   return enrichedJournal;
+};
+
+const filterNullAndDuplicateJournals = (journalRecords: (JournalRecord | null)[]): JournalRecord[] => {
+  const nonNullJournals = journalRecords.filter(record => record !== null);
+  const journalsByStaffNumber = groupBy(nonNullJournals, record => record.staffNumber);
+
+  const staffNumbersWithMultipleJournals = Object.values(journalsByStaffNumber)
+    .filter(journalsForStaffNumber => journalsForStaffNumber.length > 1)
+    .map(duplicateJournals => duplicateJournals[0].staffNumber);
+
+  if (staffNumbersWithMultipleJournals.length > 0) {
+    warn('Omitting journals for duplicate staff numbers ', staffNumbersWithMultipleJournals.join(','));
+  }
+
+  return nonNullJournals
+    .filter(record => !staffNumbersWithMultipleJournals.includes(record.staffNumber));
 };
