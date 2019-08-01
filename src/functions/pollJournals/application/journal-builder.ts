@@ -95,7 +95,9 @@ const filterNullAndDuplicateJournals = (journalRecords: (JournalRecord | null)[]
     .filter(journalsForStaffNumber => journalsForStaffNumber.length > 1)
     .map(duplicateJournals => duplicateJournals[0].staffNumber);
 
-  warn('Omitting journals for duplicate staff numbers ', staffNumbersWithMultipleJournals.join(','));
+  if (staffNumbersWithMultipleJournals.length > 0) {
+    warn('Omitting journals for duplicate staff numbers ', staffNumbersWithMultipleJournals.join(','));
+  }
 
   return nonNullJournals
     .filter(record => !staffNumbersWithMultipleJournals.includes(record.staffNumber));

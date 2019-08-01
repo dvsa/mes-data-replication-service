@@ -2,7 +2,8 @@ import {
   uncacheStaffNumbers, cacheStaffDetails,
 } from '../framework/repo/dynamodb/cached-examiner-repository';
 import { StaffDetail, TestPermissionPeriod } from '../../../common/application/models/staff-details';
-import { isEqual } from 'lodash';
+import { isEqual, groupBy } from 'lodash';
+import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export const reconcileActiveAndCachedExaminers = async (
   activeStaffDetails: StaffDetail[],
@@ -22,7 +23,7 @@ const selectStaffDetailsToCache = (
   activeStaffDetails: StaffDetail[],
   cachedStaffDetails: StaffDetail[],
 ): StaffDetail[] => {
-  return activeStaffDetails
+  return filterDuplicateUsers(activeStaffDetails)
     .filter(activeStaffDetail => staffDetailEligibleForCache(activeStaffDetail, cachedStaffDetails));
 };
 
@@ -48,4 +49,19 @@ const staffDetailIsEqual = (sd1: StaffDetail, sd2: StaffDetail): boolean => {
 const testPermissionPeriodsMatch = (tp1: TestPermissionPeriod[], tp2: TestPermissionPeriod[]): boolean => {
   return tp1.every(compareFromPeriod =>
     tp2.find(compareToPeriod => isEqual(compareFromPeriod, compareToPeriod)) !== undefined);
+};
+
+const filterDuplicateUsers = (staffDetails: StaffDetail[]): StaffDetail[] => {
+  const usersByStaffNumber = groupBy(staffDetails, record => record.staffNumber);
+
+  const staffNumbersWithDuplicateRecords = Object.values(usersByStaffNumber)
+    .filter(detailsByStaffNumber => detailsByStaffNumber.length > 1)
+    .map(duplicateStaffNumbers => duplicateStaffNumbers[0].staffNumber);
+
+  if (staffNumbersWithDuplicateRecords.length > 0) {
+    warn('Omitting users with duplicate staff numbers ', staffNumbersWithDuplicateRecords.join(','));
+  }
+
+  return staffDetails
+    .filter(record => !staffNumbersWithDuplicateRecords.includes(record.staffNumber));
 };

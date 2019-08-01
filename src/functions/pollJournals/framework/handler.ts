@@ -3,12 +3,14 @@ import createResponse from '../../../common/application/utils/createResponse';
 import Response from '../../../common/application/api/Response';
 import { transferDatasets } from '../application/transfer-datasets';
 import { bootstrapConfig } from './config/config';
+import { bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
   try {
     // cache the Lambda function start time
     const startTime = new Date();
 
+    bootstrapLogging('journals-poller', event);
     await bootstrapConfig();
     await transferDatasets(startTime);
     return createResponse({});
