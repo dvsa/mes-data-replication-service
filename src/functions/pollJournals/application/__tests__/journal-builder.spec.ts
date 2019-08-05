@@ -132,4 +132,31 @@ describe('buildJournals', () => {
 
     expect(result.length).toBe(0);
   });
+
+  it('should not include any journals that have the same staff number after leading zeros are stripped', () => {
+    const duplicateExaminers = [
+      {
+        individual_id: 111,
+        staff_number: '1234',
+      },
+      {
+        individual_id: 222,
+        staff_number: '01234',
+      },
+    ];
+    const datasets: AllDatasets = {
+      testSlots: [
+        { examinerId: 111, testSlot: { slotDetail: { slotId: 999 } } },
+        { examinerId: 222, testSlot: { slotDetail: { slotId: 888 } } },
+      ],
+      nonTestActivities: [],
+      personalCommitments: [],
+      advanceTestSlots: [],
+      deployments: [],
+    };
+
+    const result = buildJournals(duplicateExaminers, datasets);
+
+    expect(result.length).toBe(0);
+  });
 });

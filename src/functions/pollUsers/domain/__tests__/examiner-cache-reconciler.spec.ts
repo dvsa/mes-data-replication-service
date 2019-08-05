@@ -18,7 +18,7 @@ describe('examiner cache reconciler', () => {
   });
 
   describe('reconcileActiveAndCachedExaminers', () => {
-    it('should issue writes to the cache for every active examiner not already cached', async () => {
+    it('should issue writes to the cache for active examiners not already cached', async () => {
       const activeStaffDetails = [new StaffDetail('1', ExaminerRole.DE), new StaffDetail('2', ExaminerRole.LDTM)];
       const cachedStaffDetails: StaffDetail[] = [];
       const cachedStaffNumbers: string[] = [];
@@ -38,6 +38,16 @@ describe('examiner cache reconciler', () => {
       await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
       moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
       moqUncacheStaffNumbers.verify(x => x(It.isValue(['2', '3'])), Times.once());
+    });
+
+    it('should omit journals whose staff numbers occur more than once in the active dataset', async () => {
+      const activeStaffDetails = [new StaffDetail('1', ExaminerRole.DE), new StaffDetail('1', ExaminerRole.LDTM)];
+      const cachedStaffDetails: StaffDetail[] = [];
+      const cachedStaffNumbers: string[] = [];
+      await reconcileActiveAndCachedExaminers(activeStaffDetails, cachedStaffDetails);
+
+      moqCacheStaffNumbers.verify(x => x(It.isValue([])), Times.once());
+      moqUncacheStaffNumbers.verify(x => x(It.isValue(cachedStaffNumbers)), Times.once());
     });
   });
 
