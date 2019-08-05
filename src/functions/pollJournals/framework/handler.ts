@@ -3,7 +3,7 @@ import createResponse from '../../../common/application/utils/createResponse';
 import Response from '../../../common/application/api/Response';
 import { transferDatasets } from '../application/transfer-datasets';
 import { bootstrapConfig } from './config/config';
-import { bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
   try {
@@ -14,8 +14,8 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     await bootstrapConfig();
     await transferDatasets(startTime);
     return createResponse({});
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    error(err);
     return createResponse({}, 500);
   }
 }
