@@ -21,7 +21,7 @@ export const bootstrapConfig = async (): Promise<void> => {
     journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
     tarsReplicaDatabaseHostname: throwIfNotPresent(
       process.env.TARS_REPLICA_HOST_NAME,
-      'tarsReplicateDatabaseHostname',
+      'tarsReplicaDatabaseHostname',
     ),
     tarsReplicaDatabaseName: throwIfNotPresent(
       process.env.TARS_REPLICA_DB_NAME,

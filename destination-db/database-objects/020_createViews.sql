@@ -1,3 +1,4 @@
+USE tarsreplica;
 CREATE OR REPLACE VIEW WORK_SCHEDULE_SLOTS AS
 SELECT ps.slot_id, DATE(p.programme_date) as programme_date, ps.start_time, ps.minutes,
     ps.individual_id, ps.tc_id, ps.vst_code, ps.non_test_activity_code,
