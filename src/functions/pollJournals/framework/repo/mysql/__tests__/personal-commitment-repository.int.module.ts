@@ -39,10 +39,7 @@ export const personalCommitmentIntegrationTests = () => {
             activityCode: '081',
             activityDescription: 'Annual Leave',
             commitmentId: 9,
-            endDate: '31/12/4000',
-            endTime: '23:59:00',
-            startDate: moment().format('DD/MM/YYYY'),
-            startTime: '08:00:00',
+            slotId: 6,
           },
         },
       ]);
@@ -61,14 +58,7 @@ export const personalCommitmentIntegrationTests = () => {
             activityCode: '081',
             activityDescription: 'Annual Leave',
             commitmentId: 9,
-            endDate: '31/12/4000',
-            endTime: '23:59:00',
-            startDate: moment().startOf('day')
-              .add(13, 'day').add(23, 'hour').add(59, 'minute').add(59, 'second')
-              .format('DD/MM/YYYY'),
-            startTime: moment().startOf('day')
-              .add(13, 'day').add(23, 'hour').add(59, 'minute').add(59, 'second')
-              .format('HH:mm:ss'),
+            slotId: 6,
           },
         },
       ]);
@@ -97,7 +87,7 @@ const truncateTables = async () => {
   await query(truncConn, 'TRUNCATE TABLE EXAMINER_STATUS');
   await query(truncConn, 'TRUNCATE TABLE PROGRAMME');
   await query(truncConn, 'TRUNCATE TABLE PROGRAMME_SLOT');
-  await query(truncConn, 'TRUNCATE TABLE NON_TEST_ACTIVITY_REASON');
   await query(truncConn, 'TRUNCATE TABLE PERSONAL_COMMITMENT');
+  await query(truncConn, 'TRUNCATE TABLE COMMITMENT_AFFECTED_SLOT');
   truncConn.end();
 };

@@ -1,3 +1,4 @@
+USE tarsreplica;
 -- First, create the stored procedure
 DROP PROCEDURE IF EXISTS tarsreplica.CreateIndex;
 

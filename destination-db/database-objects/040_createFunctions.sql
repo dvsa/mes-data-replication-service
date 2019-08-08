@@ -1,5 +1,5 @@
+USE tarsreplica;
 DELIMITER //
-USE tarsreplica
 //
   
 /*

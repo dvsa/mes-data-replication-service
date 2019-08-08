@@ -10,10 +10,10 @@ interface PersonalCommitmentRow {
 
 export const mapRow = (row: PersonalCommitmentRow): ExaminerPersonalCommitment => {
   return {
-    examinerId: row.individual_id,
+    examinerId: +row.individual_id,
     personalCommitment: {
-      commitmentId: row.commitment_id,
-      slotId: row.slot_id,
+      commitmentId: +row.commitment_id,
+      slotId: +row.slot_id,
       activityCode: row.non_test_activity_code,
       activityDescription: row.reason_desc,
     },
