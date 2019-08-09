@@ -123,7 +123,7 @@ export const mapRow = (row: TestSlotRow): ExaminerTestSlot => {
     const booking: Booking = {};
     slot.testSlot.booking = booking;
 
-    const app: Application = {};
+    const app: Application = { applicationId: 0, bookingSequence: 0, checkDigit: 0 };
     booking.application = app;
     setNumberIfTruthy(app, 'applicationId', row.app_id);
     setNumberIfTruthy(app, 'bookingSequence', row.booking_seq);
