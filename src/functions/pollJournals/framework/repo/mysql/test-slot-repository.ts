@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { ExaminerTestSlot } from '../../../domain/examiner-test-slot';
 import { mapRow } from './row-mappers/test-slot-row-mapper';
 import { query } from '../../../../../common/framework/mysql/database';
-import { logDuration } from '../../../../../common/framework/log/logger';
+import { info, customDurationMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Get all detailed test slots, for the specified time window.
@@ -23,11 +23,13 @@ export const getTestSlots = async (
   const windowStart = moment(journalStartDate).format(sqlYearFormat);
   const windowEnd = moment(endDate).format(sqlYearFormat);
 
+  info(`running test slots query from ${windowStart} to ${windowEnd}...`);
   const start = new Date();
   const res = await query(connectionPool, getQuery(examinerIds), [windowStart, windowEnd, windowStart]);
   const results = res.map(mapRow);
   const end = new Date();
-  logDuration(start, end, `${results.length} test slots loaded and mapped`);
+  info(`${results.length} test slots loaded and mapped`);
+  customDurationMetric('TestSlotsQuery', 'Time taken querying detailed test slots, in seconds', start, end);
   return results;
 };
 

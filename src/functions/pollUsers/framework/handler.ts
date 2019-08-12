@@ -4,7 +4,7 @@ import Response from '../../../common/application/api/Response';
 import { bootstrapConfig } from '../../pollUsers/framework/config';
 import { transferUsers } from '../domain/transfer-users';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
-import { bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
   try {
@@ -12,8 +12,8 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     await bootstrapConfig();
     await transferUsers();
     return createResponse({});
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    error(err);
     return createResponse({}, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

@@ -6,6 +6,7 @@ import { chunk, get, mean } from 'lodash';
 import { config } from '../../config/config';
 import { Key } from 'aws-sdk/clients/dynamodb';
 import moment = require('moment');
+import { customMetric, warn, info } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /*
 * Amount of time (in milliseconds), to throttle Journal writes over.
@@ -72,17 +73,18 @@ export const saveJournals = async (journals: JournalRecord[], startTime: Date): 
   journalHashesCache.update(startTime, []);
 
   if (journals.length > 0) {
-    console.log(`STARTING SAVE: ${new Date()}`);
+    info(`STARTING SAVE: ${new Date()}`);
     const tableName = config().journalDynamodbTableName;
     const maxBatchWriteRequests = 25;
     const journalWriteBatches = chunk(journals, maxBatchWriteRequests);
     const { totalUnprocessedWrites, averageRequestRuntime } =
       await submitSaveRequests(journalWriteBatches, tableName, startTime);
 
-    console.log(`AVERAGE REQUEST TOOK ${averageRequestRuntime}ms`);
-    console.log(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
+    info(`AVERAGE REQUEST TOOK ${averageRequestRuntime}ms`);
+    info(`END SAVE: ${new Date()}, ${totalUnprocessedWrites} WRITES FAILED`);
+    customMetric('JournalsNotUpdated', 'Number of Journals not updated in Dynamo', totalUnprocessedWrites);
   } else {
-    console.log(`NO SAVE NEEDED`);
+    info(`NO SAVE NEEDED`);
   }
 };
 
@@ -111,7 +113,7 @@ const submitSaveRequests = async (
   for (const writeBatch of writeBatches) {
     if (runOutOfTime(startTime, sleepDuration)) {
       // this is a good point to raise an alert
-      console.log('** No more time left, aborting any further writes! **');
+      warn('No more time left, aborting any further writes!');
       break;
     }
 
@@ -143,12 +145,12 @@ const submitSaveRequests = async (
       });
 
       failedStaffNumbers.forEach((staffNumber) => {
-        console.log(`failed to write hash for ${staffNumber}`);
+        warn(`failed to write hash for ${staffNumber}`);
       });
 
       const unprocessedWriteCount = failedStaffNumbers.length;
       totalUnprocessedWrites += unprocessedWriteCount;
-      console.log(`${unprocessedWriteCount} writes failed/throttled`);
+      warn(`${unprocessedWriteCount} writes failed/throttled`);
     }
 
     const writtenHashes = writeBatch.filter((journal) => {
@@ -168,13 +170,8 @@ const submitSaveRequests = async (
     await sleep(sleepDuration);
   }
 
-  console.log(`successfully written ${totalWrittenJournals} journals, took ${totalConsumedCapacity} WCUs`);
-  console.log(JSON.stringify({
-    service: 'journals-poller',
-    name: 'JournalsUpdated',
-    description: 'Number of Journals successfully updated in Dynamo',
-    value: totalWrittenJournals,
-  }));
+  info(`successfully written ${totalWrittenJournals} journals, took ${totalConsumedCapacity} WCUs`);
+  customMetric('JournalsUpdated', 'Number of Journals successfully updated in Dynamo', totalWrittenJournals);
 
   const averageRequestRuntime = mean(requestRuntimes);
   return { totalUnprocessedWrites, averageRequestRuntime };
@@ -237,10 +234,10 @@ export const getStaffNumbersWithHashes = async (startTime: Date): Promise<Partia
   };
 
   if (journalHashesCache.isValid(startTime)) {
-    console.log('Journal Hashes Cache hit, using cached data');
+    info('Journal Hashes Cache hit, using cached data');
     return Promise.resolve(journalHashesCache.get());
   }
-  console.log('Journal Hashes Cache miss, reading hashes from Dynamo');
+  warn('Journal Hashes Cache miss, reading hashes from Dynamo');
 
   let scannedItems: Partial<JournalRecord>[] = [];
   let lastEvaluatedKey: Key | undefined;
@@ -254,12 +251,12 @@ export const getStaffNumbersWithHashes = async (startTime: Date): Promise<Partia
     const timeTaken = process.hrtime(start);
     const duration = Math.floor(((timeTaken[0] * 1e9) + timeTaken[1]) / 1e6);
     scannedItems = [...scannedItems, ...result.Items as Partial<JournalRecord>[]];
-    console.log(`scan of ${result.Items.length} journal hashes took ${duration} ms`);
+    info(`scan of ${result.Items.length} journal hashes took ${duration} ms`);
     totalConsumedCapacity += get(result, 'ConsumedCapacity.CapacityUnits', 0);
     lastEvaluatedKey = result.LastEvaluatedKey;
   } while (lastEvaluatedKey !== undefined);
 
-  console.log(`read ${scannedItems.length} journal hashes, took ${totalConsumedCapacity} RCUs`);
+  info(`read ${scannedItems.length} journal hashes, took ${totalConsumedCapacity} RCUs`);
   journalHashesCache.clearAndPopulate(scannedItems, startTime);
   return scannedItems;
 };

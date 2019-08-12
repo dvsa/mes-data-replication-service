@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { ExaminerNonTestActivity } from '../../../domain/examiner-non-test-activity';
 import { mapRow } from './row-mappers/non-test-activity-row-mapper';
 import { query } from '../../../../../common/framework/mysql/database';
-import { logDuration } from '../../../../../common/framework/log/logger';
+import { info, customDurationMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Get all Non-test activities, within the specified time window.
@@ -18,7 +18,7 @@ export const getNonTestActivities = async (connectionPool: mysql.Pool, startDate
   const windowStart = moment(startDate).format(sqlYearFormat);
   const windowEnd = moment(endDate).format(sqlYearFormat);
 
-  console.log(`running non test activity query between ${windowStart} and ${windowEnd}...`);
+  info(`running non test activity query between ${windowStart} and ${windowEnd}...`);
   const start = new Date();
   const res = await query(
     connectionPool,
@@ -36,6 +36,7 @@ export const getNonTestActivities = async (connectionPool: mysql.Pool, startDate
   );
   const results = res.map(mapRow);
   const end = new Date();
-  logDuration(start, end, `${results.length} non test activities loaded and mapped`);
+  info(`${results.length} non test activities loaded and mapped`);
+  customDurationMetric('NonTestActivitiesQuery', 'Time taken querying non test activities, in seconds', start, end);
   return results;
 };

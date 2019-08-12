@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { ExaminerPersonalCommitment } from '../../../domain/examiner-personal-commitment';
 import { mapRow } from './row-mappers/personal-commitment-row-mapper';
 import { query } from '../../../../../common/framework/mysql/database';
-import { logDuration } from '../../../../../common/framework/log/logger';
+import { info, customDurationMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 /**
  * Get all personal commitments, for the specified time window.
@@ -20,7 +20,7 @@ export const getPersonalCommitments = async (connectionPool: mysql.Pool, startDa
   const windowStartString = windowStart.format(sqlDateTimeFormat);
   const windowEndString = windowEnd.format(sqlDateTimeFormat);
 
-  console.log(`Running query for personal commitments from ${windowStartString} to ${windowEndString}...`);
+  info(`Running query for personal commitments from ${windowStartString} to ${windowEndString}...`);
   const start = new Date();
   const res = await query(
     connectionPool,
@@ -46,6 +46,7 @@ export const getPersonalCommitments = async (connectionPool: mysql.Pool, startDa
   );
   const results = res.map(mapRow);
   const end = new Date();
-  logDuration(start, end, `${results.length} personal commitments loaded and mapped`);
+  info(`${results.length} personal commitments loaded and mapped`);
+  customDurationMetric('PersonalCommitmentsQuery', 'Time taken querying personal commitments, in seconds', start, end);
   return results;
 };
