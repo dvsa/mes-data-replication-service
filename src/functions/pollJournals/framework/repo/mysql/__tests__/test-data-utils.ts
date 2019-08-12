@@ -6,7 +6,6 @@ export const loadTestFile = async (pathRelativeToTestData: string) => {
     database: 'tarsreplica',
     user: 'root',
     password: 'Pa55word1',
-    onerror: err => console.log(err.message),
   });
   const path = `src/functions/pollJournals/framework/repo/mysql/__tests__/data/${pathRelativeToTestData}`;
   await importerInstance.import(path);
