@@ -25,11 +25,11 @@ export const getPersonalCommitments = async (connectionPool: mysql.Pool, startDa
   const res = await query(
     connectionPool,
     `
-    select e.individual_id, pc.commitment_id, pc.start_date_time, pc.end_date_time,
-      pc.non_test_activity_code, reason.reason_desc
+    select e.individual_id, cas.slot_id, pc.commitment_id, pc.non_test_activity_code, reason.reason_desc
     from EXAMINER e
       join PERSONAL_COMMITMENT pc on e.individual_id = pc.individual_id
       join NON_TEST_ACTIVITY_REASON reason on pc.non_test_activity_code = reason.non_test_activity_code
+      join COMMITMENT_AFFECTED_SLOT cas on cas.commitment_id = pc.commitment_id
     where IFNULL(e.grade_code, 'ZZZ') != 'DELE'
     and (
       DATE(pc.start_date_time) between ? and ?

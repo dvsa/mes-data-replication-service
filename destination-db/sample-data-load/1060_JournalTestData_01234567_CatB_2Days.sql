@@ -4,6 +4,7 @@
 Create the examiner and test centre record if they don't already exist
 
 ****************************************************************************************************************************/
+USE tarsreplica;
 -- Initialise variables
 SET @TestCentreName 		= 'Example Test Centre';
 SET @TestCentreCostCode 	= 'EXTC1';

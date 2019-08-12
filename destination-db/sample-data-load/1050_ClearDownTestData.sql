@@ -3,6 +3,8 @@
 Clean down test data
 
 ****************************************************************************************************************************/
+USE tarsreplica;
+
 SET @ThresholdId		= 90000000;
 
 DELETE FROM TEST_CENTRE WHERE tc_id >= @ThresholdId;

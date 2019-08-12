@@ -1,6 +1,6 @@
 import { DynamoDB, config as awsConfig, Credentials } from 'aws-sdk';
 import { getStaffNumbersWithHashes } from '../journal-repository';
-import { bootstrapConfig } from '../../../config/config';
+import { bootstrapConfig, config } from '../../../config/config';
 import * as dotenv from 'dotenv';
 
 let ddb: DynamoDB.DocumentClient;
@@ -8,15 +8,18 @@ let ddb: DynamoDB.DocumentClient;
 export const dynamoDBIntegrationTests = () => {
   describe('DynamoDB integration tests', () => {
 
-    beforeAll(() => {
+    beforeAll((done) => {
       awsConfig.update({
         region: 'localhost',
         credentials: new Credentials('akid', 'secret', 'session'),
       });
       ddb = new DynamoDB.DocumentClient({ endpoint: 'http://localhost:8000', region: 'localhost' });
       process.env.IS_OFFLINE = 'true';
+      process.env.NODE_ENV = 'local';
       dotenv.config();
-      return bootstrapConfig();
+      bootstrapConfig().then(() => {
+        done();
+      });
     });
 
     describe('getStaffNumbersWithHashes', () => {
