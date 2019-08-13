@@ -31,9 +31,9 @@ interface TestSlotRow {
   programme_date: string; // not nullable
   // every field beyond this point is nullable because of the left join on booking_details...
   booking_id: number | null;
-  app_id: number | null;
-  booking_seq: number | null;
-  check_digit: number | null;
+  app_id: number;
+  booking_seq: number;
+  check_digit: number;
   welsh_test_ind: number | null;
   ext_req_ind: number | null;
   progressive_access: number | null;
