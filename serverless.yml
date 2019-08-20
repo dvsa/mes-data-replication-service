@@ -41,8 +41,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: staffNumber
             AttributeType: S
-          - AttributeName: role
-            AttributeType: S
+          # - AttributeName: role
+          #   AttributeType: S
         KeySchema:
           - AttributeName: staffNumber
             KeyType: HASH

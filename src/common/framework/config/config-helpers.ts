@@ -50,7 +50,11 @@ export const tryFetchRdsAccessToken = async (
   return new Promise((resolve, reject) => {
     signer.getAuthToken(signerOptions, (err, token) => {
       if (err) {
-        throw new Error(`Generating an auth token failed. Error message: ${err.message}`);
+        if (process.env.IS_OFFLINE === 'true') {
+          resolve('localhost');
+        } else {
+          throw new Error(`Generating an auth token failed. Error message: ${err.message}`);
+        }
       }
       resolve(token);
     });

@@ -1,3 +1,4 @@
+USE tarsreplica;
 -- REF_DATA_ITEM_MASTER
 REPLACE INTO REF_DATA_ITEM_MASTER (item_id, item_desc1, item_desc2, category_id)
 VALUES

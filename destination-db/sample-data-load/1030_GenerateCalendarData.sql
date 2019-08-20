@@ -1,3 +1,4 @@
+USE tarsreplica;
 -- AREA
 REPLACE INTO AREA (area_id, days_in_advance_count, country_id)
 VALUES
