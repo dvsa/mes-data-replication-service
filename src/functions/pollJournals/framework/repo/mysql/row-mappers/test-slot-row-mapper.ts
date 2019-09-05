@@ -57,7 +57,7 @@ interface TestSlotRow {
   candidate_surname: string | null;
   candidate_driver_number: string | null;
   candidate_date_of_birth: Date | null;
-  candidate_gender_code: number | null;
+  candidate_gender_code: string | null;
   candidate_ethnicity_code: string | null;
   cand_primary_tel_ind: number | null;
   cand_primary_tel: string | null;
@@ -323,8 +323,8 @@ const zeroIfNull = (value: number | null): number => {
  * The codes that TARS uses to represent gender
  */
 export enum GenderCode {
-  Male = 879,
-  Female = 880,
+  Male = '879',
+  Female = '880',
 }
 
 /**
@@ -332,7 +332,7 @@ export enum GenderCode {
  * @param candidate The candidate object to assign into
  * @param candidateGenderCode The candidate's gender code queried from the DB
  */
-const setGenderIfPopulated = (candidate: Candidate, candidateGenderCode: number | null) => {
+const setGenderIfPopulated = (candidate: Candidate, candidateGenderCode: string | null) => {
   if (candidateGenderCode === GenderCode.Male) {
     candidate.gender = 'M';
   }
