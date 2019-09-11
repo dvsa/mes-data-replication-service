@@ -37,7 +37,7 @@ In a separate window
 run:
 
 ```shell
-npm run test:init
+npm run test:int
 ```
 
 If you get issues starting the integration tests due to ports already being bound, you can kill old instances of the test components by running:
