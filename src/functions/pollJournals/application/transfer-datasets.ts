@@ -65,7 +65,7 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     deployments,
   ] = await Promise.all([
     getTestSlots(connectionPool, examinerIds, journalStartDate, nextWorkingDay),
-    getPersonalCommitments(connectionPool, journalStartDate, 14), // 14 days range
+    getPersonalCommitments(connectionPool, journalStartDate, 20), // 20 days range
     getNonTestActivities(connectionPool, journalStartDate, nextWorkingDay),
     getAdvanceTestSlots(connectionPool, startDate, nextWorkingDay, 14), // 14 days range
     getDeployments(connectionPool, startDate, 6), // 6 months range
