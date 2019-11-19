@@ -1,4 +1,4 @@
-CREATE USER 'dms_user' IDENTIFIED WITH mysql_native_password BY '<DMS_USER_PASSWORD>' PASSWORD EXPIRE NEVER;
+CREATE USER IF NOT EXISTS 'dms_user' IDENTIFIED WITH mysql_native_password BY '<DMS_USER_PASSWORD>' PASSWORD EXPIRE NEVER;
 
 GRANT ALL ON tarsreplica.* TO 'dms_user';
 
