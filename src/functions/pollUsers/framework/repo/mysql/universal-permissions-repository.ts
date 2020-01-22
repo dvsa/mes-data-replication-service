@@ -1,5 +1,6 @@
 import { TestPermissionPeriod } from '../../../../../common/application/models/staff-details';
 import { config } from '../../config';
+import { certs } from '../../../../../common/certs/ssl_profiles';
 import * as mysql from 'mysql2';
 import { query } from '../../../../../common/framework/mysql/database';
 
@@ -18,7 +19,7 @@ export const getUniversalTestPermissions = async (): Promise<TestPermissionPerio
     user: configuration.tarsReplicaDatabaseUsername,
     password: configuration.tarsReplicaDatabasePassword,
     charset: 'UTF8_GENERAL_CI',
-    ssl: process.env.TESTING_MODE ? null : 'Amazon RDS',
+    ssl: process.env.TESTING_MODE ? null : certs,
     authSwitchHandler(data, cb) {
       if (data.pluginName === 'mysql_clear_password') {
         cb(null, Buffer.from(`${configuration.tarsReplicaDatabasePassword}\0`));
