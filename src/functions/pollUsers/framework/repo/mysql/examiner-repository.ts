@@ -1,6 +1,6 @@
 import { query } from '../../../../../common/framework/mysql/database';
 import { config } from '../../config';
-import { certs } from '../../../../../common/certs/ssl_profiles';
+import { certificate } from '../../../../../common/certs/ssl_profiles';
 import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { StaffDetail, TestPermissionPeriod } from '../../../../../common/application/models/staff-details';
@@ -26,7 +26,7 @@ export const getActiveExaminers = async (
     user: configuration.tarsReplicaDatabaseUsername,
     password: configuration.tarsReplicaDatabasePassword,
     charset: 'UTF8_GENERAL_CI',
-    ssl: process.env.TESTING_MODE ? null : certs,
+    ssl: process.env.TESTING_MODE ? null : certificate,
     authSwitchHandler(data, cb) {
       if (data.pluginName === 'mysql_clear_password') {
         cb(null, Buffer.from(`${configuration.tarsReplicaDatabasePassword}\0`));
