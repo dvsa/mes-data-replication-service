@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2';
 import { config } from '../../config/config';
-import { certs } from '../../../../../common/certs/ssl_profiles';
+import { certificate } from '../../../../../common/certs/ssl_profiles';
 
 export const createConnectionPool = (): mysql.Pool => {
   const configuration = config();
@@ -10,7 +10,7 @@ export const createConnectionPool = (): mysql.Pool => {
     user: configuration.tarsReplicaDatabaseUsername,
     password: configuration.tarsReplicaDatabasePassword,
     charset: 'UTF8_GENERAL_CI',
-    ssl: process.env.TESTING_MODE ? null : certs,
+    ssl: process.env.TESTING_MODE ? null : certificate,
     authSwitchHandler(data, cb) {
       if (data.pluginName === 'mysql_clear_password') {
         cb(null, Buffer.from(`${configuration.tarsReplicaDatabasePassword}\0`));
