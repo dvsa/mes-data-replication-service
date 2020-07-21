@@ -2,6 +2,7 @@ import * as mysql from 'mysql2';
 import * as moment from 'moment';
 import { query } from '../../../../../common/framework/mysql/database';
 import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { get } from 'lodash';
 
 // Typesafe result mapping for statement below
 interface JournalEndDateRow {
@@ -25,4 +26,12 @@ export const getNextWorkingDay = async (connectionPool: mysql.Pool, startDate: D
     [windowStart],
   );
   return res.map((row: JournalEndDateRow) => row.next_working_day as Date)[0];
+};
+
+export const getJournalEndDate = (): Date => {
+  const numberOfFutureDays: number = parseInt(get(process, 'env.FUTURE_JOURNAL_DAYS', null), 10);
+  if (numberOfFutureDays >= 0) {
+    return moment(new Date()).add(numberOfFutureDays, 'days').toDate();
+  }
+  return null;
 };
