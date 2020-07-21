@@ -24,6 +24,7 @@ describe('transferDatasets', () => {
   const moqCreateConnectionPool = Mock.ofInstance(pool.createConnectionPool);
   const moqGetExaminers = Mock.ofInstance(examinerRepo.getExaminers);
   const moqGetNextWorkingDay = Mock.ofInstance(journalEndDateRepo.getNextWorkingDay);
+  const moqGetJournalEndDate = Mock.ofInstance(journalEndDateRepo.getJournalEndDate);
   const moqGetTestSlots = Mock.ofInstance(testSlotRepo.getTestSlots);
   const moqGetPersonalCommitments = Mock.ofInstance(personalCommitmentRepo.getPersonalCommitments);
   const moqGetNonTestActivities = Mock.ofInstance(nonTestActivityRepo.getNonTestActivities);
@@ -48,12 +49,15 @@ describe('transferDatasets', () => {
   const dummyTransformedJournals = [{ examinerId: 1 }, { examinerId: 2 }];
   const dummyFilteredJournals = [{ examinerId: 1 }];
   const dummyStartTime = new Date();
+  const mockJournalEndDate: Date = new Date('2020-01-01');
+  const mockNextWorkingDay: Date = new Date('2021-01-01');
 
   beforeEach(async () => {
     moqConfig.reset();
     moqCreateConnectionPool.reset();
     moqGetExaminers.reset();
     moqGetNextWorkingDay.reset();
+    moqGetJournalEndDate.reset();
     moqGetTestSlots.reset();
     moqGetPersonalCommitments.reset();
     moqGetNonTestActivities.reset();
@@ -66,7 +70,6 @@ describe('transferDatasets', () => {
     spyOn(config, 'config').and.callFake(moqConfig.object);
     spyOn(pool, 'createConnectionPool').and.callFake(moqCreateConnectionPool.object);
     spyOn(examinerRepo, 'getExaminers').and.callFake(moqGetExaminers.object);
-    spyOn(journalEndDateRepo, 'getNextWorkingDay').and.callFake(moqGetNextWorkingDay.object);
     spyOn(testSlotRepo, 'getTestSlots').and.callFake(moqGetTestSlots.object);
     spyOn(personalCommitmentRepo, 'getPersonalCommitments').and.callFake(moqGetPersonalCommitments.object);
     spyOn(nonTestActivityRepo, 'getNonTestActivities').and.callFake(moqGetNonTestActivities.object);
@@ -96,6 +99,9 @@ describe('transferDatasets', () => {
   });
 
   it('should retrieve all the datasets and transform into a journal and save', async () => {
+    spyOn(journalEndDateRepo, 'getNextWorkingDay').and.callFake(moqGetNextWorkingDay.object);
+    spyOn(journalEndDateRepo, 'getJournalEndDate').and.callFake(moqGetJournalEndDate.object);
+
     await transferDatasets(dummyStartTime);
 
     moqGetTestSlots.verify(x => x(It.isAny(), It.isAny(), It.isAny(), It.isAny()), Times.once());
@@ -115,5 +121,27 @@ describe('transferDatasets', () => {
     moqFilterChangedJournals.verify(
       x => x(It.isValue(<any>dummyTransformedJournals), It.isValue(dummyStartTime)), Times.once());
     moqSaveJournals.verify(x => x(It.isValue(<any>dummyFilteredJournals), It.isValue(dummyStartTime)), Times.once());
+  });
+
+  it('should use the journal end date if one is available',  async () => {
+    spyOn(journalEndDateRepo, 'getJournalEndDate').and.callFake(() => mockJournalEndDate);
+    spyOn(journalEndDateRepo, 'getNextWorkingDay').and.callFake(() => mockNextWorkingDay);
+    await transferDatasets(dummyStartTime);
+
+    moqGetTestSlots.verify(x => x(It.isAny(), It.isAny(), It.isAny(), mockJournalEndDate), Times.once());
+    moqGetNonTestActivities.verify(x => x(It.isAny(), It.isAny(), mockJournalEndDate), Times.once());
+    moqGetAdvanceTestSlots.verify(x => x(It.isAny(), It.isAny(), mockJournalEndDate, It.isAny()), Times.once());
+    moqGetDeployments.verify(x => x(It.isAny(), It.isAny(), It.isAny()), Times.once());
+  });
+
+  it('should use the next working day if journal end date is NOT available', async() => {
+    spyOn(journalEndDateRepo, 'getJournalEndDate').and.callFake(() => null);
+    spyOn(journalEndDateRepo, 'getNextWorkingDay').and.callFake(() => mockNextWorkingDay);
+    await transferDatasets(dummyStartTime);
+
+    moqGetTestSlots.verify(x => x(It.isAny(), It.isAny(), It.isAny(), mockNextWorkingDay), Times.once());
+    moqGetNonTestActivities.verify(x => x(It.isAny(), It.isAny(), mockNextWorkingDay), Times.once());
+    moqGetAdvanceTestSlots.verify(x => x(It.isAny(), It.isAny(), mockNextWorkingDay, It.isAny()), Times.once());
+    moqGetDeployments.verify(x => x(It.isAny(), It.isAny(), It.isAny()), Times.once());
   });
 });
