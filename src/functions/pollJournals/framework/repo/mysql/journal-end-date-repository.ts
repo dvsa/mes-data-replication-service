@@ -30,7 +30,7 @@ export const getNextWorkingDay = async (connectionPool: mysql.Pool, startDate: D
 
 export const getJournalEndDate = (): Date => {
   const numberOfFutureDays: number = parseInt(get(process, 'env.FUTURE_JOURNAL_DAYS', null), 10);
-  if (numberOfFutureDays >= 0) {
+  if (numberOfFutureDays > 0) {
     return moment(new Date()).add(numberOfFutureDays, 'days').toDate();
   }
   return null;
