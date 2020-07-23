@@ -11,7 +11,7 @@ import { JournalRecord } from '../domain/journal-record';
 import { buildJournals } from './journal-builder';
 import { saveJournals } from '../framework/repo/dynamodb/journal-repository';
 import { filterChangedJournals } from './journal-change-filter';
-import { getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
+import { getJournalEndDate, getNextWorkingDay } from '../framework/repo/mysql/journal-end-date-repository';
 import { config } from '../framework/config/config';
 import { info, customMetric, customDurationMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
@@ -53,9 +53,10 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     getNextWorkingDay(connectionPool, startDate),
   ]);
   const examinerIds = examiners.map(examiner => examiner.individual_id);
+  const journalEndDate: Date = getJournalEndDate() || nextWorkingDay;
 
   info(`Loading journals for ${examiners.length} examiners from ${formatDate(journalStartDate)}` +
-    ` to ${formatDate(nextWorkingDay)}...`);
+    ` to ${formatDate(journalEndDate)}...`);
 
   const [
     testSlots,
@@ -64,10 +65,10 @@ export const transferDatasets = async (startTime: Date): Promise<void> => {
     advanceTestSlots,
     deployments,
   ] = await Promise.all([
-    getTestSlots(connectionPool, examinerIds, journalStartDate, nextWorkingDay),
+    getTestSlots(connectionPool, examinerIds, journalStartDate, journalEndDate),
     getPersonalCommitments(connectionPool, journalStartDate, 20), // 20 days range
-    getNonTestActivities(connectionPool, journalStartDate, nextWorkingDay),
-    getAdvanceTestSlots(connectionPool, startDate, nextWorkingDay, 14), // 14 days range
+    getNonTestActivities(connectionPool, journalStartDate, journalEndDate),
+    getAdvanceTestSlots(connectionPool, startDate, journalEndDate, 14), // 14 days range
     getDeployments(connectionPool, startDate, 6), // 6 months range
   ]);
 
