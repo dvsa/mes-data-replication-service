@@ -254,7 +254,7 @@ function setAddressIfPopulated<T>(
  * @param field  The object field to set
  * @param value  The value to use
  */
-function setNumberIfTruthy<T>(object: T, field: keyof T, value: number | null) {
+export function setNumberIfTruthy<T>(object: T, field: keyof T, value: number | null) {
   if (value) {
     object[field as string] = value;
   }
@@ -266,7 +266,7 @@ function setNumberIfTruthy<T>(object: T, field: keyof T, value: number | null) {
  * @param field  The object field to set
  * @param value  The value to use
  */
-function setNumberIfNotNull<T>(object: T, field: keyof T, value: number | null) {
+export function setNumberIfNotNull<T>(object: T, field: keyof T, value: number | null) {
   if (value !== null) {
     object[field as string] = value;
   }
@@ -292,7 +292,7 @@ function setBooleanIfPopulated<T>(object: T, field: keyof T, value: number | nul
  * @param field  The object field to set
  * @param value  The value to use
  */
-function setStringIfPopulated<T>(object: T, field: keyof T, value: string | null) {
+export function setStringIfPopulated<T>(object: T, field: keyof T, value: string | null) {
   if (value && value.trim().length > 0) {
     object[field as string] = value;
   }
@@ -305,7 +305,7 @@ function setStringIfPopulated<T>(object: T, field: keyof T, value: string | null
  * @param field  The object field to set
  * @param value  The value to use
  */
-function setCapitalisedStringIfPopulated<T>(object: T, field: keyof T, value: string | null) {
+export function setCapitalisedStringIfPopulated<T>(object: T, field: keyof T, value: string | null) {
   if (value && value.trim().length > 0) {
     object[field as string] = value.charAt(0).toUpperCase() + value.slice(1);
   }
