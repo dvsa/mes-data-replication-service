@@ -2,11 +2,11 @@ import {
     defaultIfNotPresent,
     throwIfNotPresent,
     tryFetchRdsAccessToken,
-} from '../../../../common/framework/config/config-helpers';
+} from '../../../common/framework/config/config-helpers';
 
 export type Config = {
   isOffline: boolean;
-  journalDynamodbTableName: string;
+  delegatedBookingsDynamodbTableName: string;
   tarsReplicaDatabaseHostname: string;
   tarsReplicaDatabaseName: string;
   tarsReplicaDatabaseUsername: string;
@@ -18,7 +18,8 @@ let configuration: Config;
 export const bootstrapDelegatedExaminerConfig = async () => {
   configuration = {
     isOffline: !!process.env.IS_OFFLINE,
-    journalDynamodbTableName: defaultIfNotPresent(process.env.JOURNALS_DDB_TABLE_NAME, 'journals'),
+    delegatedBookingsDynamodbTableName:
+      defaultIfNotPresent(process.env.DELEGATED_BOOKINGS_DDB_TABLE_NAME, 'delegated-bookings'),
     tarsReplicaDatabaseHostname: throwIfNotPresent(
             process.env.TARS_REPLICA_HOST_NAME,
             'tarsReplicaDatabaseHostname',

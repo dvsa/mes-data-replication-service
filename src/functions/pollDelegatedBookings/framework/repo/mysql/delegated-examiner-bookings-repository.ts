@@ -1,20 +1,12 @@
-import { config } from '../../config/config';
 import * as mysql from 'mysql2';
+
+import { config } from '../../config';
 import { certificate } from '../../../../../common/certs/ssl_profiles';
 import { query } from '../../../../../common/framework/mysql/database';
-import { DelegatedExaminerTestSlot } from '../../../../pollJournals/domain/examiner-test-slot';
-import {
-  formatDateToIso8601,
-  formatDateToStartTime,
-} from '../../../../pollJournals/application/formatters/date-formatter';
-import { Application, Candidate } from '@dvsa/mes-journal-schema';
-import {
-  setCapitalisedStringIfPopulated,
-  setNumberIfNotNull,
-  setNumberIfTruthy, setStringIfPopulated,
-} from '../../../../pollJournals/framework/repo/mysql/row-mappers/test-slot-row-mapper';
+import { buildDelegatedBookingsFromQueryResult } from './delegated-examiner-bookings-row-mapper';
+import { DelegatedBookingDetail } from '../../../../../common/application/models/delegated-booking-details';
 
-interface DelegatedTestSlotRow {
+export interface DelegatedTestSlotRow {
   slot_id: number;
   start_time: Date;
   vehicle_type_code: string | null; // nullable
@@ -30,7 +22,7 @@ interface DelegatedTestSlotRow {
   staff_number: string;
 }
 
-export const getDelegatedExaminerBookings = async (): Promise<DelegatedExaminerTestSlot[]> => {
+export const getActiveDelegatedExaminerBookings = async (): Promise<DelegatedBookingDetail[]> => {
   const configuration = config();
 
   const connection = mysql.createConnection({
@@ -79,38 +71,69 @@ export const getDelegatedExaminerBookings = async (): Promise<DelegatedExaminerT
     ON vst.VST_CODE = ps.VST_CODE
 WHERE ex.grade_code = 'DELE'`,
   );
-  return queryResult.map(delegatedBooking => mapDelegatedExaminerBooking(delegatedBooking));
-};
 
-const mapDelegatedExaminerBooking = (row: DelegatedTestSlotRow): DelegatedExaminerTestSlot => {
-
-  const app: Application = { applicationId: 0, bookingSequence: 0, checkDigit: 0 };
-  setNumberIfTruthy(app, 'applicationId', row.booking_id);
-  setNumberIfTruthy(app, 'bookingSequence', row.booking_seq);
-  setNumberIfNotNull(app, 'checkDigit', row.check_digit);
-
-  const candidateDetails: Candidate = {};
-  setStringIfPopulated(candidateDetails, 'driverNumber', row.driver_number);
-  setStringIfPopulated(candidateDetails, 'dateOfBirth', formatDateToIso8601(row.date_of_birth));
-  candidateDetails.candidateName = {};
-  setCapitalisedStringIfPopulated(candidateDetails.candidateName, 'firstName', row.first_forename);
-  setCapitalisedStringIfPopulated(candidateDetails.candidateName, 'lastName', row.family_name);
-
-  const slot: DelegatedExaminerTestSlot = {
-    examinerId: row.staff_number,
-    testSlot: {
-      slotDetail: {
-        slotId: row.slot_id,
-        start: formatDateToStartTime(row.start_time),
-      },
-      vehicleTypeCode: row.vehicle_type_code,
-      vehicleSlotTypeCode: row.vehicle_slot_type_code,
-      booking: {
-        candidate: candidateDetails,
-        application: app,
-      },
+  const queryResult1: DelegatedTestSlotRow[] = [
+    {
+      slot_id: 1,
+      start_time: null,
+      vehicle_type_code: 'B',
+      vehicle_slot_type_code: 15,
+      booking_id: 24306179,
+      driver_number: 'HOMER146246AJ9AG',
+      first_forename: 'Homer',
+      family_name: 'Simpson',
+      test_category_ref: 'B',
+      booking_seq: 2,
+      check_digit: 1,
+      date_of_birth: new Date('1990-12-15'),
+      staff_number: '1234567',
     },
-  };
+    {
+      slot_id: 2,
+      start_time: null,
+      vehicle_type_code: 'C',
+      vehicle_slot_type_code: 14,
+      booking_id: 24306180,
+      driver_number: 'LISA9146246AJ9AG',
+      first_forename: 'Lisa',
+      family_name: 'Simpson',
+      test_category_ref: 'C',
+      booking_seq: 3,
+      check_digit: 4,
+      date_of_birth: new Date('1906-02-05'),
+      staff_number: '4583912',
+    },
+    {
+      slot_id: 3,
+      start_time: null,
+      vehicle_type_code: 'D',
+      vehicle_slot_type_code: 4,
+      booking_id: 24306141,
+      driver_number: 'DAVID146246AJ9AG',
+      first_forename: 'David',
+      family_name: 'Simpson',
+      test_category_ref: 'D',
+      booking_seq: 5,
+      check_digit: 9,
+      date_of_birth: new Date('1999-01-2'),
+      staff_number: '2468353',
+    },
+    {
+      slot_id: 4,
+      start_time: null,
+      vehicle_type_code: 'B',
+      vehicle_slot_type_code: 15,
+      booking_id: 24306182,
+      driver_number: 'MARGE146246AJ9AG',
+      first_forename: 'Marge',
+      family_name: 'Simpson',
+      test_category_ref: 'B',
+      booking_seq: 6,
+      check_digit: 4,
+      date_of_birth: new Date('1992-01-20'),
+      staff_number: '9865321',
+    },
+  ];
 
-  return slot;
+  return buildDelegatedBookingsFromQueryResult(queryResult1);
 };
