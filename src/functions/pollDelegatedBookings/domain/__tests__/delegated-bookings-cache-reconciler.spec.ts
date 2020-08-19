@@ -40,17 +40,5 @@ describe('Delegated booking cache reconciler', () => {
       moqCacheBookings.verify(x => x(It.isValue([])), Times.once());
       moqUncacheBookings.verify(x => x(It.isValue([12345678911, 12345678912])), Times.once());
     });
-
-    // it('should omit bookings where app refs occur more than once in the active dataset', async () => {
-    //   const activeBookings = [
-    //     new DelegatedBookingDetail(12345678910, '123456', Buffer.from('')),
-    //     new DelegatedBookingDetail(12345678910, '363422', Buffer.from('')),
-    //   ];
-    //   const cachedBookingDetails: DelegatedBookingDetail[] = [];
-    //   const cachedAppRefs: number[] = [];
-    //   await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails);
-    //   moqCacheBookings.verify(x => x(It.isValue([])), Times.once());
-    //   moqUncacheBookings.verify(x => x(It.isValue(cachedAppRefs)), Times.once());
-    // });
   });
 });
