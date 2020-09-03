@@ -8,6 +8,13 @@ package:
   individually: true
 
 functions:
+  pollDelegatedBookings:
+    timeout: 3600
+    handler: src/functions/pollDelegatedBookings/framework/handler.handler
+    events:
+      - http:
+          path: /pollDelegatedBookings
+          method: get
   pollJournals:
     timeout: 3600
     handler: src/functions/pollJournals/framework/handler.handler

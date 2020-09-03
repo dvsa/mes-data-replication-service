@@ -4,3 +4,8 @@ export interface ExaminerTestSlot {
   examinerId: number;
   testSlot: TestSlot;
 }
+
+export interface DelegatedExaminerTestSlot {
+  examinerId: string;
+  testSlot: TestSlot;
+}
