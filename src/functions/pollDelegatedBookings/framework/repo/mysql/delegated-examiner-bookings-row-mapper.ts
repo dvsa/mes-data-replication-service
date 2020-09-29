@@ -36,6 +36,7 @@ const mapDelegatedExaminerBooking = (row: DelegatedTestSlotRow): DelegatedExamin
   const candidateDetails: Candidate = {};
   setStringIfPopulated(candidateDetails, 'driverNumber', row.driver_number);
   setStringIfPopulated(candidateDetails, 'dateOfBirth', formatDateToIso8601(row.date_of_birth));
+  setNumberIfTruthy(candidateDetails, 'candidateId', row.individual_id);
   candidateDetails.candidateName = {};
   setCapitalisedStringIfPopulated(candidateDetails.candidateName, 'firstName', row.first_forename);
   setCapitalisedStringIfPopulated(candidateDetails.candidateName, 'lastName', row.family_name);
@@ -52,6 +53,11 @@ const mapDelegatedExaminerBooking = (row: DelegatedTestSlotRow): DelegatedExamin
       booking: {
         candidate: candidateDetails,
         application: app,
+      },
+      testCentre: {
+        centreId: row.tc_id,
+        centreName: row.tc_name,
+        costCode: row.tc_cost_centre_code,
       },
     },
   };

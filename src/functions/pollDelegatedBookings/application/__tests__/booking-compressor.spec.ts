@@ -11,7 +11,11 @@ describe('DelegatedBookingCompressor', () => {
           vehicleTypeCode: 'B',
           vehicleSlotTypeCode: 1,
           booking: {},
-          testCentre: {},
+          testCentre: {
+            centreId: 1,
+            centreName: 'test centre',
+            costCode: 'cost code',
+          },
         },
       };
       const compressedDelegatedBooking = compressDelegatedBooking(booking);
