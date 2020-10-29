@@ -7,6 +7,7 @@ import { buildDelegatedBookingsFromQueryResult } from './delegated-examiner-book
 import { DelegatedBookingDetail } from '../../../../../common/application/models/delegated-booking-details';
 
 export interface DelegatedTestSlotRow {
+  app_id: number;
   slot_id: number;
   start_time: Date;
   vehicle_type_code: string | null; // nullable
@@ -47,6 +48,7 @@ export const getActiveDelegatedExaminerBookings = async (): Promise<DelegatedBoo
       connection,
       `SELECT ps.slot_id
      , ps.start_time
+     , bk.app_id
      , bk.booking_id
      , ex.staff_number
      , cd.driver_number

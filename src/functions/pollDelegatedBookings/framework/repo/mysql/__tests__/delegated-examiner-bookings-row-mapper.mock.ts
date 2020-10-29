@@ -2,6 +2,7 @@ import { DelegatedTestSlotRow } from '../delegated-examiner-bookings-repository'
 
 export const mockDelegatedBookingRows: DelegatedTestSlotRow[] = [
   {
+    app_id: 41234567,
     slot_id: 1,
     start_time: null,
     vehicle_type_code: 'B',
@@ -21,6 +22,7 @@ export const mockDelegatedBookingRows: DelegatedTestSlotRow[] = [
     staff_number: '1234567',
   },
   {
+    app_id: 41234568,
     slot_id: 2,
     start_time: null,
     vehicle_type_code: 'C',
@@ -40,6 +42,7 @@ export const mockDelegatedBookingRows: DelegatedTestSlotRow[] = [
     staff_number: '4583912',
   },
   {
+    app_id: 41234569,
     slot_id: 3,
     start_time: null,
     vehicle_type_code: 'D',
@@ -59,6 +62,7 @@ export const mockDelegatedBookingRows: DelegatedTestSlotRow[] = [
     staff_number: '2468053',
   },
   {
+    app_id: 41234561,
     slot_id: 4,
     start_time: null,
     vehicle_type_code: 'B',
