@@ -28,7 +28,7 @@ export const buildDelegatedBookingsFromQueryResult = (
 
 const mapDelegatedExaminerBooking = (row: DelegatedTestSlotRow): DelegatedExaminerTestSlot => {
   const app: Application = { applicationId: 0, bookingSequence: 0, checkDigit: 0, testCategory: null };
-  setNumberIfTruthy(app, 'applicationId', row.booking_id);
+  setNumberIfTruthy(app, 'applicationId', row.app_id);
   setNumberIfTruthy(app, 'bookingSequence', row.booking_seq);
   setNumberIfNotNull(app, 'checkDigit', row.check_digit);
   setStringIfPopulated(app, 'testCategory', row.test_category_ref);
@@ -65,7 +65,7 @@ const mapDelegatedExaminerBooking = (row: DelegatedTestSlotRow): DelegatedExamin
 
 const mapDelegatedExaminerAppRefs = (row: DelegatedTestSlotRow): number => {
   const app: Application = { applicationId: 0, bookingSequence: 0, checkDigit: 0 };
-  setNumberIfTruthy(app, 'applicationId', row.booking_id);
+  setNumberIfTruthy(app, 'applicationId', row.app_id);
   setNumberIfTruthy(app, 'bookingSequence', row.booking_seq);
   setNumberIfNotNull(app, 'checkDigit', row.check_digit);
   return formatApplicationReference(app);
