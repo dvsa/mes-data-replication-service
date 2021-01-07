@@ -4,6 +4,7 @@ import { transferDelegatedBookings } from '../transfer-delegated-bookings';
 import * as cachedDelegatedBookingsRepository from '../../framework/repo/dynamodb/cached-delegated-bookings-repository';
 import * as delegatedBookingsCacheReconciler from '../delegated-bookings-cache-reconciler';
 import { DelegatedBookingDetail } from '../../../../common/application/models/delegated-booking-details';
+import { DateTime } from '../../../../common/application/utils/dateTime';
 
 describe('transferDelegatedBookings module', () => {
   const moqDelBookingsRepo = Mock.ofInstance(delegatedBookingsRepository.getActiveDelegatedExaminerBookings);
@@ -35,11 +36,13 @@ describe('transferDelegatedBookings module', () => {
         new DelegatedBookingDetail(12345678911, '222001', buffer),
         new DelegatedBookingDetail(12345678912, '833201', buffer),
       ];
+      const todaysDate = new DateTime();
       moqDelBookingsRepo.setup(x => x()).returns(() => Promise.resolve(activeBookings));
       moqCachedDelBookingRepo.setup(x => x()).returns(() => Promise.resolve(cachedBookingsDetails));
 
       await transferDelegatedBookings();
-      moqReconciler.verify(x => x(It.isValue(activeBookings), It.isValue(cachedBookingsDetails)), Times.once());
+      // tslint:disable-next-line:max-line-length
+      moqReconciler.verify(x => x(It.isValue(activeBookings), It.isValue(cachedBookingsDetails), It.isValue(todaysDate)), Times.once());
     });
   });
 });

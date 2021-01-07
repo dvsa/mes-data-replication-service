@@ -3,6 +3,9 @@ import { Mock, It, Times } from 'typemoq';
 import { reconcileActiveAndCachedDelegatedBookings } from '../delegated-bookings-cache-reconciler';
 import * as cachedDelegatedBookingRepository from '../../framework/repo/dynamodb/cached-delegated-bookings-repository';
 import { DelegatedBookingDetail } from '../../../../common/application/models/delegated-booking-details';
+import { mockNewDelegatedExaminerTestSlot, mockOldDelegatedExaminerTestSlot } from '../__mocks__/delegated-examiner-test-slot.mock';
+import { DateTime } from '../../../../common/application/utils/dateTime';
+import { gzipSync } from 'zlib';
 
 describe('Delegated booking cache reconciler', () => {
   const moqCacheBookings = Mock.ofInstance(cachedDelegatedBookingRepository.cacheDelegatedBookingDetails);
@@ -24,7 +27,7 @@ describe('Delegated booking cache reconciler', () => {
       ];
       const cachedBookingDetails: DelegatedBookingDetail[] = [];
       const cachedAppRefs: number[] = [];
-      await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails);
+      await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails, new DateTime('2021-01-06T07:51:00'));
       moqCacheBookings.verify(x => x(It.isValue(activeBookings)), Times.once());
       moqUncacheBookings.verify(x => x(It.isValue(cachedAppRefs)), Times.once());
     });
@@ -36,9 +39,24 @@ describe('Delegated booking cache reconciler', () => {
         new DelegatedBookingDetail(12345678911, '363422', Buffer.from('')),
         new DelegatedBookingDetail(12345678912, '552422', Buffer.from('')),
       ];
-      await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails);
+      await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails, new DateTime('2021-01-06T07:51:00'));
       moqCacheBookings.verify(x => x(It.isValue([])), Times.once());
       moqUncacheBookings.verify(x => x(It.isValue([12345678911, 12345678912])), Times.once());
+    });
+
+    it('should not try to delete cached bookings that are ineligible for deletion', async () => {
+      // ARRANGE
+      const activeBookings = [new DelegatedBookingDetail(12345678910, '123456', Buffer.from(''))];
+      const cachedBookingDetails = [
+        new DelegatedBookingDetail(12345678912, '123456', gzipSync(Buffer.from(JSON.stringify(mockNewDelegatedExaminerTestSlot)))),
+        new DelegatedBookingDetail(12345678911, '363422', gzipSync(Buffer.from(JSON.stringify(mockOldDelegatedExaminerTestSlot)))),
+        new DelegatedBookingDetail(12345678910, '363422', gzipSync(Buffer.from(JSON.stringify(mockNewDelegatedExaminerTestSlot)))),
+      ];
+      // ACT
+      await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails, new DateTime('2021-01-06T07:51:00'));
+      // ASSERT
+      moqCacheBookings.verify(x => x(It.isValue([])), Times.once());
+      moqUncacheBookings.verify(x => x(It.isValue([12345678911])), Times.once());
     });
   });
 });
