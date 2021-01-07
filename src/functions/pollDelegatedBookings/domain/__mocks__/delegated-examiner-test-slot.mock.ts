@@ -1,3 +1,5 @@
+import { gzipSync } from 'zlib';
+
 export const mockOldDelegatedExaminerTestSlot = {
   examinerId: '44X4',
   testSlot: {
@@ -33,6 +35,9 @@ export const mockOldDelegatedExaminerTestSlot = {
   },
 };
 
+export const compressedMockOldDelegatedExaminerTestSlot =
+  gzipSync(Buffer.from(JSON.stringify(mockOldDelegatedExaminerTestSlot)));
+
 export const mockNewDelegatedExaminerTestSlot = {
   examinerId: '44X4',
   testSlot: {
@@ -67,3 +72,6 @@ export const mockNewDelegatedExaminerTestSlot = {
     },
   },
 };
+
+export const compressedMockNewDelegatedExaminerTestSlot =
+  gzipSync(Buffer.from(JSON.stringify(mockNewDelegatedExaminerTestSlot)));
