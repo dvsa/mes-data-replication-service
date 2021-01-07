@@ -36,13 +36,12 @@ describe('transferDelegatedBookings module', () => {
         new DelegatedBookingDetail(12345678911, '222001', buffer),
         new DelegatedBookingDetail(12345678912, '833201', buffer),
       ];
-      const todaysDate = new DateTime();
       moqDelBookingsRepo.setup(x => x()).returns(() => Promise.resolve(activeBookings));
       moqCachedDelBookingRepo.setup(x => x()).returns(() => Promise.resolve(cachedBookingsDetails));
 
       await transferDelegatedBookings();
       // tslint:disable-next-line:max-line-length
-      moqReconciler.verify(x => x(It.isValue(activeBookings), It.isValue(cachedBookingsDetails), It.isValue(todaysDate)), Times.once());
+      moqReconciler.verify(x => x(It.isValue(activeBookings), It.isValue(cachedBookingsDetails), It.isAny()), Times.once());
     });
   });
 });

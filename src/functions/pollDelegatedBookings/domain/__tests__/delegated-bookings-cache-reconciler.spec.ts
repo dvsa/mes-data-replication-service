@@ -35,9 +35,9 @@ describe('Delegated booking cache reconciler', () => {
     it('should cache active bookings not already in the cache and uncache those that are cached but not active', async () => {
       const activeBookings = [new DelegatedBookingDetail(12345678910, '123456', Buffer.from(''))];
       const cachedBookingDetails = [
-        new DelegatedBookingDetail(12345678910, '123456', Buffer.from('')),
-        new DelegatedBookingDetail(12345678911, '363422', Buffer.from('')),
-        new DelegatedBookingDetail(12345678912, '552422', Buffer.from('')),
+        new DelegatedBookingDetail(12345678910, '123456', gzipSync(Buffer.from(JSON.stringify(mockNewDelegatedExaminerTestSlot)))),
+        new DelegatedBookingDetail(12345678911, '363422', gzipSync(Buffer.from(JSON.stringify(mockOldDelegatedExaminerTestSlot)))),
+        new DelegatedBookingDetail(12345678912, '552422', gzipSync(Buffer.from(JSON.stringify(mockOldDelegatedExaminerTestSlot)))),
       ];
       await reconcileActiveAndCachedDelegatedBookings(activeBookings, cachedBookingDetails, new DateTime('2021-01-06T07:51:00'));
       moqCacheBookings.verify(x => x(It.isValue([])), Times.once());
