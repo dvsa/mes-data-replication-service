@@ -3,7 +3,7 @@ import {
   cacheDelegatedBookingDetails,
 } from '../framework/repo/dynamodb/cached-delegated-bookings-repository';
 import { DelegatedBookingDetail } from '../../../common/application/models/delegated-booking-details';
-import { DateTime } from '../../../common/application/utils/dateTime';
+import { DateTime } from '../../../common/application/utils/date-time';
 import { decompressDelegatedBooking } from '../application/booking-compressor';
 
 const NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS = 60;

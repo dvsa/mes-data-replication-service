@@ -4,7 +4,7 @@ import { reconcileActiveAndCachedDelegatedBookings } from '../delegated-bookings
 import * as cachedDelegatedBookingRepository from '../../framework/repo/dynamodb/cached-delegated-bookings-repository';
 import { DelegatedBookingDetail } from '../../../../common/application/models/delegated-booking-details';
 import { compressedMockNewDelegatedExaminerTestSlot, compressedMockOldDelegatedExaminerTestSlot } from '../__mocks__/delegated-examiner-test-slot.mock';
-import { DateTime } from '../../../../common/application/utils/dateTime';
+import { DateTime } from '../../../../common/application/utils/date-time';
 
 describe('Delegated booking cache reconciler', () => {
   const moqCacheBookings = Mock.ofInstance(cachedDelegatedBookingRepository.cacheDelegatedBookingDetails);

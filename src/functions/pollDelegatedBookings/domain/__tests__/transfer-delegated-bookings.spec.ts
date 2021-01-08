@@ -4,7 +4,6 @@ import { transferDelegatedBookings } from '../transfer-delegated-bookings';
 import * as cachedDelegatedBookingsRepository from '../../framework/repo/dynamodb/cached-delegated-bookings-repository';
 import * as delegatedBookingsCacheReconciler from '../delegated-bookings-cache-reconciler';
 import { DelegatedBookingDetail } from '../../../../common/application/models/delegated-booking-details';
-import { DateTime } from '../../../../common/application/utils/dateTime';
 
 describe('transferDelegatedBookings module', () => {
   const moqDelBookingsRepo = Mock.ofInstance(delegatedBookingsRepository.getActiveDelegatedExaminerBookings);
