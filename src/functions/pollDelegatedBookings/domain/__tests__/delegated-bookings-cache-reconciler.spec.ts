@@ -34,7 +34,7 @@ describe('Delegated booking cache reconciler', () => {
     it('should cache active bookings not already in the cache and uncache those that are cached but not active', async () => {
       const activeBookings = [new DelegatedBookingDetail(12345678910, '123456', Buffer.from(''))];
       const cachedBookingDetails = [
-        new DelegatedBookingDetail(12345678910, '123456', compressedMockNewDelegatedExaminerTestSlot),
+        new DelegatedBookingDetail(12345678910, '123456', compressedMockOldDelegatedExaminerTestSlot),
         new DelegatedBookingDetail(12345678911, '363422', compressedMockNewDelegatedExaminerTestSlot),
         new DelegatedBookingDetail(12345678912, '552422', compressedMockOldDelegatedExaminerTestSlot),
       ];

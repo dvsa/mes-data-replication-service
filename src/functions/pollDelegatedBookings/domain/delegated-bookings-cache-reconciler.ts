@@ -12,9 +12,8 @@ export const reconcileActiveAndCachedDelegatedBookings = async (
   todaysDate: DateTime,
 ): Promise<void> => {
 
-  const activeAppRefs = activeDelegatedBookingsSlots.map(delegatedTestSlot => delegatedTestSlot.applicationReference);
   const cachedAppRefsEligibleForDeletion =
-    extractCachedAppRefsEligibleForDeletion(cachedDelegatedBookingsSlots, todaysDate)
+    extractCachedBookingsEligibleForDeletion(cachedDelegatedBookingsSlots, activeDelegatedBookingsSlots, todaysDate)
       .map(delegatedTestSlot => delegatedTestSlot.applicationReference);
 
   const delegatedBookingDetailsToCache =
@@ -22,8 +21,7 @@ export const reconcileActiveAndCachedDelegatedBookings = async (
 
   await cacheDelegatedBookingDetails(delegatedBookingDetailsToCache);
 
-  const appRefsToUnCache = cachedAppRefsEligibleForDeletion.filter(appRef => !activeAppRefs.includes(appRef));
-  await unCacheDelegatedBookingDetails(appRefsToUnCache);
+  await unCacheDelegatedBookingDetails(cachedAppRefsEligibleForDeletion);
 };
 
 const selectDelegatedBookingsToCache = (
@@ -58,10 +56,17 @@ const appRefsAreEqual = (
   sd2: DelegatedBookingDetail,
 ): boolean => sd1.applicationReference === sd2.applicationReference;
 
-const extractCachedAppRefsEligibleForDeletion = (
+const extractCachedBookingsEligibleForDeletion = (
   cachedDelegatedBookingsSlots: DelegatedBookingDetail[],
-  todaysDate: DateTime) => {
+  activeDelegatedBookingsSlots: DelegatedBookingDetail[],
+  todaysDate: DateTime): DelegatedBookingDetail[] => {
+
+  const activeAppRefs = activeDelegatedBookingsSlots.map(delegatedTestSlot => delegatedTestSlot.applicationReference);
+
   return cachedDelegatedBookingsSlots.filter((bookingSlot) => {
+
+    if (activeAppRefs.includes(bookingSlot.applicationReference)) return false;
+
     const unzippedSlot = decompressDelegatedBooking(bookingSlot.bookingDetail);
     if (new DateTime(unzippedSlot.testSlot.slotDetail.start).daysDiff(todaysDate) > 60) {
       return true;
