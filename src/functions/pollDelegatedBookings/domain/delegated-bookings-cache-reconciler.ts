@@ -6,6 +6,8 @@ import { DelegatedBookingDetail } from '../../../common/application/models/deleg
 import { DateTime } from '../../../common/application/utils/dateTime';
 import { decompressDelegatedBooking } from '../application/booking-compressor';
 
+const NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS = 60;
+
 export const reconcileActiveAndCachedDelegatedBookings = async (
   activeDelegatedBookingsSlots: DelegatedBookingDetail[],
   cachedDelegatedBookingsSlots: DelegatedBookingDetail[],
@@ -68,7 +70,9 @@ const extractCachedBookingsEligibleForDeletion = (
     if (activeAppRefs.includes(bookingSlot.applicationReference)) return false;
 
     const unzippedSlot = decompressDelegatedBooking(bookingSlot.bookingDetail);
-    if (new DateTime(unzippedSlot.testSlot.slotDetail.start).daysDiff(todaysDate) > 60) {
+    const ageOfBooking = new DateTime(unzippedSlot.testSlot.slotDetail.start).daysDiff(todaysDate);
+
+    if (ageOfBooking > NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS) {
       return true;
     }
     return false;
