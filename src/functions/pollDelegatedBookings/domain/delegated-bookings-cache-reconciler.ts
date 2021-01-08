@@ -72,9 +72,6 @@ const extractCachedBookingsEligibleForDeletion = (
     const unzippedSlot = decompressDelegatedBooking(bookingSlot.bookingDetail);
     const ageOfBooking = new DateTime(unzippedSlot.testSlot.slotDetail.start).daysDiff(todaysDate);
 
-    if (ageOfBooking > NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS) {
-      return true;
-    }
-    return false;
+    return ageOfBooking > NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS;
   });
 };
