@@ -3,21 +3,27 @@ import {
   cacheDelegatedBookingDetails,
 } from '../framework/repo/dynamodb/cached-delegated-bookings-repository';
 import { DelegatedBookingDetail } from '../../../common/application/models/delegated-booking-details';
+import { DateTime } from '../../../common/application/utils/date-time';
+import { decompressDelegatedBooking } from '../application/booking-compressor';
+
+const NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS = 60;
 
 export const reconcileActiveAndCachedDelegatedBookings = async (
   activeDelegatedBookingsSlots: DelegatedBookingDetail[],
   cachedDelegatedBookingsSlots: DelegatedBookingDetail[],
+  todaysDate: DateTime,
 ): Promise<void> => {
 
-  const activeAppRefs = activeDelegatedBookingsSlots.map(delegatedTestSlot => delegatedTestSlot.applicationReference);
-  const cachedAppRefs = cachedDelegatedBookingsSlots.map(delegatedTestSlot => delegatedTestSlot.applicationReference);
+  const cachedAppRefsEligibleForDeletion =
+    extractCachedBookingsEligibleForDeletion(cachedDelegatedBookingsSlots, activeDelegatedBookingsSlots, todaysDate)
+      .map(delegatedTestSlot => delegatedTestSlot.applicationReference);
 
   const delegatedBookingDetailsToCache =
     selectDelegatedBookingsToCache(activeDelegatedBookingsSlots, cachedDelegatedBookingsSlots);
+
   await cacheDelegatedBookingDetails(delegatedBookingDetailsToCache);
 
-  const appRefsToUnCache = cachedAppRefs.filter(appRef => !activeAppRefs.includes(appRef));
-  await unCacheDelegatedBookingDetails(appRefsToUnCache);
+  await unCacheDelegatedBookingDetails(cachedAppRefsEligibleForDeletion);
 };
 
 const selectDelegatedBookingsToCache = (
@@ -51,3 +57,21 @@ const appRefsAreEqual = (
   sd1: DelegatedBookingDetail,
   sd2: DelegatedBookingDetail,
 ): boolean => sd1.applicationReference === sd2.applicationReference;
+
+const extractCachedBookingsEligibleForDeletion = (
+  cachedDelegatedBookingsSlots: DelegatedBookingDetail[],
+  activeDelegatedBookingsSlots: DelegatedBookingDetail[],
+  todaysDate: DateTime): DelegatedBookingDetail[] => {
+
+  const activeAppRefs = activeDelegatedBookingsSlots.map(delegatedTestSlot => delegatedTestSlot.applicationReference);
+
+  return cachedDelegatedBookingsSlots.filter((bookingSlot) => {
+
+    if (activeAppRefs.includes(bookingSlot.applicationReference)) return false;
+
+    const unzippedSlot = decompressDelegatedBooking(bookingSlot.bookingDetail);
+    const ageOfBooking = new DateTime(unzippedSlot.testSlot.slotDetail.start).daysDiff(todaysDate);
+
+    return ageOfBooking > NUMBER_OF_DAYS_TO_RETAIN_CACHED_BOOKINGS;
+  });
+};

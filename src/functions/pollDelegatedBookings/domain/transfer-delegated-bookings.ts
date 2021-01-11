@@ -3,6 +3,7 @@ import { DelegatedBookingDetail } from '../../../common/application/models/deleg
 import { getActiveDelegatedExaminerBookings } from '../framework/repo/mysql/delegated-examiner-bookings-repository';
 import { reconcileActiveAndCachedDelegatedBookings } from './delegated-bookings-cache-reconciler';
 import { getCachedDelegatedExaminerBookings } from '../framework/repo/dynamodb/cached-delegated-bookings-repository';
+import { DateTime } from '../../../common/application/utils/date-time';
 
 export const transferDelegatedBookings = async (): Promise<void> => {
   const activeDelegatedBookings: DelegatedBookingDetail[] = await getActiveDelegatedExaminerBookings();
@@ -11,5 +12,9 @@ export const transferDelegatedBookings = async (): Promise<void> => {
   const cachedDelegatedBookings: DelegatedBookingDetail[] = await getCachedDelegatedExaminerBookings();
   info(`Number of cached delegated bookings: ${cachedDelegatedBookings.length}`);
 
-  await reconcileActiveAndCachedDelegatedBookings(activeDelegatedBookings, cachedDelegatedBookings);
+  await reconcileActiveAndCachedDelegatedBookings(
+    activeDelegatedBookings,
+    cachedDelegatedBookings,
+    new DateTime(),
+  );
 };
