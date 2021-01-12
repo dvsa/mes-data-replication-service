@@ -39,7 +39,8 @@ describe('transferDelegatedBookings module', () => {
       moqCachedDelBookingRepo.setup(x => x()).returns(() => Promise.resolve(cachedBookingsDetails));
 
       await transferDelegatedBookings();
-      moqReconciler.verify(x => x(It.isValue(activeBookings), It.isValue(cachedBookingsDetails)), Times.once());
+      // tslint:disable-next-line:max-line-length
+      moqReconciler.verify(x => x(It.isValue(activeBookings), It.isValue(cachedBookingsDetails), It.isAny()), Times.once());
     });
   });
 });
