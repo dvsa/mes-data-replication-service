@@ -9,11 +9,8 @@ import { transferTestCentreExaminers } from '../domain/transfer-test-centre-exam
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
   try {
-    console.log('Invoked Test Centre lambda');
     bootstrapLogging('test-centre-poller', event);
-    console.log('bootstrapTestCentreConfig');
     await bootstrapTestCentreConfig();
-    console.log('transferTestCentreExaminers');
     await transferTestCentreExaminers();
     return createResponse({});
   } catch (err) {
