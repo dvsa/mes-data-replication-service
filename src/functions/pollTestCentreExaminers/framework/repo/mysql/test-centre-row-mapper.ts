@@ -1,6 +1,5 @@
 import { TestCentreRow } from './test-centre-repository';
 import { Examiner, TestCentreDetail } from '../../../../../common/application/models/test-centre';
-// import { DateTime } from '../../../../../common/application/utils/date-time';
 
 export const buildTestCentreRowsFromQueryResult = (
   queryResult: TestCentreRow[],
@@ -9,7 +8,6 @@ export const buildTestCentreRowsFromQueryResult = (
     mapStaffNumber(row),
     mapExaminers(row),
     mapTestCentreIDs(row),
-    // new DateTime(),
   ));
 };
 

@@ -39,7 +39,7 @@ describe('transferTestCentreExaminers', () => {
 
       await transferTestCentreExaminers();
       // tslint:disable-next-line:max-line-length
-      moqReconciler.verify(x => x(It.isValue(activeTestCentres), It.isValue(cachedTestCentres), It.isAny()), Times.once());
+      moqReconciler.verify(x => x(It.isValue(activeTestCentres), It.isValue(cachedTestCentres)), Times.once());
     });
   });
 });

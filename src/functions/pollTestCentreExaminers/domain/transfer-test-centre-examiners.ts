@@ -1,5 +1,4 @@
 import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
-import { DateTime } from '../../../common/application/utils/date-time';
 import { getCachedTestCentreExaminers } from '../framework/repo/dynamodb/cached-test-centre-repository';
 import { getActiveTestCentreExaminers } from '../framework/repo/mysql/test-centre-repository';
 import { TestCentreDetail } from '../../../common/application/models/test-centre';
@@ -15,6 +14,5 @@ export const transferTestCentreExaminers = async (): Promise<void> => {
   await reconcileActiveAndCachedTestCentreRows(
     activeTestCentres,
     cachedTestCentres,
-    new DateTime(),
   );
 };

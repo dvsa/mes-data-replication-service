@@ -1,7 +1,5 @@
-import { config as awsConfig, Credentials, DynamoDB } from 'aws-sdk';
 import { customMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
-import { chunk } from 'lodash';
-
+import { config as awsConfig, Credentials, DynamoDB } from 'aws-sdk';
 import { config } from '../../config';
 import { TestCentreDetail } from '../../../../../common/application/models/test-centre';
 
@@ -36,29 +34,25 @@ export const getCachedTestCentreExaminers = async (): Promise<TestCentreDetail[]
   return scanResult.Items as TestCentreDetail[];
 };
 
-export const cacheTestCentreExaminers = async (testCentreExaminers: TestCentreDetail[]): Promise<void> => {
+export const updateTestCentreExaminers = async (testCentres: TestCentreDetail[]): Promise<void> => {
   const ddb: DynamoDB.DocumentClient = getDynamoClient();
   const tableName: string = config().testCentreDynamodbTableName;
 
-  const maxBatchWriteRequests: number = 25;
-  const testCentreWriteBatches: TestCentreDetail[][] = chunk(testCentreExaminers, maxBatchWriteRequests);
-
-  const writePromises = testCentreWriteBatches.map((batch: TestCentreDetail[]) => {
-    const params = {
-      RequestItems: {
-        [tableName]: batch.map((testCentreExaminer: TestCentreDetail) => ({
-          PutRequest: {
-            Item: testCentreExaminer,
-          },
-        })),
+  // will update row using a put and add new rows if staffNumber not found
+  const putPromises = testCentres.map((testCentre: TestCentreDetail) => {
+    const putParams = {
+      TableName: tableName,
+      Item: {
+        staffNumber: testCentre.staffNumber,
+        examiners: testCentre.examiners,
+        testCentreIDs: testCentre.testCentreIDs,
       },
     };
-    return ddb.batchWrite(params).promise();
+    return ddb.put(putParams).promise();
   });
+  await Promise.all(putPromises);
 
-  await Promise.all(writePromises);
-
-  customMetric('TestCentreRowAdded', 'Number of Test Centre rows added to Dynamo', testCentreExaminers.length);
+  customMetric('TestCentreRowUpdated', 'Number of Test Centre rows updated from Dynamo', testCentres.length);
 };
 
 export const unCacheTestCentreExaminers = async (staffNumbers: string[]): Promise<void> => {
