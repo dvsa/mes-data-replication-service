@@ -22,6 +22,13 @@ functions:
       - http:
           path: /pollJournals
           method: get
+  pollTestCentreExaminers:
+    timeout: 3600
+    handler: src/functions/pollTestCentreExaminers/framework/handler.handler
+    events:
+      - http:
+          path: /pollTestCentreExaminers
+          method: get
   pollUsers:
     timeout: 3600
     handler: src/functions/pollUsers/framework/handler.handler
