@@ -31,7 +31,6 @@ describe('Test centre cache reconciler', () => {
         new TestCentreDetail('123', [], []),
       ];
       const cachedTestCentres = [
-        new TestCentreDetail('123', [], []),
         new TestCentreDetail('456', [], []),
         new TestCentreDetail('789', [], []),
       ];
