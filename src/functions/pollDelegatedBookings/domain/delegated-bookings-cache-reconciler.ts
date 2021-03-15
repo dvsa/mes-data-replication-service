@@ -54,9 +54,11 @@ const delegatedBookingsEligibleForCache = (
 };
 
 const appRefsAreEqual = (
-  sd1: DelegatedBookingDetail,
-  sd2: DelegatedBookingDetail,
-): boolean => sd1.applicationReference === sd2.applicationReference;
+    sd1: DelegatedBookingDetail,
+    sd2: DelegatedBookingDetail,
+): boolean => sd1.applicationReference === sd2.applicationReference &&
+    Buffer.compare(sd1.bookingDetail, sd2.bookingDetail) === 0 &&
+    sd1.staffNumber === sd2.staffNumber;
 
 const extractCachedBookingsEligibleForDeletion = (
   cachedDelegatedBookingsSlots: DelegatedBookingDetail[],
