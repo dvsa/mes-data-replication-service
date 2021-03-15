@@ -1,6 +1,5 @@
 import { config as awsConfig, Credentials, DynamoDB } from 'aws-sdk';
 import { customMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
-import { chunk } from 'lodash';
 
 import { config } from '../../config';
 import { DelegatedBookingDetail } from '../../../../../common/application/models/delegated-booking-details';
@@ -40,23 +39,19 @@ export const cacheDelegatedBookingDetails = async (delegatedBookings: DelegatedB
   const ddb: DynamoDB.DocumentClient = getDynamoClient();
   const tableName: string = config().delegatedBookingsDynamodbTableName;
 
-  const maxBatchWriteRequests: number = 25;
-  const delegatedBookingsWriteBatches: DelegatedBookingDetail[][] = chunk(delegatedBookings, maxBatchWriteRequests);
-
-  const writePromises = delegatedBookingsWriteBatches.map((batch: DelegatedBookingDetail[]) => {
-    const params = {
-      RequestItems: {
-        [tableName]: batch.map((delegatedBooking: DelegatedBookingDetail) => ({
-          PutRequest: {
-            Item: delegatedBooking,
-          },
-        })),
+  const putPromises = delegatedBookings.map((delegatedBooking: DelegatedBookingDetail) => {
+    const putParams = {
+      TableName: tableName,
+      Item: {
+        applicationReference: delegatedBooking.applicationReference,
+        bookingDetail: delegatedBooking.bookingDetail,
+        staffNumber: delegatedBooking.staffNumber,
       },
     };
-    return ddb.batchWrite(params).promise();
+    return ddb.put(putParams);
   });
 
-  await Promise.all(writePromises);
+  await Promise.all(putPromises);
 
   customMetric('DelegatedBookingAdded', 'Number of Delegated bookings added to Dynamo', delegatedBookings.length);
 };
