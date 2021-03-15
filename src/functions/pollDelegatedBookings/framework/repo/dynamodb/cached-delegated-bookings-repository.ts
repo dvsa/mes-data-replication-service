@@ -48,12 +48,12 @@ export const cacheDelegatedBookingDetails = async (delegatedBookings: DelegatedB
         staffNumber: delegatedBooking.staffNumber,
       },
     };
-    return ddb.put(putParams);
+    return ddb.put(putParams).promise();
   });
 
   await Promise.all(putPromises);
 
-  customMetric('DelegatedBookingAdded', 'Number of Delegated bookings added to Dynamo', delegatedBookings.length);
+  customMetric('DelegatedBookingAdded', 'Number of Delegated bookings updated in Dynamo', delegatedBookings.length);
 };
 
 export const unCacheDelegatedBookingDetails = async (appRefs: number[]): Promise<void> => {
