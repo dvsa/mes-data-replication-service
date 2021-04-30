@@ -18,12 +18,12 @@ export const reconcileActiveAndCachedDelegatedBookings = async (
     extractCachedBookingsEligibleForDeletion(cachedDelegatedBookingsSlots, activeDelegatedBookingsSlots, todaysDate)
       .map(delegatedTestSlot => delegatedTestSlot.applicationReference);
 
+  await unCacheDelegatedBookingDetails(cachedAppRefsEligibleForDeletion);
+
   const delegatedBookingDetailsToCache =
     selectDelegatedBookingsToCache(activeDelegatedBookingsSlots, cachedDelegatedBookingsSlots);
 
   await cacheDelegatedBookingDetails(delegatedBookingDetailsToCache);
-
-  await unCacheDelegatedBookingDetails(cachedAppRefsEligibleForDeletion);
 };
 
 const selectDelegatedBookingsToCache = (
@@ -56,7 +56,11 @@ const delegatedBookingsEligibleForCache = (
 const appRefsAreEqual = (
   sd1: DelegatedBookingDetail,
   sd2: DelegatedBookingDetail,
-): boolean => sd1.applicationReference === sd2.applicationReference;
+): boolean => (
+  sd1.applicationReference === sd2.applicationReference &&
+  Buffer.compare(sd1.bookingDetail, sd2.bookingDetail) === 0 &&
+  sd1.staffNumber === sd2.staffNumber
+);
 
 const extractCachedBookingsEligibleForDeletion = (
   cachedDelegatedBookingsSlots: DelegatedBookingDetail[],
